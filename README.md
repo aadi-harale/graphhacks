@@ -11,6 +11,21 @@ The agent connects historic shortage claims, documented promotions, supplier sta
 - **Live verification:** GitHub Actions runs a FalkorDB service and adversarial graph tests. See the latest [Actions runs](https://github.com/aadi-harale/graphhacks/actions). At the time of this update the conflict guard has passed its live regression. Browser smoke and unknown-history adoption testing remain in progress.
 - **Judge demo:** [DEMO_JUDGE_GUIDE.md](DEMO_JUDGE_GUIDE.md) contains the exact three-minute story and truthful limitations.
 
+## First look: understand the whole product in 60 seconds
+
+The interface now opens with the **retailer's real question**: two units arrived, but there are two different older promises for four units total. Click **See SahiAaya solve this →** to follow:
+
+1. **Receive** — observe and confirm the goods.
+2. **Connect** — recover earlier shortage and promotion obligations.
+3. **Ask** — use the actual simulated supplier-response operation to attribute this receipt.
+4. **Approve** — let the retailer review the suggested allocation; record two units settled and two still owed, or block the action if statements conflict.
+
+The evidence chain below the interactive case shows how connected documents, the receipt, a supplier statement and retailer approval affect the final verdict. The public page is explicitly **a synthetic, client-only walkthrough**; Docker runs the same interface with actual FalkorDB Cypher queries. A real FalkorDB-backed browser video remains a distinct submission requirement.
+
+**Reproducible browser checks:** `scripts/ui_browser_check.py` runs desktop and 390-pixel mobile Playwright checks in GitHub Actions. It covers the guided positive case, contradiction negative control and horizontal mobile overflow. Screenshots are attached as the `sahiaaya-browser-screenshots` Actions artifact.
+
+**Design reference evidence:** the [October 7 First Commit recap](https://www.wemakedevs.org/blogs/first-commit-hackathon-recap-and-whats-next) credits Suraksha's clear human need, Beacon's approved response and CampusEvac's two-player coordination; [FalkorDB's August 18 recap](https://www.falkordb.com/blog/memory-meets-motion-the-falkordb-standouts/) describes Atrium's connected evidence changing a teaching action. The [September 30 Hack for Humanity recap](https://www.falkordb.com/blog/how-builders-at-hack-for-humanity-used-falkordb-to-solve-real-community-problems/) documents accessible input/output with evidence-backed graph decisions. We applied these **product-interaction lessons**, not an unverified claim about their visual aesthetics.
+
 ## The demonstrated user problem
 
 A retailer is owed two replacement units from a short delivery, plus two promotional units. Two units arrive. Either obligation could plausibly match, but the supplier hasn't identified the purpose.
