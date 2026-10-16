@@ -1,0 +1,48 @@
+{
+  "synthetic_only": true,
+  "case_id": "shop_alpha_20261016",
+  "supplier_id": "fictional_supplier_alpha",
+  "sku": "SOAP100",
+  "unit": "piece",
+  "obligations": [
+    {
+      "id": "SHORT_A",
+      "kind": "shortage",
+      "qty": 3,
+      "created_on": "2026-10-02",
+      "document_ref": "fictional_invoice_short_02"
+    },
+    {
+      "id": "PROMO_B",
+      "kind": "promotion",
+      "qty": 2,
+      "created_on": "2026-10-03",
+      "earned_on": "2026-10-03",
+      "document_ref": "fictional_scheme_offer_03",
+      "scheme_terms": {
+        "valid_from": "2026-10-01",
+        "valid_to": "2026-10-31",
+        "min_purchase": 10,
+        "purchase_qty": 12
+      }
+    }
+  ],
+  "receipts": [
+    {
+      "id": "LATER_1",
+      "received_on": "2026-10-08",
+      "qty": 1,
+      "unit": "piece",
+      "retailer_confirmed": true,
+      "document_ref": "fictional_delivery_note_08"
+    },
+    {
+      "id": "LATER_2",
+      "received_on": "2026-10-12",
+      "qty": 2,
+      "unit": "piece",
+      "retailer_confirmed": true,
+      "document_ref": "fictional_delivery_note_12"
+    }
+  ]
+}

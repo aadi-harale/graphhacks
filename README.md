@@ -26,6 +26,18 @@ The evidence chain below the interactive case shows how connected documents, the
 
 **Design reference evidence:** the [October 7 First Commit recap](https://www.wemakedevs.org/blogs/first-commit-hackathon-recap-and-whats-next) credits Suraksha's clear human need, Beacon's approved response and CampusEvac's two-player coordination; [FalkorDB's August 18 recap](https://www.falkordb.com/blog/memory-meets-motion-the-falkordb-standouts/) describes Atrium's connected evidence changing a teaching action. The [September 30 Hack for Humanity recap](https://www.falkordb.com/blog/how-builders-at-hack-for-humanity-used-falkordb-to-solve-real-community-problems/) documents accessible input/output with evidence-backed graph decisions. We applied these **product-interaction lessons**, not an unverified claim about their visual aesthetics.
 
+## New: enter an unfamiliar fictional delivery history
+
+**The application is no longer limited to the fixed RCP-52 walkthrough.** In the local Docker app, scroll to **Try your own delivery history**, enter a supplier/SKU, the earlier **billed** and **actually received** counts, a documented promotional entitlement, and quantities for two later deliveries—or upload a separate *fictional* JSON fixture.
+
+This creates new FalkorDB nodes and candidate relationships and lets you investigate, attribute and review quantities for either receipt. Promotions are eligible only if their recorded date and purchase threshold are satisfied; invalid terms are shown as excluded, not silently accepted. Duplicate case IDs with different content are rejected.
+
+**Persistence safeguard:** the preset guided demo operates in the resettable graph \`sahiaaya_proof\`; imported histories live in the separate \`sahiaaya_resolve\` graph. Refresh the page, enter the generated case ID under **Reopen graph case**, and verify that reviewed allocations remain present even if the preset demo was reset.
+
+Try \`examples/fictional_second_supplier_case.json\` for a second supplier with an expired promotional scheme. See [docs/NEW_CASE_WORKFLOW.md](docs/NEW_CASE_WORKFLOW.md) for the data format, endpoints, trust assumptions and exact demonstration.
+
+**Limits:** These are typed, explicitly synthetic receipts and scheme terms—not independently authenticated real invoices. This local demo has no production identity, supplier messaging, real payments or security model for public mutation endpoints. The [Vercel preview](https://sahiaaya-graphhacks.vercel.app/) intentionally disables the new-case writer because it does not host FalkorDB.
+
 ## The demonstrated user problem
 
 A retailer is owed two replacement units from a short delivery, plus two promotional units. Two units arrive. Either obligation could plausibly match, but the supplier hasn't identified the purpose.

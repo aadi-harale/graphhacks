@@ -1,0 +1,48 @@
+{
+  "synthetic_only": true,
+  "case_id": "shop_beta_20261016",
+  "supplier_id": "fictional_supplier_beta",
+  "sku": "RICE1KG",
+  "unit": "packet",
+  "obligations": [
+    {
+      "id": "SHORT_R1",
+      "kind": "shortage",
+      "qty": 4,
+      "created_on": "2026-10-01",
+      "document_ref": "fictional_shortfall_01"
+    },
+    {
+      "id": "PROMO_INVALID",
+      "kind": "promotion",
+      "qty": 2,
+      "created_on": "2026-10-01",
+      "earned_on": "2026-10-02",
+      "document_ref": "fictional_offer_expired",
+      "scheme_terms": {
+        "valid_from": "2026-09-01",
+        "valid_to": "2026-09-20",
+        "min_purchase": 8,
+        "purchase_qty": 10
+      }
+    }
+  ],
+  "receipts": [
+    {
+      "id": "RICE_03",
+      "received_on": "2026-10-03",
+      "qty": 2,
+      "unit": "packet",
+      "retailer_confirmed": true,
+      "document_ref": "fictional_receipt_rice_03"
+    },
+    {
+      "id": "RICE_11",
+      "received_on": "2026-10-11",
+      "qty": 4,
+      "unit": "packet",
+      "retailer_confirmed": true,
+      "document_ref": "fictional_receipt_rice_11"
+    }
+  ]
+}
