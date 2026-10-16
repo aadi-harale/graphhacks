@@ -79,7 +79,7 @@ for(const button of $("scenarios").children)button.classList.toggle("active",but
 }
 async function api(url,body){const response=await fetch(url,{method:body?"POST":"GET",headers:body?{"content-type":"application/json"}:{},body:body?JSON.stringify(body):undefined});const data=await response.json();if(!response.ok)throw Error(typeof data.detail==="string"?data.detail:"Request failed");return data;}
 function setMode(){const live=kind==="FALKORDB";$("mode").classList.toggle("live",live);assign("modeText",live?"LIVE FALKORDB — CYPHER VERIFIED":kind==="LOCAL_MEMORY"?"LOCAL MEMORY TEST MODE":"PUBLIC SYNTHETIC SIMULATION");}
-async function reset(s){selected=s;try{if(kind!=="SIMULATION"){render(await api("/api/demo/reset",{scenario:s}));}else{local=createCase(s);refreshSynthetic();}setMode();}catch(error){failure("Case reset failed: "+error.message);}}
+async function reset(s){selected=s;try{if(kind!=="SIMULATION"){render(await api("/api/demo/reset",{scenario:s}));}else{local=createCase(s);refreshSynthetic();}setMode();return true;}catch(error){failure("Case reset failed: "+error.message);return false;}}
 async function respond(target){try{if(kind!=="SIMULATION"){render(await api("/api/investigate/RCP-52/simulate-supplier-response",{obligation_id:target,reference:"SYNTHETIC-supplier-evidence-"+target}));}else{if(local.receipt.available_qty<=0)throw Error("No remaining goods");if(!local.obligations.some(x=>x.id===target&&x.outstanding_qty>0))throw Error("No eligible open obligation");local.statements=[statement(target)];local.receipt.version++;refreshSynthetic();} }catch(error){failure("Supplier demonstration: "+error.message);}}
 async function approve(){try{const d=snapshot.decision;if(d.status!=="REVIEW_SETTLEMENT"||!d.suggested_obligation)throw Error("No evidence-supported proposal");const o=snapshot.obligations.find(x=>x.id===d.suggested_obligation);if(kind!=="SIMULATION"){render(await api("/api/investigate/RCP-52/approve-demo-settlement",{obligation_id:d.suggested_obligation,quantity:d.suggested_qty,expected_receipt_version:snapshot.receipt.version,expected_obligation_version:o.version}));}else{if(d.suggested_qty>local.receipt.available_qty||d.suggested_qty>o.outstanding_qty)throw Error("Quantity exceeds capacity");local.receipt.available_qty-=d.suggested_qty;local.receipt.version++;o.outstanding_qty-=d.suggested_qty;o.version++;local.verified_allocations.push({allocation_id:"SYNTHETIC-APPROVAL-"+(local.verified_allocations.length+1),obligation_id:o.id,quantity:d.suggested_qty,approved_by:"retailer-demo"});refreshSynthetic();}}catch(error){failure("Settlement was blocked: "+error.message);}}
 const TOUR=[
@@ -94,11 +94,11 @@ function updateTour(){const t=TOUR[tourStep];assign("tourPhase",t[0]);assign("to
 async function advanceTour(){
 const b=$("tourNext");b.disabled=true;
 try{
-if(tourStep===0){await reset("ambiguous");tourStep=1;}
-else if(tourStep===1){await reset("promotion_confirmed");tourStep=2;}
+if(tourStep===0){if(!await reset("ambiguous"))throw Error("Could not load ambiguous case");tourStep=1;}
+else if(tourStep===1){if(!await reset("promotion_confirmed"))throw Error("Could not load promotion_confirmed case");tourStep=2;}
 else if(tourStep===2){if(!snapshot||snapshot.decision.status!=="REVIEW_SETTLEMENT")throw Error("Supplier evidence is not ready");await approve();if(snapshot?.verified_allocations?.length!==1)throw Error("Retailer approval was not confirmed");tourStep=3;}
-else if(tourStep===3){await reset("conflict");tourStep=4;}
-else{await reset("ambiguous");tourStep=1;}
+else if(tourStep===3){if(!await reset("conflict"))throw Error("Could not load conflict case");tourStep=4;}
+else{if(!await reset("ambiguous"))throw Error("Could not load ambiguous case");tourStep=1;}
 updateTour();
 }catch(error){failure("Guided demonstration stopped: "+error.message);}
 finally{b.disabled=false;}
@@ -106,7 +106,7 @@ finally{b.disabled=false;}
 async function initialize(){const list=$("scenarios");for(const [id,label] of SCENARIOS){const b=document.createElement("button");b.className="scenario";b.type="button";b.dataset.scenario=id;b.textContent=label;b.addEventListener("click",()=>reset(id));list.append(b);}
 $("tourNext").addEventListener("click",advanceTour);updateTour();$("short").addEventListener("click",()=>respond("SHORT-41"));$("promo").addEventListener("click",()=>respond("PROMO-17"));$("approve").addEventListener("click",approve);$("reset").addEventListener("click",()=>reset(selected));$("navProof").addEventListener("click",()=>$("proof").scrollIntoView({behavior:"smooth"}));$("navAbout").addEventListener("click",()=>$("about").scrollIntoView({behavior:"smooth"}));
 try{const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),1600);const res=await fetch("/api/health",{signal:controller.signal,headers:{accept:"application/json"}});clearTimeout(timeout);if(res.ok){const health=await res.json();if(health.backend==="falkor"&&health.status==="ok")kind="FALKORDB";else if(health.backend==="memory")kind="LOCAL_MEMORY";else throw Error("Unknown health state");}else if(res.status!==404)throw Error("Graph API health unavailable: HTTP "+res.status);}catch(e){if(e instanceof TypeError ||e.name==="AbortError"){kind="SIMULATION";}else{failure("Graph connection not ready. This is a synthetic preview. "+e.message);kind="SIMULATION";}}
-await reset("ambiguous");}
+if(!await reset("ambiguous"))throw Error("Could not load ambiguous case");}
 initialize();
 </script>
 </body></html>
