@@ -144,6 +144,15 @@ def resolve_import(inp: CaseIn):
     except Exception as exc:
         raise HTTPException(status_code=503,detail=f"Synthetic case import failed: {exc}")
 
+@app.get("/api/resolve/cases/{case_id}/receipts")
+def resolve_case_receipts(case_id: str):
+    try:
+        return {"case_id":case_id,"receipts":resolve_store().case_receipts(case_id)}
+    except KeyError:
+        raise HTTPException(status_code=404,detail="Synthetic case not found")
+    except Exception as exc:
+        raise HTTPException(status_code=503,detail=f"Case retrieval failed: {exc}")
+
 @app.get("/api/resolve/cases/{case_id}/receipts/{receipt_id}")
 def resolve_investigate(case_id: str, receipt_id: str):
     try:
