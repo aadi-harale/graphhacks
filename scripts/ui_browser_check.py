@@ -19,6 +19,13 @@ def main():
         page.goto(URL, wait_until="domcontentloaded")
 
         expect(page.locator("#heroStart")).to_be_visible()
+        expect(page.locator(".hero-simple h1")).to_contain_text("Did your supplier keep their promise?")
+        expect(page.locator(".visual-example")).to_contain_text("2 soaps")
+        expect(page.locator("#tour")).to_be_hidden()
+        expect(page.locator("#newCaseDetails")).not_to_have_attribute("open", "")
+        expect(page.locator("#evidenceDetails")).not_to_have_attribute("open", "")
+        expect(page.locator("#plainTitle")).to_contain_text("Don't close either claim yet.")
+
         if EXPECT_GRAPH:
             expect(page.locator("#modeText")).to_contain_text("LIVE FALKORDB")
             expect(page.locator("#graphStamp")).to_have_text("GRAPH QUERY CONTEXT")
@@ -30,6 +37,7 @@ def main():
         expect(page.locator("#settledUnits")).to_have_text("0")
 
         page.locator("#heroStart").click()
+        expect(page.locator("#tour")).to_be_visible()
         expect(page.locator("#tourPhase")).to_contain_text("STEP 1 OF 4")
         expect(page.locator("#status")).to_have_text("ASK SUPPLIER")
 
@@ -53,6 +61,8 @@ def main():
         expect(page.locator("#owedUnits")).to_have_text("4")
         if EXPECT_GRAPH:
             # The judge can enter unfamiliar numeric evidence instead of only clicking presets.
+            page.locator("#newCaseDetails summary").click()
+            expect(page.locator("#newCase")).to_be_visible()
             page.locator("#newActual").fill("5")
             page.locator("#newReceiptTwo").fill("2")
             page.locator("#caseSubmit").click()
@@ -90,6 +100,9 @@ def main():
         mobile = browser.new_page(viewport={"width": 390, "height": 844}, device_scale_factor=1, is_mobile=True, has_touch=True, reduced_motion="reduce")
         mobile.goto(URL, wait_until="domcontentloaded")
         expect(mobile.locator("#heroStart")).to_be_visible()
+        expect(mobile.locator(".visual-example")).to_be_visible()
+        expect(mobile.locator("#newCase")).to_be_hidden()
+        expect(mobile.locator("#plainTitle")).to_contain_text("Don't close either claim yet.")
         expect(mobile.locator("#journeyApprove")).to_be_visible()
         assert mobile.evaluate("document.documentElement.scrollWidth <= window.innerWidth + 2"), "Mobile page overflows horizontally"
         mobile.screenshot(path="docs/screenshots/judge-live-mobile.png" if EXPECT_GRAPH else "docs/screenshots/judge-mobile.png", full_page=True)
