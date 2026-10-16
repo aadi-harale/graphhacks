@@ -19,8 +19,10 @@ def main():
         page.goto(URL, wait_until="domcontentloaded")
 
         expect(page.locator("#heroStart")).to_be_visible()
-        expect(page.locator(".hero-simple h1")).to_contain_text("Did your supplier keep their promise?")
-        expect(page.locator(".visual-example")).to_contain_text("2 soaps")
+        expect(page.locator(".hero-simple h1")).to_contain_text("Billed for 50.")
+        expect(page.locator(".billbox-visual")).to_contain_text("50 soaps")
+        expect(page.locator(".billbox-visual")).to_contain_text("48 soaps")
+        expect(page.locator(".billbox-missing")).to_contain_text("2 soaps")
         expect(page.locator("#tour")).to_be_hidden()
         expect(page.locator("#newCaseDetails")).not_to_have_attribute("open", "")
         expect(page.locator("#evidenceDetails")).not_to_have_attribute("open", "")
@@ -31,7 +33,7 @@ def main():
             expect(page.locator("#graphStamp")).to_have_text("GRAPH QUERY CONTEXT")
         else:
             expect(page.locator("#modeText")).to_contain_text("PUBLIC SYNTHETIC SIMULATION")
-        expect(page.locator("#journeyConnect")).to_contain_text("Find old promises")
+        expect(page.locator("#journeyConnect")).to_contain_text("Spot what’s missing")
         expect(page.locator("#graphSteps .graph-step")).to_have_count(4)
         expect(page.locator("#status")).to_have_text("ASK SUPPLIER")
         expect(page.locator("#settledUnits")).to_have_text("0")
