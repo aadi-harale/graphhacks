@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SahiAaya / Evidence Desk</title>
+<style>
+:root{color-scheme:light;--ink:#18352e;--cream:#f6f3e9;--white:#fff;--line:#d8dfd4;--gold:#b06c27;--muted:#62746b}
+*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font:16px/1.55 system-ui,-apple-system,sans-serif}button,input,select{font:inherit}
+header{padding:24px clamp(20px,6vw,90px);display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);gap:16px;flex-wrap:wrap}
+.logo{font-weight:850;letter-spacing:-.035em;font-size:1.5rem}.tag{font-size:.73rem;letter-spacing:.08em;text-transform:uppercase;font-weight:800;color:var(--gold)}
+main{max-width:1180px;margin:0 auto;padding:40px 20px 85px}.intro{display:grid;grid-template-columns:1.5fr 1fr;gap:42px;align-items:end}
+h1{font-size:clamp(2.25rem,6vw,4.4rem);line-height:1.03;letter-spacing:-.06em;max-width:700px;margin:.4em 0}p{margin:0 0 15px;color:#54675d}
+.panel{background:var(--white);border:1px solid var(--line);border-radius:17px;padding:25px;box-shadow:0 12px 36px #25453609}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:26px}.flow{grid-column:span 2;display:grid;grid-template-columns:1fr 1fr;gap:26px}
+label{display:block;font-size:.81rem;font-weight:750;margin:15px 0 6px}input,select{width:100%;border:1px solid #bdc9bd;background:#fff;border-radius:9px;padding:11px;color:var(--ink)}
+button{cursor:pointer;border:0;border-radius:10px;padding:12px 16px;background:var(--ink);color:white;font-weight:750}button.secondary{background:#e8ede5;color:var(--ink)}button:hover{filter:brightness(1.15)}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #bc873d;outline-offset:3px}
+button:disabled{opacity:.5;cursor:not-allowed}.bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.pill{display:inline-flex;padding:6px 12px;border-radius:30px;background:#edf2df;color:#3b502c;font-weight:800;font-size:.76rem;letter-spacing:.045em}
+.pill.risk{background:#fff1da;color:#885315}.sub{color:var(--muted);font-size:.84rem}.num{font-size:2.2rem;font-weight:840;letter-spacing:-.06em}
+hr{border:0;border-top:1px solid var(--line);margin:20px 0}h2{margin:0 0 8px;font-size:1.3rem;letter-spacing:-.035em}h3{margin:10px 0 4px;font-size:1.05rem}
+ul{padding-left:20px;color:#53665d}.trail{display:flex;flex-wrap:wrap;gap:7px}.node{background:#ecf1ea;border:1px solid var(--line);padding:7px 10px;border-radius:7px;font-size:.76rem}
+.error{padding:12px;color:#9b2525;background:#fff0ec;border-radius:7px}.note{background:#fdf4e4;padding:15px;border-left:3px solid #ca8b33;border-radius:4px}code{font-size:.82rem}
+footer{color:var(--muted);font-size:.78rem;padding-top:30px}
+@media(max-width:740px){.intro,.grid,.flow{grid-template-columns:1fr}.flow{grid-column:span 1}main{padding-top:22px}.panel{padding:20px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+</style></head>
+<body>
+<header><div><div class="logo">SahiAaya <span style="font-weight:450">/ evidence desk</span></div><div class="tag">Bill vs Box. Promise vs Proof.</div></div><span class="pill">SYNTHETIC DATA · LOCAL DEMO</span></header>
+<main>
+<section class="intro"><div><div class="tag">Connected supplier intelligence</div><h1>Every delivery has a history. Every settlement needs proof.</h1><p>A shortage and a promotional promise can both match the same delivered goods. EvidenceGap traces the history and asks for what is missing before closing either claim.</p></div>
+<div class="panel"><label for="scenario">Explore a scenario</label><select id="scenario"><option value="ambiguous">Same goods, two possible claims</option><option value="shortage_confirmed">Supplier cites shortage replacement</option><option value="promotion_confirmed">Supplier cites promotion</option><option value="conflict">Contradictory supplier statements</option><option value="unknown_pack">Unknown pack conversion</option><option value="not_received">No retailer receipt confirmation</option></select><button id="reset" style="margin-top:12px">Load synthetic case</button><p class="sub" style="margin-top:12px">Reset destroys only the isolated synthetic graph.</p></div></section>
+<div id="error" role="alert" hidden class="error"></div>
+<section class="grid">
+<div class="panel"><div class="tag">Receipt</div><div id="receipt"><p>Load a scenario to begin.</p></div></div>
+<div class="panel"><div class="tag">Open obligations</div><div id="obligations"></div></div>
+<div class="panel flow">
+<div><div class="tag">Agent conclusion</div><h2 id="verdict">Waiting for FalkorDB</h2><div id="status" class="pill risk">NOT EVALUATED</div><p id="why" style="margin-top:15px"></p><div id="request" class="note"></div><h3>Graph evidence path</h3><div id="paths"></div></div>
+<div><div class="tag">Bounded action</div><h2>Resolve with evidence</h2>
+<label for="target">Supplier-directed obligation</label><select id="target"></select>
+<label for="reference">Synthetic supplier reference</label><input id="reference" value="SYNTHETIC-SUPPLIER-NOTE-2026" autocomplete="off">
+<div class="bar" style="margin-top:13px"><button id="supplier">Simulate supplier clarification</button><button id="approve" class="secondary" disabled>Approve verified proposal</button></div>
+<p class="sub" style="margin-top:12px">Supplier replies and retailer approvals are simulated, not real communications. Both actions are recorded in the demo graph.</p>
+<h3>Reviewed allocation history</h3><div id="history" class="sub">None yet.</div></div>
+</div></section>
+<footer>FalkorDB is required for the live demo. If graph queries fail, the app displays an error and does not silently switch to fixture mode. No real payments or financial recoveries occur.</footer>
+</main>
+<script>
+let snap=null;
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
+async function api(url,options){
+ const r=await fetch(url,options);
+ let data;try{data=await r.json()}catch{throw Error('Unparseable server response')}
+ if(!r.ok)throw Error(typeof data.detail==='string'?data.detail:JSON.stringify(data));
+ return data;
+}
+function render(d){
+ snap=d; $('error').hidden=true;
+ const r=d.receipt, v=d.decision;
+ $('receipt').innerHTML='<div class="num">'+esc(r.available_qty)+' <small style="font-size:.85rem">units unallocated</small></div><p>Receipt '+esc(r.id)+' · '+esc(r.sku)+'</p><p class="sub">Merchant counted: '+(r.retailer_confirmed?'confirmed':'not confirmed')+' · version '+esc(r.version)+'</p>';
+ $('obligations').innerHTML=d.obligations.map(o=>'<div style="padding:10px 0;border-bottom:1px solid #e3e6e0"><strong>'+esc(o.id)+'</strong><br><span class="sub">'+esc(o.kind)+'</span><div><b>'+esc(o.outstanding_qty)+'</b> units outstanding</div></div>').join('')||'<p>No open obligations.</p>';
+ $('verdict').textContent=v.title; $('status').textContent=v.status; $('why').textContent=v.explanation; $('request').textContent=v.requested_evidence||'No action required.';
+ $('paths').innerHTML=Object.entries(v.evidence_paths).map(([k,path])=>'<h3>'+esc(k)+'</h3><div class="trail">'+path.map(t=>'<span class="node">'+esc(t)+'</span>').join('')+'</div>').join('')||'<p class="sub">No matching paths.</p>';
+ $('target').innerHTML=d.obligations.map(o=>'<option value="'+esc(o.id)+'">'+esc(o.id)+'</option>').join('');
+ if(v.suggested_obligation)$('target').value=v.suggested_obligation;
+ $('approve').disabled=v.status!=='REVIEW_SETTLEMENT';
+ $('history').innerHTML=(d.allocations||[]).map(a=>'<div>'+esc(a.allocation_id)+' — '+esc(a.obligation_id)+' · '+esc(a.quantity)+' units · approved by '+esc(a.approved_by)+'</div>').join('')||'None yet.';
+}
+async function perform(fn){try{const d=await fn();render(d)}catch(e){$('error').textContent=e.message;$('error').hidden=false}}
+$('reset').onclick=()=>perform(()=>api('/api/demo/reset',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({scenario:$('scenario').value})}));
+$('supplier').onclick=()=>perform(()=>api('/api/investigate/RCP-52/simulate-supplier-response',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({obligation_id:$('target').value,reference:$('reference').value})}));
+$('approve').onclick=()=>{if(!snap)return;const target=snap.obligations.find(x=>x.id===snap.decision.suggested_obligation);if(!target)return;perform(()=>api('/api/investigate/RCP-52/approve-demo-settlement',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({obligation_id:target.id,quantity:snap.decision.suggested_qty,receipt_version:snap.receipt.version,obligation_version:target.version})}))};
+perform(()=>api('/api/investigate/RCP-52'));
+</script></body></html>
