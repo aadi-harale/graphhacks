@@ -96,6 +96,60 @@
 .case-resume div{display:flex;gap:9px;flex-wrap:wrap}
 .case-resume input{border:1px solid #c3d5c7;border-radius:8px;min-width:200px;flex:1;padding:10px;background:#f8faf5}
 @media(max-width:520px){.case-resume input,.case-resume .btn{width:100%;flex:auto}}
+
+/* Judge-first progressive disclosure, retaining all graph-backed controls. */
+.hero-simple{grid-template-columns:minmax(0,1fr) minmax(250px,345px);gap:40px;align-items:center;margin-bottom:20px}
+.hero-simple h1{font-size:clamp(45px,5vw,72px);line-height:1.025;max-width:740px;margin:13px 0 17px}
+.hero-simple .lead{max-width:600px;line-height:1.54;font-size:17px;color:#405b4a}
+.hero-simple .one-line{font-size:14px;font-weight:620;color:#28573e;margin:14px 0 0;line-height:1.55;max-width:580px}
+.hero-simple .hero-actions{margin-top:25px;gap:12px}
+.hero-simple .hero-caption{font-size:11px}
+.visual-example{background:#e0edad;padding:24px;transform:none;min-height:302px;display:flex;flex-direction:column;justify-content:center}
+.promise-lines{display:grid;gap:7px;margin-top:20px}
+.promise-lines>div{display:flex;justify-content:space-between;gap:15px;align-items:center;background:rgba(255,255,255,.7);padding:10px 13px;border-radius:9px}
+.promise-lines span{font-size:13px;line-height:1.35;font-weight:650}
+.promise-lines b{font-size:23px}
+.visual-example .simple-arrow{text-align:center;font-size:23px;margin:6px 0}
+.arrived-today{border-radius:11px;padding:14px;background:#204f39;color:#fff;display:flex;justify-content:space-between;gap:14px;align-items:center}
+.arrived-today span{font-size:10px;letter-spacing:.1em;font-weight:750;color:#c8dcca}
+.arrived-today strong{font-size:27px;letter-spacing:-.04em;white-space:nowrap}
+.visual-example .receipt-foot{text-align:center;font-size:12px;margin:15px 0 0}
+.journey{padding:14px 16px;margin:18px 0 16px}
+.journey-caption{margin:0 0 10px}
+.journey-step{padding:10px 9px;gap:8px}
+.journey-step strong{font-size:11px}
+.journey-step small{font-size:10px;margin-top:3px}
+.guided.is-collapsed{display:none}
+.guided{margin:16px 0}
+.notice:not(.error){background:transparent;border:0;padding:2px 0 9px;margin:0;color:#768477;font-size:11px}
+.plain-verdict{display:flex;gap:15px;background:#e5f0e4;border:1px solid #bfd5bd;border-radius:14px;padding:19px 20px;margin:2px 0 20px;align-items:center}
+.plain-symbol{display:grid;place-items:center;flex:0 0 45px;width:45px;height:45px;border-radius:13px;background:#285d43;color:#fff;font-size:24px;font-weight:800}
+.plain-verdict strong{font-size:19px;letter-spacing:-.025em}
+.plain-verdict p{margin:5px 0 0;color:#506b56;font-size:13px;line-height:1.5}
+.plain-verdict.problem{background:#faf0e5;border-color:#ead5b8}.plain-verdict.problem .plain-symbol{background:#a36b32}
+.plain-verdict.success{background:#e0f2e7;border-color:#aaceb9}.plain-verdict.success .plain-symbol{background:#2d7853}
+.optional-section{background:transparent;margin:12px 0}
+.optional-section>summary{cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:13px;font-weight:740;border:1px solid #cbd8c9;background:#fff;padding:14px 18px;border-radius:11px;list-style:none}
+.optional-section>summary::-webkit-details-marker{display:none}
+.optional-section>summary:after{content:"⌄";font-size:17px;color:#4f7659;transform:rotate(0)}
+.optional-section[open]>summary:after{transform:rotate(180deg)}
+.optional-section>summary span{font-size:11px;color:#6b7c6e;font-weight:520;margin-left:auto}
+.optional-section[open]>summary{border-radius:11px 11px 0 0;background:#f0f5ec}
+.optional-section> .scenario-bar,.optional-section>.scenario-help{padding-top:16px}
+.optional-section>.card,.optional-section>.story-graph{margin-top:12px}
+.full-optional{margin:20px 0}
+.case-grid{margin-top:14px}
+.case-grid .doc-label,.case-grid .tag{font-size:10px}
+.case-grid .card{padding:21px}
+.case-grid .investigator{margin-top:9px;padding:16px}
+.case-grid .investigator h4{font-size:19px}
+.case-grid .result-box{margin-top:13px}
+.case-grid .claim-row{padding:12px 0}
+.section-head{margin-top:20px}
+.section-head h2{font-size:26px;margin-top:4px}
+@media(max-width:900px){.hero-simple{grid-template-columns:1fr 250px;gap:17px}.hero-simple h1{font-size:clamp(39px,5vw,53px)}.hero-simple .lead{font-size:15px}}
+@media(max-width:760px){.hero-simple{grid-template-columns:1fr}.hero-simple .visual-example{display:flex;min-height:0}.visual-example{padding:18px}.promise-lines{grid-template-columns:1fr 1fr}.promise-lines>div{display:block}.promise-lines b{display:block;margin-top:5px}.visual-example .simple-arrow{margin:0}.arrived-today{margin-top:1px}}
+@media(max-width:520px){.hero-simple h1{font-size:41px}.hero-simple .lead{font-size:15px}.hero-simple .visual-example{display:flex}.journey-step{min-height:0}.journey-step small{display:none}.plain-verdict{align-items:flex-start;padding:16px}.plain-verdict strong{font-size:16px}.optional-section>summary span{font-size:10px}.optional-section>summary{padding:12px}.hero-actions .hero-caption{font-size:10px}}
 </style>
 </head>
 <body>
@@ -106,33 +160,40 @@
 </aside><div class="main">
 <header class="topbar"><div class="crumb">SahiAaya / <strong>Supplier resolution</strong> / Sample case RCP-52</div><div class="mode" id="mode"><span class="dot"></span><span id="modeText">Checking graph connection…</span></div></header>
 <main class="content">
-<section class="hero" aria-label="The retailer's problem">
- <div><div class="eyebrow">SAHIAAYA · A RECEIVING & SUPPLIER RESOLUTION ASSISTANT</div>
- <h1>The goods arrived.<br><span>Was the promise kept?</span></h1>
- <p class="lead">A kirana shop receives <strong>two soap units</strong>. But the same supplier owes <strong>two replacement units</strong> from a shortage and <strong>two promotional units</strong> from an earlier offer. SahiAaya checks <strong>which promise this box fulfils</strong>—before anyone marks a claim settled.</p>
- <div class="hero-actions"><button type="button" class="btn primary hero-cta" id="heroStart">See SahiAaya solve this →</button><span>One-minute walkthrough · fictional data</span></div>
+<section class="hero hero-simple" aria-label="The problem SahiAaya solves">
+ <div class="hero-text">
+   <div class="eyebrow">FOR SMALL SHOPS · ONE REAL-WORLD PROBLEM</div>
+   <h1>Did your supplier <span>keep their promise?</span></h1>
+   <p class="lead">Last week, a shopkeeper was owed <b>2 missing soaps</b> and <b>2 free soaps</b>. Today, just <b>2 soaps arrived.</b> Which promise did the supplier fulfil?</p>
+   <p class="one-line">SahiAaya checks past deliveries and supplier replies so the shopkeeper knows what's still owed.</p>
+   <div class="hero-actions"><button type="button" class="btn primary hero-cta" id="heroStart">Show me how it works <span aria-hidden="true">→</span></button><span class="hero-caption">60-second interactive example · fictional data</span></div>
  </div>
- <div class="truth receipt-tile"><div class="truth-label">TODAY'S RECEIPT · SOAP-100G</div><div class="receipt-main">2<span> units arrived</span></div><div class="receipt-separator"></div><div class="receipt-small">4 units were owed across<br><strong>2 different promises</strong></div><div class="receipt-foot">Two units cannot settle both.</div></div>
+ <div class="truth receipt-tile visual-example" role="img" aria-label="Supplier owed two missing soaps and two free soaps, but only two arrived today">
+   <div class="truth-label">THE SHOPKEEPER'S PROBLEM</div>
+   <div class="promise-lines"><div><span>Missing from last bill</span><b>2</b></div><div><span>Free soaps promised</span><b>2</b></div></div>
+   <div class="simple-arrow" aria-hidden="true">↓</div>
+   <div class="arrived-today"><span>BOX ARRIVED TODAY</span><strong>2 soaps</strong></div>
+   <div class="receipt-foot">Which promise is actually fulfilled?</div>
+ </div>
 </section>
 <section class="journey" aria-label="SahiAaya workflow: receive, connect, investigate, approve">
-  <div class="journey-caption"><strong>WHAT SAHIAAYA DOES</strong><span>From a box received to a claim resolved</span></div>
+  <div class="journey-caption"><strong>HOW IT WORKS</strong><span>Four simple steps</span></div>
   <div class="journey-steps">
-   <div id="journeyReceive" class="journey-step"><span class="journey-index">01</span><div><strong>Receive goods</strong><small>Confirm the goods that arrived</small></div></div>
-   <div id="journeyConnect" class="journey-step"><span class="journey-index">02</span><div><strong>Find old promises</strong><small>Connect invoices, offers and history</small></div></div>
-   <div id="journeyAsk" class="journey-step"><span class="journey-index">03</span><div><strong>Request missing proof</strong><small>Ask what these goods were meant to settle</small></div></div>
-   <div id="journeyApprove" class="journey-step"><span class="journey-index">04</span><div><strong>Approve & track</strong><small>Close only the obligation proven</small></div></div>
+   <div id="journeyReceive" class="journey-step"><span class="journey-index">01</span><div><strong>Receive goods</strong><small>Count what came</small></div></div>
+   <div id="journeyConnect" class="journey-step"><span class="journey-index">02</span><div><strong>Find old promises</strong><small>Check past dues</small></div></div>
+   <div id="journeyAsk" class="journey-step"><span class="journey-index">03</span><div><strong>Request missing proof</strong><small>Ask the supplier</small></div></div>
+   <div id="journeyApprove" class="journey-step"><span class="journey-index">04</span><div><strong>Approve & track</strong><small>Keep a clear record</small></div></div>
   </div>
 </section>
-<div class="guided" id="tour" aria-live="polite"><div><small id="tourPhase">A 60-SECOND EXPLAINER · STEP 0 OF 4</small><strong id="tourTitle">Can two delivered units settle four owed?</strong><p id="tourDetail">Follow the same receipt through missing proof, a supplier statement, retailer approval and a contradictory-history test.</p></div><button class="btn" id="tourNext" type="button">▶ Start the guided walkthrough</button></div>
-<div class="story" aria-label="The three steps of the case"><div class="story-card"><div class="num">01 / EARLIER</div><strong>Goods missing</strong><p>Two soap units were short on invoice 41. A replacement was promised.</p></div><div class="story-card"><div class="num">02 / ALSO OWED</div><strong>Free-goods scheme</strong><p>A separate documented promotion left two additional units due.</p></div><div class="story-card highlight"><div class="num">03 / TODAY</div><strong>Two units arrive</strong><p>Same product. Enough for one promise, not both. Evidence decides.</p></div></div>
-<div id="notice" class="notice" role="status">PUBLIC SANDBOX: all suppliers, invoices and responses below are fictional. This page does not contact a supplier, make a payment or create a real settlement.</div>
-<div class="section-head"><div><div class="eyebrow">A WORKING CASE · TRY THE EVIDENCE</div><h2>One receipt. Four possible outcomes.</h2></div><div class="hint">Switch the history, not the delivered quantity. The evidence changes the next action.</div></div>
-<div class="scenario-bar" id="scenarios" aria-label="Synthetic evidence scenarios"></div><p class="scenario-help">Or explore individual cases manually. Every tab has the same two received units; evidence is what changes the result.</p>
+<div class="guided is-collapsed" id="tour" aria-live="polite"><div><small id="tourPhase">A 60-SECOND EXPLAINER · STEP 0 OF 4</small><strong id="tourTitle">Can two delivered units settle four owed?</strong><p id="tourDetail">Follow the same receipt through missing proof, a supplier statement, retailer approval and a contradictory-history test.</p></div><button class="btn" id="tourNext" type="button">▶ Start the guided walkthrough</button></div>
+<div id="notice" class="notice" role="status">Demo with fictional information. No real supplier is contacted and no payment is made.</div>
+<div class="section-head"><div><div class="eyebrow">WHAT HAPPENS NEXT?</div><h2>Here’s what SahiAaya tells the shopkeeper.</h2></div></div><div class="plain-verdict" aria-live="polite"><div class="plain-symbol" id="plainSymbol" aria-hidden="true">?</div><div><strong id="plainTitle">Don’t close either claim yet.</strong><p id="plainSummary">The supplier hasn’t said which of the two promises these soaps fulfil.</p></div></div>
+<details class="optional-section" id="otherScenarios"><summary>What if the supplier says something different? <span>Explore more examples</span></summary><div class="scenario-bar" id="scenarios" aria-label="Synthetic evidence scenarios"></div><p class="scenario-help">Same delivery, different supporting evidence.</p></details>
 <div class="case-grid">
-  <section class="card"><div class="card-head"><div class="doc-label">Receipt RCP-52 · SOAP-100G</div><span class="tag">MERCHANT OBSERVATION</span></div><h3>Today's inward delivery</h3><div class="quantities"><div class="qty"><small>Recorded received</small><b id="received">2</b></div><div class="qty"><small>Remaining</small><b id="available">2</b></div><div class="qty"><small>Open promises</small><b id="open">2</b></div></div><div class="doc-label" style="margin-top:19px">Historical supplier obligations</div><div id="obligations"></div><div class="result-box"><strong>Why this is not an ordinary bill mismatch</strong><p>Today's quantities match the delivery. The unresolved question lives across earlier bills, scheme terms, supplier messages and later evidence.</p></div></section>
-  <section class="card"><div class="card-head"><div class="doc-label">Evidence-gap agent</div><span class="tag warn" id="risk">REVIEW REQUIRED</span></div><h3>The next correct action</h3><div class="investigator"><div class="status" id="status">INVESTIGATING</div><h4 id="decisionTitle">Reading evidence…</h4><p id="why"></p></div><div class="doc-label" style="margin-top:22px">Question prepared for supplier / retailer</div><div class="question" id="question" aria-live="polite"></div><div class="controls"><button class="btn secondary" id="short">Supplier says: replacement</button><button class="btn secondary" id="promo">Supplier says: promotion</button><button class="btn primary wide" id="approve">Retailer reviews &amp; records settlement</button><button class="btn wide" id="reset">Reset this case</button></div><p class="helper">Supplier responses on this page are simulated. Real settlement requires attributable supplier evidence and retailer-approved receipt confirmation.</p><div class="impact-strip" aria-label="Quantity outcome"><div class="impact-item"><b id="settledUnits">0</b><span>Units reviewed as settled in this scenario</span></div><div class="impact-item"><b id="owedUnits">4</b><span>Units still owed by supplier</span></div></div><div class="result-box"><strong id="outcomeTitle">Nothing has been settled.</strong><p id="outcomeDetail">The agent will not turn a plausible allocation into proof.</p></div></section>
+  <section class="card"><div class="card-head"><div class="doc-label">Receipt RCP-52 · SOAP-100G</div><span class="tag">MERCHANT OBSERVATION</span></div><h3>Today’s delivery</h3><div class="quantities"><div class="qty"><small>Recorded received</small><b id="received">2</b></div><div class="qty"><small>Remaining</small><b id="available">2</b></div><div class="qty"><small>Open promises</small><b id="open">2</b></div></div><div class="doc-label" style="margin-top:19px">Historical supplier obligations</div><div id="obligations"></div></section>
+  <section class="card"><div class="card-head"><div class="doc-label">Evidence-gap agent</div><span class="tag warn" id="risk">REVIEW REQUIRED</span></div><h3>What to do next</h3><div class="investigator"><div class="status" id="status">INVESTIGATING</div><h4 id="decisionTitle">Reading evidence…</h4><p id="why"></p></div><div class="doc-label" style="margin-top:22px">Question to ask</div><div class="question" id="question" aria-live="polite"></div><div class="controls"><button class="btn secondary" id="short">Supplier: these replace missing soaps</button><button class="btn secondary" id="promo">Supplier: these are free soaps</button><button class="btn primary wide" id="approve">Shopkeeper confirms the settlement</button><button class="btn wide" id="reset">Reset this case</button></div><p class="helper">These are simulated replies. A real supplier message and the shopkeeper’s confirmation are required in practice.</p><div class="impact-strip" aria-label="Quantity outcome"><div class="impact-item"><b id="settledUnits">0</b><span>Units reviewed as settled in this scenario</span></div><div class="impact-item"><b id="owedUnits">4</b><span>Units still owed by supplier</span></div></div><div class="result-box"><strong id="outcomeTitle">Nothing has been settled.</strong><p id="outcomeDetail">The agent will not turn a plausible allocation into proof.</p></div></section>
 </div>
-<section class="card case-intake" id="newCase" aria-label="Create a new supplier delivery case">
+<details class="optional-section full-optional" id="newCaseDetails"><summary>Try a different delivery <span>Enter your own example · local FalkorDB</span></summary><section class="card case-intake" id="newCase" aria-label="Create a new supplier delivery case">
  <div class="case-intake-head">
    <div><div class="eyebrow">NEW · NOT A PRESET SCENARIO</div><h2>Try your own delivery history.</h2><p class="lead">Enter fictional goods and previous supplier promises, or upload a synthetic JSON history. SahiAaya creates new FalkorDB relationships and investigates what remains owed.</p></div>
    <span class="tag" id="caseMode">LOCAL GRAPH REQUIRED</span>
@@ -157,13 +218,14 @@
   <div><label for="caseTarget">Claim to attribute this delivery to</label><select id="caseTarget"></select><label for="caseReference">Fictional supplier reference</label><input id="caseReference" value="fictional_supplier_confirmation"><button id="caseAttribute" type="button" class="btn secondary wide">Record supplier attribution</button><button id="caseApprove" type="button" class="btn primary wide" disabled>Retailer review & record allocation</button><p class="helper">This is a synthetic response; a reference string is not independently verified supplier evidence.</p></div></div>
   <div class="case-audit"><strong>Verified local ledger</strong><div id="caseAudit"></div></div>
  </div>
-</section>
+</section></details>
+<details class="optional-section full-optional" id="evidenceDetails"><summary>Why did SahiAaya make this decision? <span>View evidence and settlement history</span></summary>
 <section class="story-graph" aria-label="Evidence chain explanation">
  <div class="story-graph-head"><div><span class="doc-label">THE CONNECTED EVIDENCE</span><h3>Why does the decision change?</h3><p>An invoice and a quantity alone cannot prove which older promise was fulfilled.</p></div><span class="graph-stamp" id="graphStamp">EXPLANATION VIEW</span></div>
  <div class="graph-steps" id="graphSteps" aria-live="polite"></div>
  <div class="graph-summary"><strong id="graphSummaryTitle">Missing supplier attribution</strong><span id="graphSummaryDetail">The retailer still has two outstanding obligations.</span></div>
 </section>
-<div class="under" id="proof"><section class="card"><div class="card-head"><div class="doc-label">Evidence trail</div><span class="tag">CONNECTIONS</span></div><h3>Why did SahiAaya decide this?</h3><ul class="evidence-list" id="evidenceList"></ul><div id="paths"></div><details><summary>Inspect machine decision and graph tool trace</summary><pre id="raw"></pre></details></section><section class="card"><div class="card-head"><div class="doc-label">Reviewed outcome</div><span class="tag">AUDIT</span></div><h3>What actually changed?</h3><ul class="ledger" id="audit"></ul><div class="result-box"><strong>No invented recoveries</strong><p>We report proposed allocations, supplier statements and reviewed settlements separately. No money is shown as saved until a real adjustment is proven.</p></div></section></div>
+<div class="under" id="proof"><section class="card"><div class="card-head"><div class="doc-label">Evidence trail</div><span class="tag">CONNECTIONS</span></div><h3>Why did SahiAaya decide this?</h3><ul class="evidence-list" id="evidenceList"></ul><div id="paths"></div><details><summary>Inspect machine decision and graph tool trace</summary><pre id="raw"></pre></details></section><section class="card"><div class="card-head"><div class="doc-label">Reviewed outcome</div><span class="tag">AUDIT</span></div><h3>What actually changed?</h3><ul class="ledger" id="audit"></ul><div class="result-box"><strong>No invented recoveries</strong><p>We report proposed allocations, supplier statements and reviewed settlements separately. No money is shown as saved until a real adjustment is proven.</p></div></section></div></details>
 <footer class="foot" id="about"><strong>Current experience:</strong> <span id="runtimeDisclosure">Public synthetic walkthrough. Real FalkorDB reasoning is available in the separate local Docker application.</span> <a href="https://github.com/aadi-harale/graphhacks" target="_blank" rel="noopener noreferrer">Source and local FalkorDB setup →</a><br><br>Graph Hacks × FalkorDB 2026 · Track 01 — Agents That Act on Connected Data · Built with AI development assistance. No real retailer information is used.</footer>
 </main></div></div>
 <script>
@@ -236,6 +298,14 @@ function renderStory(s){
 }
 function normalizeState(s){if(s&&s.backend==="FALKORDB"){return {...s,mode:"FALKORDB",verified_allocations:Array.isArray(s.allocations)?s.allocations:[],decision:{...s.decision,tool_trace:s.decision?.graph_tool_trace||[]}};}return s;}
 function render(s){s=normalizeState(s);snapshot=s;const d=s.decision;renderStory(s);assign("received",s.receipt.original_qty);assign("available",s.receipt.available_qty);assign("open",s.obligations.filter(x=>x.outstanding_qty>0).length);assign("settledUnits",s.verified_allocations.reduce((total,a)=>total+Number(a.quantity||0),0));assign("owedUnits",s.obligations.reduce((total,o)=>total+Number(o.outstanding_qty||0),0));
+const v=$("plainTitle"),p=$("plainSummary"),box=v.closest(".plain-verdict");
+box.classList.remove("problem","success");
+if(d.status==="REVIEW_SETTLEMENT"){v.textContent="The supplier says these soaps were free.";p.textContent="The shopkeeper can review this claim. The missing soaps are still owed.";box.classList.add("success");assign("plainSymbol","✓");}
+else if(d.status==="ALREADY_ALLOCATED"||s.verified_allocations.length){v.textContent="2 soaps settled. 2 still owed.";p.textContent="Only the confirmed promise is marked fulfilled. The other stays open.";box.classList.add("success");assign("plainSymbol","✓");}
+else if(d.status==="DISPUTE"){v.textContent="The supplier gave conflicting answers.";p.textContent="Don't close the claim. Ask which statement is correct.";box.classList.add("problem");assign("plainSymbol","!");}
+else if(d.status==="ASK_SUPPLIER"){v.textContent="Don't close either claim yet.";p.textContent="Ask the supplier: were these 2 soaps a replacement or the free offer?";assign("plainSymbol","?");}
+else if(d.status==="ASK_RETAILER"){v.textContent="First, count what actually arrived.";p.textContent="The shopkeeper must confirm the goods before anything can be settled.";assign("plainSymbol","?");}
+else{v.textContent="We need more information.";p.textContent="SahiAaya won't guess when the proof is missing.";assign("plainSymbol","?");}
 assign("decisionTitle",d.title);assign("status",d.status.replaceAll("_"," "));assign("why",d.explanation);assign("question",d.requested_evidence||"No clarification required.");$("status").className="status"+(["DISPUTE","UNKNOWN"].includes(d.status)?" blocked":"");
 assign("risk",d.status==="REVIEW_SETTLEMENT"?"REVIEW BEFORE CLOSE":d.status==="ALREADY_ALLOCATED"?"PROOF RECORDED":"NEEDS EVIDENCE");
 $("approve").disabled=d.status!=="REVIEW_SETTLEMENT";$("short").disabled=!s.obligations.some(o=>o.id==="SHORT-41"&&o.outstanding_qty>0)||s.receipt.available_qty===0;$("promo").disabled=!s.obligations.some(o=>o.id==="PROMO-17"&&o.outstanding_qty>0)||s.receipt.available_qty===0;
@@ -398,7 +468,7 @@ async function approveResolve(){
 }
 
 async function initialize(){const list=$("scenarios");for(const [id,label] of SCENARIOS){const b=document.createElement("button");b.className="scenario";b.type="button";b.dataset.scenario=id;b.textContent=label;b.addEventListener("click",()=>reset(id));list.append(b);}
-$("caseForm").addEventListener("submit",e=>{e.preventDefault();createResolveCase();});$("resumeCaseButton").addEventListener("click",reopenResolveCase);$("caseReceiptSelect").addEventListener("change",loadResolveReceipt);$("caseAttribute").addEventListener("click",attributeResolve);$("caseApprove").addEventListener("click",approveResolve);setCaseAvailable();$("tourNext").addEventListener("click",advanceTour);$("heroStart").addEventListener("click",()=>{if(tourStep===0)advanceTour();$("tour").scrollIntoView({behavior:"smooth",block:"center"});});updateTour();$("short").addEventListener("click",()=>respond("SHORT-41"));$("promo").addEventListener("click",()=>respond("PROMO-17"));$("approve").addEventListener("click",approve);$("reset").addEventListener("click",()=>reset(selected));$("navProof").addEventListener("click",()=>$("proof").scrollIntoView({behavior:"smooth"}));$("navAbout").addEventListener("click",()=>$("about").scrollIntoView({behavior:"smooth"}));
+$("caseForm").addEventListener("submit",e=>{e.preventDefault();createResolveCase();});$("resumeCaseButton").addEventListener("click",reopenResolveCase);$("caseReceiptSelect").addEventListener("change",loadResolveReceipt);$("caseAttribute").addEventListener("click",attributeResolve);$("caseApprove").addEventListener("click",approveResolve);setCaseAvailable();$("tourNext").addEventListener("click",advanceTour);$("heroStart").addEventListener("click",()=>{$("tour").classList.remove("is-collapsed");if(tourStep===0)advanceTour();$("tour").scrollIntoView({behavior:"smooth",block:"center"});});updateTour();$("short").addEventListener("click",()=>respond("SHORT-41"));$("promo").addEventListener("click",()=>respond("PROMO-17"));$("approve").addEventListener("click",approve);$("reset").addEventListener("click",()=>reset(selected));$("navProof").addEventListener("click",()=>$("proof").scrollIntoView({behavior:"smooth"}));$("navAbout").addEventListener("click",()=>$("about").scrollIntoView({behavior:"smooth"}));
 try{const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),1600);const res=await fetch("/api/health",{signal:controller.signal,headers:{accept:"application/json"}});clearTimeout(timeout);if(res.ok){const health=await res.json();if(health.backend==="FALKORDB"&&health.ok===true)kind="FALKORDB";else if(health.backend==="memory"&&health.ok===true)kind="LOCAL_MEMORY";else throw Error("Unknown health state");}else if(res.status!==404)throw Error("Graph API health unavailable: HTTP "+res.status);}catch(e){kind="UNAVAILABLE";failure("Graph API unavailable: "+e.message+". The app will not claim live settlement results.");}
 if(!await reset("ambiguous"))throw Error("Could not load ambiguous case");}
 initialize();
