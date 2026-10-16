@@ -120,8 +120,14 @@ def approve(receipt_id:str,inp:ApprovalIn):
 # Localhost-only Docker mode. Public Vercel stays a read-only synthetic walkthrough.
 from .resolve import CaseIn, ResolveStore
 
+_resolve_store = None
+
 def resolve_store():
-    return ResolveStore(store())
+    """Keep imported case history in a separate graph from the destructive preset reset."""
+    global _resolve_store
+    if _resolve_store is None:
+        _resolve_store = ResolveStore(FalkorStore(graph_name="sahiaaya_resolve"))
+    return _resolve_store
 
 def require_local_mutations():
     if os.getenv("ALLOW_DEMO_MUTATIONS") != "1":
