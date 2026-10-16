@@ -25,6 +25,9 @@ def main():
         expect(page.locator(".billbox-missing")).to_contain_text("2 soaps")
         expect(page.locator("#tour")).to_be_hidden()
         expect(page.locator("#newCaseDetails")).not_to_have_attribute("open", "")
+        expect(page.locator("#caseDetails")).not_to_have_attribute("open", "")
+        expect(page.locator("#quickShort")).to_have_text("2 soaps still owed")
+        expect(page.locator("#quickPromo")).to_have_text("2 soaps still owed")
         expect(page.locator("#evidenceDetails")).not_to_have_attribute("open", "")
         expect(page.locator("#plainTitle")).to_contain_text("Don't close either claim yet.")
 
@@ -54,6 +57,8 @@ def main():
         expect(page.locator("#tourPhase")).to_contain_text("STEP 3 OF 4")
         expect(page.locator("#settledUnits")).to_have_text("2")
         expect(page.locator("#owedUnits")).to_have_text("2")
+        expect(page.locator("#quickPromo")).to_have_text("Settled ✓")
+        expect(page.locator("#quickShort")).to_have_text("2 soaps still owed")
         expect(page.locator("#audit li")).to_have_count(1)
 
         page.locator("#tourNext").click()
@@ -61,6 +66,7 @@ def main():
         expect(page.locator("#status")).to_have_text("DISPUTE")
         expect(page.locator("#settledUnits")).to_have_text("0")
         expect(page.locator("#owedUnits")).to_have_text("4")
+        expect(page.locator("#quickPromo")).to_have_text("2 soaps still owed")
         if EXPECT_GRAPH:
             # The judge can enter unfamiliar numeric evidence instead of only clicking presets.
             page.locator("#newCaseDetails summary").click()
@@ -106,6 +112,8 @@ def main():
         expect(mobile.locator("#heroStart")).to_be_visible()
         expect(mobile.locator(".visual-example")).to_be_visible()
         expect(mobile.locator("#newCase")).to_be_hidden()
+        expect(mobile.locator("#caseDetails")).not_to_have_attribute("open", "")
+        expect(mobile.locator("#quickShort")).to_be_visible()
         expect(mobile.locator("#plainTitle")).to_contain_text("Don't close either claim yet.")
         expect(mobile.locator("#journeyApprove")).to_be_visible()
         assert mobile.evaluate("document.documentElement.scrollWidth <= window.innerWidth + 2"), "Mobile page overflows horizontally"
