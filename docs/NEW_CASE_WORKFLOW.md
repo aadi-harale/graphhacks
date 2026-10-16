@@ -8,7 +8,7 @@ Instead of requiring one hardcoded `RCP-52` scenario, the local app can now crea
 
 On **http://localhost:8000**, scroll to **Try your own delivery history**:
 
-1. Enter fictional supplier/SKU and two obligation quantities; edit the sizes of both later deliveries.
+1. Enter fictional supplier/SKU and an earlier billed-versus-observed quantity. The shortage is computed automatically; edit promotional eligibility thresholds and two later delivery quantities.
 2. Click **Create case & investigate**. The service validates the structured records and writes a case-specific graph.
 3. Select `LATER_A` or `LATER_B`. The agent follows `ResolveCase → ResolveReceipt → POTENTIALLY_FULFILLS → ResolveObligation → ResolveDocument` and reports possible candidates.
 4. Record a **fictional** supplier attribution. The UI reveals only a *proposed* allocation.
