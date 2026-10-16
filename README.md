@@ -11,6 +11,12 @@ The agent connects historic shortage claims, documented promotions, supplier sta
 - **Live verification:** GitHub Actions runs a FalkorDB service and adversarial graph tests. See the latest [Actions runs](https://github.com/aadi-harale/graphhacks/actions). At the time of this update the conflict guard has passed its live regression. Browser smoke and unknown-history adoption testing remain in progress.
 - **Judge demo:** [DEMO_JUDGE_GUIDE.md](DEMO_JUDGE_GUIDE.md) contains the exact three-minute story and truthful limitations.
 
+## Judge-first home screen (October 16)
+
+The public first screen now answers only three questions: **Who?** A small shopkeeper. **What went wrong?** Two missing soaps and two promised free soaps are still due; only two arrived. **What does SahiAaya do?** It checks the supplier history before claiming a promise is fulfilled.
+
+The single primary button opens the guided proof → supplier response → retailer review story. Contradictory evidence, new-case import, Cypher traces and audit history remain available in clearly labeled optional disclosures. They are not hidden from reviewers; they are simply not mandatory reading on first visit. The public Vercel demonstration remains client-side and fictional; local Docker runs FalkorDB.
+
 ## First look: understand the whole product in 60 seconds
 
 The interface now opens with the **retailer's real question**: two units arrived, but there are two different older promises for four units total. Click **See SahiAaya solve this →** to follow:
