@@ -150,6 +150,34 @@
 @media(max-width:900px){.hero-simple{grid-template-columns:1fr 250px;gap:17px}.hero-simple h1{font-size:clamp(39px,5vw,53px)}.hero-simple .lead{font-size:15px}}
 @media(max-width:760px){.hero-simple{grid-template-columns:1fr}.hero-simple .visual-example{display:flex;min-height:0}.visual-example{padding:18px}.promise-lines{grid-template-columns:1fr 1fr}.promise-lines>div{display:block}.promise-lines b{display:block;margin-top:5px}.visual-example .simple-arrow{margin:0}.arrived-today{margin-top:1px}}
 @media(max-width:520px){.hero-simple h1{font-size:41px}.hero-simple .lead{font-size:15px}.hero-simple .visual-example{display:flex}.journey-step{min-height:0}.journey-step small{display:none}.plain-verdict{align-items:flex-start;padding:16px}.plain-verdict strong{font-size:16px}.optional-section>summary span{font-size:10px}.optional-section>summary{padding:12px}.hero-actions .hero-caption{font-size:10px}}
+
+/* Bill-vs-box visual: show the actual receiving problem before the advanced evidence case. */
+.hero-simple{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,360px);gap:clamp(22px,4vw,52px);align-items:center;padding:14px 0 24px}
+.hero-simple h1{max-width:800px;font-size:clamp(46px,5.1vw,77px);letter-spacing:-.068em;line-height:1.02;margin:12px 0 20px}
+.hero-simple .lead{max-width:710px;font-size:clamp(16px,1.42vw,19px);line-height:1.52;color:#405747}
+.hero-simple .one-line{font-size:13px;margin:15px 0 0;max-width:630px;color:#315743;font-weight:650}
+.hero-simple .hero-actions{margin-top:24px;display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.hero-simple .hero-actions .hero-caption{font-size:11px;color:#6d7e70}
+.btn.hero-cta{font-size:14px;min-height:52px;padding:15px 21px;box-shadow:0 9px 21px rgba(27,79,54,.15)}
+.billbox-visual{min-width:0;background:#e6ebdc;border:1px solid #cdd9c4;border-radius:18px;padding:17px;box-shadow:var(--shadow)}
+.billbox-head{display:flex;justify-content:space-between;gap:12px;align-items:center;font-size:10px;letter-spacing:.11em;color:#486752;font-weight:850;padding:3px 2px 13px}
+.billbox-head span:last-child{font-size:9px;padding:4px 7px;border-radius:6px;background:#d2dfc9}
+.billbox-receipt{background:#fff;border:1px solid #dfdfd4;border-radius:12px;padding:14px 16px;box-shadow:0 5px 14px rgba(47,70,49,.05)}
+.billbox-row{display:flex;align-items:center;justify-content:space-between;gap:9px;border-bottom:1px dashed #d8ded4;padding:11px 0}
+.billbox-row:first-child{padding-top:2px}
+.billbox-row small{display:block;color:#778777;font-size:10px;letter-spacing:.10em;margin-bottom:5px;font-weight:750}
+.billbox-row b{font-size:22px;letter-spacing:-.045em}
+.billbox-mark{border:1px solid #dce5dc;border-radius:5px;background:#f4f8f3;color:#58705c;font-size:9px;font-weight:800;padding:5px 6px}
+.billbox-missing{margin:14px 0 1px;padding:12px 13px;border-radius:9px;background:#fff0e5;color:#864728;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.billbox-missing span{font-size:11px;font-weight:700}
+.billbox-missing strong{font-size:22px;white-space:nowrap;letter-spacing:-.045em}
+.billbox-future{border-top:1px solid #d0dcc7;margin-top:15px;padding:14px 4px 2px}
+.billbox-future-tag{color:#476f4e;font-size:9px;letter-spacing:.13em;font-weight:850}
+.billbox-future p{color:#3b5942;font-size:12px;line-height:1.6;margin:6px 0 0}
+.journey-caption span{max-width:410px;text-align:right}
+@media(max-width:900px){.hero-simple{grid-template-columns:minmax(0,1fr) 294px;gap:24px}.hero-simple h1{font-size:51px}}
+@media(max-width:760px){.hero-simple{grid-template-columns:1fr;gap:19px}.billbox-visual{display:block}.hero-simple h1{font-size:clamp(43px,8vw,60px)}.billbox-visual{max-width:520px}.billbox-head{padding-bottom:9px}.billbox-future{padding-top:10px}.journey-caption span{text-align:left}}
+@media(max-width:520px){.hero-simple{padding-top:0}.hero-simple h1{font-size:45px}.hero-simple .lead{font-size:15px}.hero-simple .one-line{font-size:12px}.hero-simple .hero-actions{gap:8px}.billbox-receipt{padding:10px 13px}.billbox-row{padding:7px 0}.billbox-row b{font-size:19px}.billbox-missing strong{font-size:20px}.billbox-future p{font-size:11px}.journey-caption span{font-size:10px}}
 </style>
 </head>
 <body>
@@ -160,34 +188,36 @@
 </aside><div class="main">
 <header class="topbar"><div class="crumb">SahiAaya / <strong>Supplier resolution</strong> / Sample case RCP-52</div><div class="mode" id="mode"><span class="dot"></span><span id="modeText">Checking graph connection…</span></div></header>
 <main class="content">
-<section class="hero hero-simple" aria-label="The problem SahiAaya solves">
+<section class="hero hero-simple" aria-label="What SahiAaya does for a shopkeeper">
  <div class="hero-text">
-   <div class="eyebrow">FOR SMALL SHOPS · ONE REAL-WORLD PROBLEM</div>
-   <h1>Did your supplier <span>keep their promise?</span></h1>
-   <p class="lead">Last week, a shopkeeper was owed <b>2 missing soaps</b> and <b>2 free soaps</b>. Today, just <b>2 soaps arrived.</b> Which promise did the supplier fulfil?</p>
-   <p class="one-line">SahiAaya checks past deliveries and supplier replies so the shopkeeper knows what's still owed.</p>
-   <div class="hero-actions"><button type="button" class="btn primary hero-cta" id="heroStart">Show me how it works <span aria-hidden="true">→</span></button><span class="hero-caption">60-second interactive example · fictional data</span></div>
+  <div class="eyebrow">SAHIAAYA · BILL VS BOX · PROMISE VS PROOF</div>
+  <h1>Billed for 50.<br><span>Received only 48.</span></h1>
+  <p class="lead">When a shopkeeper receives goods, the supplier's bill and the actual delivery don't always match. <strong>SahiAaya finds what's missing and remembers what the supplier still owes</strong>—even on the next delivery.</p>
+  <p class="one-line">It helps small shops catch shortages, track promised replacements and avoid closing a claim without proof.</p>
+  <div class="hero-actions"><button type="button" class="btn primary hero-cta" id="heroStart">See what happens to the missing 2 <span aria-hidden="true">→</span></button><span class="hero-caption">A 60-second fictional shop example</span></div>
  </div>
- <div class="truth receipt-tile visual-example" role="img" aria-label="Supplier owed two missing soaps and two free soaps, but only two arrived today">
-   <div class="truth-label">THE SHOPKEEPER'S PROBLEM</div>
-   <div class="promise-lines"><div><span>Missing from last bill</span><b>2</b></div><div><span>Free soaps promised</span><b>2</b></div></div>
-   <div class="simple-arrow" aria-hidden="true">↓</div>
-   <div class="arrived-today"><span>BOX ARRIVED TODAY</span><strong>2 soaps</strong></div>
-   <div class="receipt-foot">Which promise is actually fulfilled?</div>
+ <div class="billbox-visual" role="img" aria-label="An example supplier bill lists 50 soaps but the shopkeeper counts only 48. Two soaps remain owed.">
+  <div class="billbox-head"><span>THE SHOPKEEPER'S DELIVERY</span><span>EXAMPLE</span></div>
+  <div class="billbox-receipt">
+   <div class="billbox-row"><span><small>SUPPLIER BILL</small><b>50 soaps</b></span><span class="billbox-mark">BILLED</span></div>
+   <div class="billbox-row"><span><small>SHOPKEEPER COUNT</small><b>48 soaps</b></span><span class="billbox-mark">RECEIVED</span></div>
+   <div class="billbox-missing"><span>Missing from the box</span><strong>2 soaps</strong></div>
+  </div>
+  <div class="billbox-future"><span class="billbox-future-tag">NEXT DELIVERY</span><p>The supplier sends 2 more soaps—but also owes 2 free promotional soaps. <strong>Which promise is fulfilled?</strong></p></div>
  </div>
 </section>
 <section class="journey" aria-label="SahiAaya workflow: receive, connect, investigate, approve">
-  <div class="journey-caption"><strong>HOW IT WORKS</strong><span>Four simple steps</span></div>
+  <div class="journey-caption"><strong>WHAT SAHIAAYA DOES</strong><span>From checking a bill to closing the missing-goods claim</span></div>
   <div class="journey-steps">
-   <div id="journeyReceive" class="journey-step"><span class="journey-index">01</span><div><strong>Receive goods</strong><small>Count what came</small></div></div>
-   <div id="journeyConnect" class="journey-step"><span class="journey-index">02</span><div><strong>Find old promises</strong><small>Check past dues</small></div></div>
-   <div id="journeyAsk" class="journey-step"><span class="journey-index">03</span><div><strong>Request missing proof</strong><small>Ask the supplier</small></div></div>
-   <div id="journeyApprove" class="journey-step"><span class="journey-index">04</span><div><strong>Approve & track</strong><small>Keep a clear record</small></div></div>
+   <div id="journeyReceive" class="journey-step"><span class="journey-index">01</span><div><strong>Check the bill</strong><small>Compare billed and received</small></div></div>
+   <div id="journeyConnect" class="journey-step"><span class="journey-index">02</span><div><strong>Spot what’s missing</strong><small>Record the supplier’s dues</small></div></div>
+   <div id="journeyAsk" class="journey-step"><span class="journey-index">03</span><div><strong>Track the promise</strong><small>Check later deliveries</small></div></div>
+   <div id="journeyApprove" class="journey-step"><span class="journey-index">04</span><div><strong>Confirm it was fixed</strong><small>Close only proven claims</small></div></div>
   </div>
 </section>
-<div class="guided is-collapsed" id="tour" aria-live="polite"><div><small id="tourPhase">A 60-SECOND EXPLAINER · STEP 0 OF 4</small><strong id="tourTitle">Can two delivered units settle four owed?</strong><p id="tourDetail">Follow the same receipt through missing proof, a supplier statement, retailer approval and a contradictory-history test.</p></div><button class="btn" id="tourNext" type="button">▶ Start the guided walkthrough</button></div>
+<div class="guided is-collapsed" id="tour" aria-live="polite"><div><small id="tourPhase">A 60-SECOND STORY · STEP 0 OF 4</small><strong id="tourTitle">What happened to the 2 missing soaps?</strong><p id="tourDetail">The shopkeeper spotted a shortage. Now the next delivery is here. See how SahiAaya checks whether the supplier really made it right.</p></div><button class="btn" id="tourNext" type="button">▶ Start the guided walkthrough</button></div>
 <div id="notice" class="notice" role="status">Demo with fictional information. No real supplier is contacted and no payment is made.</div>
-<div class="section-head"><div><div class="eyebrow">WHAT HAPPENS NEXT?</div><h2>Here’s what SahiAaya tells the shopkeeper.</h2></div></div><div class="plain-verdict" aria-live="polite"><div class="plain-symbol" id="plainSymbol" aria-hidden="true">?</div><div><strong id="plainTitle">Don’t close either claim yet.</strong><p id="plainSummary">The supplier hasn’t said which of the two promises these soaps fulfil.</p></div></div>
+<div class="section-head"><div><div class="eyebrow">AN EXAMPLE OF WHAT SAHIAAYA DOES</div><h2>Did the shopkeeper get the missing goods back?</h2></div></div><div class="plain-verdict" aria-live="polite"><div class="plain-symbol" id="plainSymbol" aria-hidden="true">?</div><div><strong id="plainTitle">Don’t close either claim yet.</strong><p id="plainSummary">The supplier hasn’t said which of the two promises these soaps fulfil.</p></div></div>
 <details class="optional-section" id="otherScenarios"><summary>What if the supplier says something different? <span>Explore more examples</span></summary><div class="scenario-bar" id="scenarios" aria-label="Synthetic evidence scenarios"></div><p class="scenario-help">Same delivery, different supporting evidence.</p></details>
 <div class="case-grid">
   <section class="card"><div class="card-head"><div class="doc-label">Receipt RCP-52 · SOAP-100G</div><span class="tag">MERCHANT OBSERVATION</span></div><h3>Today’s delivery</h3><div class="quantities"><div class="qty"><small>Recorded received</small><b id="received">2</b></div><div class="qty"><small>Remaining</small><b id="available">2</b></div><div class="qty"><small>Open promises</small><b id="open">2</b></div></div><div class="doc-label" style="margin-top:19px">Historical supplier obligations</div><div id="obligations"></div></section>
@@ -320,11 +350,11 @@ async function reset(s){selected=s;try{if(kind==="UNAVAILABLE")throw Error("Grap
 async function respond(target){try{if(kind!=="SIMULATION"){render(normalizeState(await api("/api/investigate/RCP-52/simulate-supplier-response",{obligation_id:target,reference:"SYNTHETIC-supplier-evidence-"+target})));}else{if(local.receipt.available_qty<=0)throw Error("No remaining goods");if(!local.obligations.some(x=>x.id===target&&x.outstanding_qty>0))throw Error("No eligible open obligation");local.statements=[statement(target)];local.receipt.version++;refreshSynthetic();} return true;}catch(error){failure("Supplier demonstration: "+error.message);return false;}}
 async function approve(){try{const d=snapshot.decision;if(d.status!=="REVIEW_SETTLEMENT"||!d.suggested_obligation)throw Error("No evidence-supported proposal");const o=snapshot.obligations.find(x=>x.id===d.suggested_obligation);if(kind!=="SIMULATION"){render(normalizeState(await api("/api/investigate/RCP-52/approve-demo-settlement",{obligation_id:d.suggested_obligation,quantity:d.suggested_qty,receipt_version:snapshot.receipt.version,obligation_version:o.version})));}else{if(d.suggested_qty>local.receipt.available_qty||d.suggested_qty>o.outstanding_qty)throw Error("Quantity exceeds capacity");local.receipt.available_qty-=d.suggested_qty;local.receipt.version++;o.outstanding_qty-=d.suggested_qty;o.version++;local.verified_allocations.push({allocation_id:"SYNTHETIC-APPROVAL-"+(local.verified_allocations.length+1),obligation_id:o.id,quantity:d.suggested_qty,approved_by:"retailer-demo"});refreshSynthetic();}}catch(error){failure("Settlement was blocked: "+error.message);}}
 const TOUR=[
-["STEP 0 OF 4 · SETUP","Can two delivered units settle four owed?","Start with the same goods and two separate promises. Don't assume the delivery settled either.","▶ Start the guided walkthrough"],
-["STEP 1 OF 4 · INVESTIGATE","The delivery cannot prove its own purpose.","Two units arrived, but no supplier statement says which claim they fulfil. SahiAaya keeps both obligations open and asks for one precise answer.","1 / Show the supplier's evidence →"],
-["STEP 2 OF 4 · EVIDENCE","The supplier links these units to the promotion.","That evidence supports a proposal. Nothing is settled until the retailer checks it and explicitly approves.","2 / Record a retailer-reviewed settlement →"],
-["STEP 3 OF 4 · RESULT","Two settled. Two still owed.","The promotion is now reviewed as settled. The original shortage stays open, and the audit trail shows exactly what changed.","3 / Test contradictory evidence →"],
-["STEP 4 OF 4 · SAFETY CHECK","Same quantities. Conflicting evidence. No settlement.","The agent must block closure when supplier statements disagree, rather than produce a confident but wrong answer.","↻ Restart walkthrough"]
+["STEP 0 OF 4 · THE PROBLEM","The bill said 50. The box had 48.","The shopkeeper records two missing soaps. The supplier also owes two free promotional soaps. Later, two soaps arrive—but what are they for?","▶ Follow the missing 2 soaps"],
+["STEP 1 OF 4 · DON'T GUESS","The supplier still owes 4 soaps in two separate promises.","Two arrived today. SahiAaya checks earlier records and asks: are these replacement soaps or free promotional soaps? It doesn't close either claim yet.","1 / Supplier explains the new delivery →"],
+["STEP 2 OF 4 · CHECK THE RESPONSE","The supplier says these are the free promotional soaps.","That's a possible answer, not proof of a completed claim. The shopkeeper must confirm what arrived before recording a settlement.","2 / Shopkeeper confirms the goods →"],
+["STEP 3 OF 4 · THE RESULT","The free soaps are settled. The missing 2 are still owed.","SahiAaya keeps the old shortage open. The same box of soaps wasn't counted toward both promises.","3 / What if the supplier contradicts themselves? →"],
+["STEP 4 OF 4 · THE SAFETY CHECK","Two conflicting answers? Keep the claim open.","If supplier statements disagree, SahiAaya asks for clarification instead of incorrectly marking the missing goods as recovered.","↻ Try the story again"]
 ];
 let tourStep=0;
 function updateTour(){const t=TOUR[tourStep];assign("tourPhase",t[0]);assign("tourTitle",t[1]);assign("tourDetail",t[2]);assign("tourNext",t[3]);}
