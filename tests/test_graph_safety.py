@@ -38,7 +38,7 @@ def test_two_consistent_supplier_statements_can_support_one_reviewed_settlement(
     from app.agent import investigate
     store=FalkorStore(graph_name="sahiaaya_ci_same_target_corroboration")
     store.seed("shortage_confirmed")
-    store._write("""MATCH (r:Receipt {tenant:$tenant,id:$rid})
+    store.write("""MATCH (r:Receipt {tenant:$tenant,id:$rid})
 CREATE (d:Document {tenant:$tenant,id:'second-proof',ref:'SYNTHETIC-CORROBORATING-REFERENCE'})
 CREATE (st:Statement {tenant:$tenant,id:'second-note',target_id:'SHORT-41',active:true})
 CREATE (st)-[:ABOUT_RECEIPT]->(r)
