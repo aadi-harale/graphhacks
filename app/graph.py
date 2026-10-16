@@ -37,6 +37,11 @@ WHERE r.version=$receipt_version AND o.version=$obligation_version
   AND r.available_qty >= $quantity AND o.outstanding_qty >= $quantity
   AND r.confirmed=true AND r.unit_known=true
   AND r.supplier_id=o.supplier_id AND r.sku=o.sku AND d.ref <> ''
+WITH r,o,st,d
+OPTIONAL MATCH (other:Statement {tenant:$tenant,active:true})-[:ABOUT_RECEIPT]->(r)
+WHERE other.id <> st.id
+WITH r,o,st,d,count(other) AS competing_active_statements
+WHERE competing_active_statements = 0
 WITH DISTINCT r,o
 CREATE (a:Allocation {tenant:$tenant,id:$allocation_id,quantity:$quantity,proof_ref:$proof_ref})
 CREATE (a)-[:USES_RECEIPT]->(r)
