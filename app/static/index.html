@@ -342,8 +342,8 @@ function renderStory(s){
 }
 function normalizeState(s){if(s&&s.backend==="FALKORDB"){return {...s,mode:"FALKORDB",verified_allocations:Array.isArray(s.allocations)?s.allocations:[],decision:{...s.decision,tool_trace:s.decision?.graph_tool_trace||[]}};}return s;}
 function render(s){s=normalizeState(s);snapshot=s;const d=s.decision;renderStory(s);assign("received",s.receipt.original_qty);assign("available",s.receipt.available_qty);assign("open",s.obligations.filter(x=>x.outstanding_qty>0).length);const sh=s.obligations.find(x=>x.id==="SHORT-41"),pr=s.obligations.find(x=>x.id==="PROMO-17");
-assign("quickShort",sh?(sh.outstanding_qty?sh.outstanding_qty+" soaps still owed":"Settled ✓"):"—");
-assign("quickPromo",pr?(pr.outstanding_qty?pr.outstanding_qty+" soaps still owed":"Settled ✓"):"—");assign("settledUnits",s.verified_allocations.reduce((total,a)=>total+Number(a.quantity||0),0));assign("owedUnits",s.obligations.reduce((total,o)=>total+Number(o.outstanding_qty||0),0));
+assign("quickShort",sh?(sh.outstanding_qty?sh.outstanding_qty+" soaps still owed":"Settled ✓"):(s.verified_allocations.some(x=>x.obligation_id==="SHORT-41")?"Settled ✓":"—"));
+assign("quickPromo",pr?(pr.outstanding_qty?pr.outstanding_qty+" soaps still owed":"Settled ✓"):(s.verified_allocations.some(x=>x.obligation_id==="PROMO-17")?"Settled ✓":"—"));assign("settledUnits",s.verified_allocations.reduce((total,a)=>total+Number(a.quantity||0),0));assign("owedUnits",s.obligations.reduce((total,o)=>total+Number(o.outstanding_qty||0),0));
 const v=$("plainTitle"),p=$("plainSummary"),box=v.closest(".plain-verdict");
 box.classList.remove("problem","success");
 if(d.status==="REVIEW_SETTLEMENT"){v.textContent="The supplier says these soaps were free.";p.textContent="The shopkeeper can review this claim. The missing soaps are still owed.";box.classList.add("success");assign("plainSymbol","✓");}
