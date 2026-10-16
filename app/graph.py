@@ -39,7 +39,7 @@ WHERE r.version=$receipt_version AND o.version=$obligation_version
   AND r.supplier_id=o.supplier_id AND r.sku=o.sku AND d.ref <> ''
 WITH r,o,st,d
 OPTIONAL MATCH (other:Statement {tenant:$tenant,active:true})-[:ABOUT_RECEIPT]->(r)
-WHERE other.id <> st.id
+WHERE other.target_id <> $obligation_id
 WITH r,o,st,d,count(other) AS competing_active_statements
 WHERE competing_active_statements = 0
 WITH DISTINCT r,o
