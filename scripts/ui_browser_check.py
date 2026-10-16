@@ -65,6 +65,10 @@ def main():
             page.locator("#caseAttribute").click()
             expect(page.locator("#caseDecisionStatus")).to_have_text("REVIEW SETTLEMENT")
             page.locator("#caseApprove").click()
+            page.wait_for_timeout(600)
+            print("CASE_APPROVAL_DIAGNOSTIC:",page.locator("#caseMessage").inner_text(),
+                  "status:",page.locator("#caseDecisionStatus").inner_text(),
+                  "audit:",page.locator("#caseAudit").inner_text(),flush=True)
             expect(page.locator("#caseAudit")).to_contain_text("2 units")
             expect(page.locator("#caseDecisionStatus")).to_have_text("ALREADY ALLOCATED")
             # Reload demonstrates persisted graph history, not an in-memory frontend effect.
