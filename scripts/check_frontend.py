@@ -21,9 +21,9 @@ def main():
     html = PAGE.read_text(encoding="utf-8")
     parser = Scan()
     parser.feed(html)
-    embedded = re.findall(r"<script(?:\\s[^>]*)?>(.*?)</script>", html, flags=re.S|re.I)
+    embedded = re.findall(r"<script(?:\s[^>]*)?>(.*?)</script>", html, flags=re.S|re.I)
     assert len(embedded) == 1, "Expected one bundled script"
-    refs = set(re.findall(r'\\$\\("([a-zA-Z0-9_-]+)"\\)', embedded[0]))
+    refs = set(re.findall(r'\$\("([a-zA-Z0-9_-]+)"\)', embedded[0]))
     missing = refs - parser.ids
     assert not missing, "Undefined UI element IDs: " + ", ".join(sorted(missing))
     for text in ("PUBLIC SYNTHETIC SIMULATION", "LIVE FALKORDB", "REVIEW_SETTLEMENT",
