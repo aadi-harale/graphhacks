@@ -12,6 +12,54 @@
 @media(max-width:850px){.guided{flex-direction:column;align-items:stretch}.guided .btn{width:100%;white-space:normal}.case-grid,.under{grid-template-columns:1fr}.hero{grid-template-columns:1fr}.truth{display:none}.story{grid-template-columns:1fr 1fr}.case-grid{gap:14px}.content{padding-top:25px}.section-head{align-items:flex-start;flex-direction:column;gap:7px}}
 @media(max-width:520px){.guided{padding:18px}.impact-strip{grid-template-columns:1fr 1fr}.story{grid-template-columns:1fr}.story-card{padding:14px}.hero h1{font-size:43px}.topbar{padding:13px 20px}.content{padding:25px 17px 55px}.card{padding:18px}.quantities{gap:5px}.qty{padding:11px}.qty b{font-size:22px}.controls{grid-template-columns:1fr}.btn.wide{grid-column:auto}.mode{font-size:10px}.brand{font-size:23px}}
 @media(prefers-reduced-motion:no-preference){button{transition:filter .14s,transform .14s}button:hover:not(:disabled){transform:translateY(-1px)}}
+
+/* First-look editorial flow. UI uses the same evidence state as the underlying decision view. */
+.hero{grid-template-columns:minmax(0,1fr) 270px;align-items:center;gap:28px;margin-bottom:20px}
+.hero h1{font-size:clamp(40px,4.7vw,69px);max-width:830px;line-height:1.035;letter-spacing:-.065em}
+.hero .lead{max-width:730px;font-size:15px}
+.hero-actions{display:flex;align-items:center;flex-wrap:wrap;gap:14px;margin-top:22px}
+.hero-actions span{font-size:11px;color:var(--muted)}
+.btn.hero-cta{background:var(--green);color:#fff;border-color:var(--green);padding:14px 20px;min-height:49px;font-size:13px}
+.receipt-tile{transform:none;min-height:209px;background:#deedad}
+.receipt-main{font-family:Georgia,serif;font-size:61px;letter-spacing:-.07em;line-height:1;margin:17px 0}
+.receipt-main span{font-family:Inter,ui-sans-serif,system-ui,sans-serif;letter-spacing:-.01em;font-size:13px;font-weight:700}
+.receipt-separator{height:1px;background:#b3cf89;margin-bottom:12px}
+.receipt-small{font-size:13px;line-height:1.5}
+.receipt-foot{font-size:11px;font-weight:750;opacity:.76;margin-top:14px}
+.journey{margin:20px 0 16px;border:1px solid #c4d6be;background:#ecf3e6;border-radius:17px;padding:17px}
+.journey-caption{display:flex;justify-content:space-between;gap:13px;align-items:center;margin:0 2px 13px}
+.journey-caption strong{font-size:10px;letter-spacing:.16em;color:#2b6547}
+.journey-caption span{font-size:11px;color:#5b7563}
+.journey-steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.journey-step{display:flex;gap:10px;min-width:0;background:#fff;border:1px solid #d4e2d1;border-radius:10px;padding:12px 10px}
+.journey-step strong{font-size:12px;line-height:1.3;display:block}
+.journey-step small{font-size:10px;line-height:1.45;display:block;margin-top:5px;color:#637b69}
+.journey-step .journey-index{display:grid;place-items:center;flex:0 0 25px;width:25px;height:25px;background:#e7f0e1;color:#38674a;border-radius:7px;font-size:10px;font-weight:850}
+.journey-step.done{background:#e2f0e4;border-color:#b8d9c3}
+.journey-step.active{background:#163f31;border-color:#163f31;color:#fff}
+.journey-step.active small{color:#cee2d5}
+.journey-step.active .journey-index{background:#d9ed9e;color:#214634}
+.guided{margin:0 0 19px}
+.story{margin-bottom:17px}
+.story-graph{margin:20px 0;border:1px solid #c9d9c7;border-radius:17px;background:#eff4e9;padding:23px;box-shadow:var(--shadow)}
+.story-graph-head{display:flex;align-items:start;justify-content:space-between;gap:16px}
+.story-graph-head h3{font-family:Georgia,serif;font-size:26px;font-weight:500;letter-spacing:-.04em;margin:6px 0}
+.story-graph-head p{font-size:12px;color:#617865;line-height:1.5;margin:0 0 14px}
+.graph-stamp{background:#fff;border:1px solid #cadac6;border-radius:100px;font-size:10px;font-weight:800;color:#52745b;padding:6px 11px;white-space:nowrap}
+.graph-steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.graph-step{min-width:0;position:relative;background:#fff;border:1px solid #d7e2d4;border-radius:11px;padding:14px}
+.graph-step:not(:last-child):after{content:"→";position:absolute;top:39%;right:-12px;color:#477352;background:#eff4e9;z-index:1;font-size:17px;font-weight:700}
+.graph-step .graph-step-kicker{font-size:10px;text-transform:uppercase;letter-spacing:.075em;color:#718472;font-weight:800;display:block;margin-bottom:8px}
+.graph-step b{font-size:13px;display:block;line-height:1.4;overflow-wrap:anywhere}
+.graph-step p{font-size:11px;color:#617967;line-height:1.5;margin:6px 0 0;overflow-wrap:anywhere}
+.graph-step.missing{background:#fffbf3;border-color:#e0c393}
+.graph-step.verified{background:#eff8ef;border-color:#a5cca9}
+.graph-summary{display:flex;justify-content:space-between;gap:20px;margin-top:15px;border-top:1px solid #d2e2d0;padding-top:13px}
+.graph-summary strong{font-size:12px;color:#225139}
+.graph-summary span{font-size:12px;color:#5f7765;text-align:right}
+@media(max-width:1100px){.journey-steps{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:850px){.hero{grid-template-columns:1fr}.receipt-tile{display:none}.journey-steps{grid-template-columns:repeat(2,minmax(0,1fr))}.graph-steps{grid-template-columns:repeat(2,minmax(0,1fr))}.graph-step:after{display:none}}
+@media(max-width:520px){.hero h1{font-size:43px}.journey-caption{align-items:flex-start;flex-direction:column;gap:5px}.journey-steps{grid-template-columns:repeat(2,minmax(0,1fr))}.journey-step{display:block;min-height:114px}.journey-step .journey-index{margin-bottom:8px}.graph-steps{grid-template-columns:1fr}.story-graph{padding:17px}.story-graph-head{display:block}.graph-stamp{display:inline-block;margin:4px 0 11px}.graph-summary{display:block}.graph-summary span{display:block;text-align:left;margin-top:6px}}
 </style>
 </head>
 <body>
@@ -20,20 +68,41 @@
   <div><div class="rail-section">Workspace</div><div class="nav"><button class="active"><i>01</i> Case desk</button><button id="navProof"><i>02</i> Proof trail</button><button id="navAbout"><i>03</i> How it works</button></div></div>
   <div class="rail-bottom"><strong>Built for the shopkeeper.</strong>Not another inventory dashboard.<br>One clear next action when a supplier's promise is uncertain.</div>
 </aside><div class="main">
-<header class="topbar"><div class="crumb">Home / <strong>Supplier disputes</strong> / Case RCP-52</div><div class="mode" id="mode"><span class="dot"></span><span id="modeText">Checking graph connection…</span></div></header>
+<header class="topbar"><div class="crumb">SahiAaya / <strong>Supplier resolution</strong> / Sample case RCP-52</div><div class="mode" id="mode"><span class="dot"></span><span id="modeText">Checking graph connection…</span></div></header>
 <main class="content">
-<div class="hero"><div><div class="eyebrow">The receiving desk · Fictional Sharma Distributors</div><h1>Two promises.<br><span>One delivery.</span></h1><p class="lead">A kirana shop receives two extra soap units. The supplier previously owed a shortage replacement and a promotional free-goods delivery. <b>Which promise does this box fulfil?</b> SahiAaya checks connected evidence before closing either claim.</p></div><div class="truth"><div class="truth-label">The principle</div><strong>A delivery is not a settlement.</strong><p>Two units cannot silently erase four units of separate obligations.</p></div></div>
+<section class="hero" aria-label="The retailer's problem">
+ <div><div class="eyebrow">SAHIAAYA · A RECEIVING & SUPPLIER RESOLUTION ASSISTANT</div>
+ <h1>The goods arrived.<br><span>Was the promise kept?</span></h1>
+ <p class="lead">A kirana shop receives <strong>two soap units</strong>. But the same supplier owes <strong>two replacement units</strong> from a shortage and <strong>two promotional units</strong> from an earlier offer. SahiAaya checks <strong>which promise this box fulfils</strong>—before anyone marks a claim settled.</p>
+ <div class="hero-actions"><button type="button" class="btn primary hero-cta" id="heroStart">See SahiAaya solve this →</button><span>One-minute walkthrough · fictional data</span></div>
+ </div>
+ <div class="truth receipt-tile"><div class="truth-label">TODAY'S RECEIPT · SOAP-100G</div><div class="receipt-main">2<span> units arrived</span></div><div class="receipt-separator"></div><div class="receipt-small">4 units were owed across<br><strong>2 different promises</strong></div><div class="receipt-foot">Two units cannot settle both.</div></div>
+</section>
+<section class="journey" aria-label="SahiAaya workflow: receive, connect, investigate, approve">
+  <div class="journey-caption"><strong>WHAT SAHIAAYA DOES</strong><span>From a box received to a claim resolved</span></div>
+  <div class="journey-steps">
+   <div id="journeyReceive" class="journey-step"><span class="journey-index">01</span><div><strong>Receive goods</strong><small>Confirm the goods that arrived</small></div></div>
+   <div id="journeyConnect" class="journey-step"><span class="journey-index">02</span><div><strong>Find old promises</strong><small>Connect invoices, offers and history</small></div></div>
+   <div id="journeyAsk" class="journey-step"><span class="journey-index">03</span><div><strong>Request missing proof</strong><small>Ask what these goods were meant to settle</small></div></div>
+   <div id="journeyApprove" class="journey-step"><span class="journey-index">04</span><div><strong>Approve & track</strong><small>Close only the obligation proven</small></div></div>
+  </div>
+</section>
+<div class="guided" id="tour" aria-live="polite"><div><small id="tourPhase">A 60-SECOND EXPLAINER · STEP 0 OF 4</small><strong id="tourTitle">Can two delivered units settle four owed?</strong><p id="tourDetail">Follow the same receipt through missing proof, a supplier statement, retailer approval and a contradictory-history test.</p></div><button class="btn" id="tourNext" type="button">▶ Start the guided walkthrough</button></div>
 <div class="story" aria-label="The three steps of the case"><div class="story-card"><div class="num">01 / EARLIER</div><strong>Goods missing</strong><p>Two soap units were short on invoice 41. A replacement was promised.</p></div><div class="story-card"><div class="num">02 / ALSO OWED</div><strong>Free-goods scheme</strong><p>A separate documented promotion left two additional units due.</p></div><div class="story-card highlight"><div class="num">03 / TODAY</div><strong>Two units arrive</strong><p>Same product. Enough for one promise, not both. Evidence decides.</p></div></div>
 <div id="notice" class="notice" role="status">PUBLIC SANDBOX: all suppliers, invoices and responses below are fictional. This page does not contact a supplier, make a payment or create a real settlement.</div>
-<div class="section-head"><div><div class="eyebrow">Try the evidence, not just the amounts</div><h2>Change the history. Watch the decision.</h2></div><div class="hint">Every scenario starts with the same two physical units. Only the connected evidence differs.</div></div>
-<div class="guided" id="tour" aria-live="polite"><div><small id="tourPhase">A 60-SECOND EXPLAINER · STEP 0 OF 4</small><strong id="tourTitle">Can two delivered units settle four owed?</strong><p id="tourDetail">Follow the same receipt through missing proof, a supplier statement, retailer approval and a contradictory-history test.</p></div><button class="btn" id="tourNext" type="button">▶ Start the guided walkthrough</button></div>
+<div class="section-head"><div><div class="eyebrow">A WORKING CASE · TRY THE EVIDENCE</div><h2>One receipt. Four possible outcomes.</h2></div><div class="hint">Switch the history, not the delivered quantity. The evidence changes the next action.</div></div>
 <div class="scenario-bar" id="scenarios" aria-label="Synthetic evidence scenarios"></div><p class="scenario-help">Or explore individual cases manually. Every tab has the same two received units; evidence is what changes the result.</p>
 <div class="case-grid">
   <section class="card"><div class="card-head"><div class="doc-label">Receipt RCP-52 · SOAP-100G</div><span class="tag">MERCHANT OBSERVATION</span></div><h3>Today's inward delivery</h3><div class="quantities"><div class="qty"><small>Recorded received</small><b id="received">2</b></div><div class="qty"><small>Remaining</small><b id="available">2</b></div><div class="qty"><small>Open promises</small><b id="open">2</b></div></div><div class="doc-label" style="margin-top:19px">Historical supplier obligations</div><div id="obligations"></div><div class="result-box"><strong>Why this is not an ordinary bill mismatch</strong><p>Today's quantities match the delivery. The unresolved question lives across earlier bills, scheme terms, supplier messages and later evidence.</p></div></section>
   <section class="card"><div class="card-head"><div class="doc-label">Evidence-gap agent</div><span class="tag warn" id="risk">REVIEW REQUIRED</span></div><h3>The next correct action</h3><div class="investigator"><div class="status" id="status">INVESTIGATING</div><h4 id="decisionTitle">Reading evidence…</h4><p id="why"></p></div><div class="doc-label" style="margin-top:22px">Question prepared for supplier / retailer</div><div class="question" id="question" aria-live="polite"></div><div class="controls"><button class="btn secondary" id="short">Supplier says: replacement</button><button class="btn secondary" id="promo">Supplier says: promotion</button><button class="btn primary wide" id="approve">Retailer reviews &amp; records settlement</button><button class="btn wide" id="reset">Reset this case</button></div><p class="helper">Supplier responses on this page are simulated. Real settlement requires attributable supplier evidence and retailer-approved receipt confirmation.</p><div class="impact-strip" aria-label="Quantity outcome"><div class="impact-item"><b id="settledUnits">0</b><span>Units reviewed as settled in this scenario</span></div><div class="impact-item"><b id="owedUnits">4</b><span>Units still owed by supplier</span></div></div><div class="result-box"><strong id="outcomeTitle">Nothing has been settled.</strong><p id="outcomeDetail">The agent will not turn a plausible allocation into proof.</p></div></section>
 </div>
+<section class="story-graph" aria-label="Evidence chain explanation">
+ <div class="story-graph-head"><div><span class="doc-label">THE CONNECTED EVIDENCE</span><h3>Why does the decision change?</h3><p>An invoice and a quantity alone cannot prove which older promise was fulfilled.</p></div><span class="graph-stamp" id="graphStamp">EXPLANATION VIEW</span></div>
+ <div class="graph-steps" id="graphSteps" aria-live="polite"></div>
+ <div class="graph-summary"><strong id="graphSummaryTitle">Missing supplier attribution</strong><span id="graphSummaryDetail">The retailer still has two outstanding obligations.</span></div>
+</section>
 <div class="under" id="proof"><section class="card"><div class="card-head"><div class="doc-label">Evidence trail</div><span class="tag">CONNECTIONS</span></div><h3>Why did SahiAaya decide this?</h3><ul class="evidence-list" id="evidenceList"></ul><div id="paths"></div><details><summary>Inspect machine decision and graph tool trace</summary><pre id="raw"></pre></details></section><section class="card"><div class="card-head"><div class="doc-label">Reviewed outcome</div><span class="tag">AUDIT</span></div><h3>What actually changed?</h3><ul class="ledger" id="audit"></ul><div class="result-box"><strong>No invented recoveries</strong><p>We report proposed allocations, supplier statements and reviewed settlements separately. No money is shown as saved until a real adjustment is proven.</p></div></section></div>
-<footer class="foot" id="about"><strong>What you're seeing:</strong> The deployed preview is a browser-only synthetic walkthrough. The local Docker application uses FalkorDB to traverse supplier → SKU → historical obligations → documentary evidence and commit reviewed settlements. The preview deliberately makes <b>no live graph claim</b>. <a href="https://github.com/aadi-harale/graphhacks" target="_blank" rel="noopener noreferrer">Source and local FalkorDB setup →</a><br><br>Graph Hacks × FalkorDB 2026 · Track 01 — Agents That Act on Connected Data · Built with AI development assistance. No real retailer information is used.</footer>
+<footer class="foot" id="about"><strong>Current experience:</strong> <span id="runtimeDisclosure">Public synthetic walkthrough. Real FalkorDB reasoning is available in the separate local Docker application.</span> <a href="https://github.com/aadi-harale/graphhacks" target="_blank" rel="noopener noreferrer">Source and local FalkorDB setup →</a><br><br>Graph Hacks × FalkorDB 2026 · Track 01 — Agents That Act on Connected Data · Built with AI development assistance. No real retailer information is used.</footer>
 </main></div></div>
 <script>
 "use strict";
@@ -68,7 +137,43 @@ return verdict("ASK_SUPPLIER","The goods arrived. The purpose did not.","The sam
 function refreshSynthetic(){local.decision=decision(local);render(local);}
 function details(texts){const host=$("evidenceList");host.replaceChildren();for(const value of texts){const li=document.createElement("li");li.textContent=value;host.append(li);}}
 function showPaths(value){const p=$("paths");p.replaceChildren();for(const [k,v] of Object.entries(value||{})){const el=document.createElement("div");el.className="lineage";el.textContent=k+": "+v.join(" → ");p.append(el)}}
-function render(s){snapshot=s;const d=s.decision;assign("received",s.receipt.original_qty);assign("available",s.receipt.available_qty);assign("open",s.obligations.filter(x=>x.outstanding_qty>0).length);assign("settledUnits",s.verified_allocations.reduce((total,a)=>total+Number(a.quantity||0),0));assign("owedUnits",s.obligations.reduce((total,o)=>total+Number(o.outstanding_qty||0),0));
+function renderStory(s){
+ const d=s.decision,receipt=s.receipt,obs=s.obligations||[],statements=(s.statements||[]).filter(x=>x.active);
+ const reviewed=(s.verified_allocations||[]).reduce((n,x)=>n+Number(x.quantity||0),0);
+ const stillOwed=obs.reduce((n,x)=>n+Number(x.outstanding_qty||0),0);
+ const distinct=[...new Set(statements.map(x=>x.target_id))].sort();
+ const supplierText=distinct.length>1?"Conflicting supplier statements":distinct.length===1?(distinct[0]==="PROMO-17"?"Linked to the free-goods offer":distinct[0]==="SHORT-41"?"Linked to the old shortage":"Linked to "+distinct[0]):"Purpose not confirmed";
+ const supplierNote=distinct.length>1?"The same receipt is assigned to competing promises.":distinct.length===1?"A supplier statement names an outstanding obligation.":"No evidence connects these units to a particular promise.";
+ const stages=[
+  ["01 · OLD HISTORY",obs.length+" earlier claims","Previous shortage and documented promotion","verified"],
+  ["02 · PHYSICAL GOODS",receipt.original_qty+" units received",receipt.retailer_confirmed?"Retailer count on record":"Physical count still needs confirmation",receipt.retailer_confirmed?"verified":"missing"],
+  ["03 · SUPPLIER EVIDENCE",supplierText,supplierNote,distinct.length===1?"verified":"missing"],
+  ["04 · APPROVED RESULT",reviewed+" units reviewed as settled",stillOwed+" units remain owed",reviewed>0?"verified":"missing"]
+ ];
+ const host=$("graphSteps");host.replaceChildren();
+ for(const [label,heading,sub,kind] of stages){
+  const el=document.createElement("div");el.className="graph-step "+kind;
+  const small=document.createElement("span");small.className="graph-step-kicker";small.textContent=label;
+  const strong=document.createElement("b");strong.textContent=heading;
+  const p=document.createElement("p");p.textContent=sub;el.append(small,strong,p);host.append(el);
+ }
+ assign("graphStamp",s.mode==="FALKORDB"?"GRAPH QUERY CONTEXT":"SYNTHETIC EXPLANATION");
+ let summaryTitle="Evidence is incomplete",summary="Both promises remain open until the purpose of this box is verified.";
+ if(d.status==="REVIEW_SETTLEMENT"){summaryTitle="A proposal—not yet a settlement";summary="Supplier evidence supports one allocation. The retailer must review it.";}
+ else if(d.status==="DISPUTE"){summaryTitle="Conflicting history blocks settlement";summary="SahiAaya asks for authoritative evidence instead of guessing.";}
+ else if(d.status==="ALREADY_ALLOCATED"||reviewed>0){summaryTitle="Reviewed evidence, recorded result";summary=reviewed+" units reviewed as settled; "+stillOwed+" units still owed.";}
+ else if(d.status==="ASK_RETAILER"||d.status==="UNKNOWN"){summaryTitle="Missing physical proof";summary="A safe outcome requires the retailer's confirmed count and compatible units.";}
+ assign("graphSummaryTitle",summaryTitle);assign("graphSummaryDetail",summary);
+ const states=[
+  ["journeyReceive",receipt.retailer_confirmed?"done":"active"],
+  ["journeyConnect","done"],
+  ["journeyAsk",distinct.length===0||distinct.length>1?"active":"done"],
+  ["journeyApprove",reviewed>0?"done":d.status==="REVIEW_SETTLEMENT"?"active":""]
+ ];
+ for(const [id,kind] of states){const el=$(id);el.classList.remove("done","active");if(kind)el.classList.add(kind);}
+}
+function normalizeState(s){if(s&&s.backend==="FALKORDB"){return {...s,mode:"FALKORDB",verified_allocations:Array.isArray(s.allocations)?s.allocations:[],decision:{...s.decision,tool_trace:s.decision?.graph_tool_trace||[]}};}return s;}
+function render(s){s=normalizeState(s);snapshot=s;const d=s.decision;renderStory(s);assign("received",s.receipt.original_qty);assign("available",s.receipt.available_qty);assign("open",s.obligations.filter(x=>x.outstanding_qty>0).length);assign("settledUnits",s.verified_allocations.reduce((total,a)=>total+Number(a.quantity||0),0));assign("owedUnits",s.obligations.reduce((total,o)=>total+Number(o.outstanding_qty||0),0));
 assign("decisionTitle",d.title);assign("status",d.status.replaceAll("_"," "));assign("why",d.explanation);assign("question",d.requested_evidence||"No clarification required.");$("status").className="status"+(["DISPUTE","UNKNOWN"].includes(d.status)?" blocked":"");
 assign("risk",d.status==="REVIEW_SETTLEMENT"?"REVIEW BEFORE CLOSE":d.status==="ALREADY_ALLOCATED"?"PROOF RECORDED":"NEEDS EVIDENCE");
 $("approve").disabled=d.status!=="REVIEW_SETTLEMENT";$("short").disabled=!s.obligations.some(o=>o.id==="SHORT-41"&&o.outstanding_qty>0)||s.receipt.available_qty===0;$("promo").disabled=!s.obligations.some(o=>o.id==="PROMO-17"&&o.outstanding_qty>0)||s.receipt.available_qty===0;
@@ -78,10 +183,10 @@ const audit=$("audit");audit.replaceChildren();if(!s.verified_allocations.length
 for(const button of $("scenarios").children)button.classList.toggle("active",button.dataset.scenario===selected);
 }
 async function api(url,body){const response=await fetch(url,{method:body?"POST":"GET",headers:body?{"content-type":"application/json"}:{},body:body?JSON.stringify(body):undefined});const data=await response.json();if(!response.ok)throw Error(typeof data.detail==="string"?data.detail:"Request failed");return data;}
-function setMode(){const live=kind==="FALKORDB";$("mode").classList.toggle("live",live);assign("modeText",live?"LIVE FALKORDB — CYPHER VERIFIED":kind==="LOCAL_MEMORY"?"LOCAL MEMORY TEST MODE":"PUBLIC SYNTHETIC SIMULATION");}
-async function reset(s){selected=s;try{if(kind!=="SIMULATION"){render(await api("/api/demo/reset",{scenario:s}));}else{local=createCase(s);refreshSynthetic();}setMode();return true;}catch(error){failure("Case reset failed: "+error.message);return false;}}
-async function respond(target){try{if(kind!=="SIMULATION"){render(await api("/api/investigate/RCP-52/simulate-supplier-response",{obligation_id:target,reference:"SYNTHETIC-supplier-evidence-"+target}));}else{if(local.receipt.available_qty<=0)throw Error("No remaining goods");if(!local.obligations.some(x=>x.id===target&&x.outstanding_qty>0))throw Error("No eligible open obligation");local.statements=[statement(target)];local.receipt.version++;refreshSynthetic();} }catch(error){failure("Supplier demonstration: "+error.message);}}
-async function approve(){try{const d=snapshot.decision;if(d.status!=="REVIEW_SETTLEMENT"||!d.suggested_obligation)throw Error("No evidence-supported proposal");const o=snapshot.obligations.find(x=>x.id===d.suggested_obligation);if(kind!=="SIMULATION"){render(await api("/api/investigate/RCP-52/approve-demo-settlement",{obligation_id:d.suggested_obligation,quantity:d.suggested_qty,expected_receipt_version:snapshot.receipt.version,expected_obligation_version:o.version}));}else{if(d.suggested_qty>local.receipt.available_qty||d.suggested_qty>o.outstanding_qty)throw Error("Quantity exceeds capacity");local.receipt.available_qty-=d.suggested_qty;local.receipt.version++;o.outstanding_qty-=d.suggested_qty;o.version++;local.verified_allocations.push({allocation_id:"SYNTHETIC-APPROVAL-"+(local.verified_allocations.length+1),obligation_id:o.id,quantity:d.suggested_qty,approved_by:"retailer-demo"});refreshSynthetic();}}catch(error){failure("Settlement was blocked: "+error.message);}}
+function setMode(){const live=kind==="FALKORDB";$("mode").classList.toggle("live",live);assign("modeText",live?"LIVE FALKORDB — CYPHER VERIFIED":kind==="UNAVAILABLE"?"GRAPH SERVICE UNAVAILABLE":kind==="LOCAL_MEMORY"?"LOCAL MEMORY TEST MODE":"PUBLIC SYNTHETIC SIMULATION");assign("runtimeDisclosure",live?"Local FalkorDB mode: Cypher traversals and retailer-reviewed allocations on fictional data. No actual supplier communication or money movement.":kind==="UNAVAILABLE"?"Graph service unavailable. No live decisions may be recorded.":"Public preview: fictional browser-only actions, not a live database. Use local Docker to verify FalkorDB queries.");}
+async function reset(s){selected=s;try{if(kind==="UNAVAILABLE")throw Error("Graph backend not ready");if(kind!=="SIMULATION"){render(normalizeState(await api("/api/demo/reset",{scenario:s})));}else{local=createCase(s);refreshSynthetic();}setMode();return true;}catch(error){failure("Case reset failed: "+error.message);return false;}}
+async function respond(target){try{if(kind!=="SIMULATION"){render(normalizeState(await api("/api/investigate/RCP-52/simulate-supplier-response",{obligation_id:target,reference:"SYNTHETIC-supplier-evidence-"+target})));}else{if(local.receipt.available_qty<=0)throw Error("No remaining goods");if(!local.obligations.some(x=>x.id===target&&x.outstanding_qty>0))throw Error("No eligible open obligation");local.statements=[statement(target)];local.receipt.version++;refreshSynthetic();} return true;}catch(error){failure("Supplier demonstration: "+error.message);return false;}}
+async function approve(){try{const d=snapshot.decision;if(d.status!=="REVIEW_SETTLEMENT"||!d.suggested_obligation)throw Error("No evidence-supported proposal");const o=snapshot.obligations.find(x=>x.id===d.suggested_obligation);if(kind!=="SIMULATION"){render(normalizeState(await api("/api/investigate/RCP-52/approve-demo-settlement",{obligation_id:d.suggested_obligation,quantity:d.suggested_qty,receipt_version:snapshot.receipt.version,obligation_version:o.version})));}else{if(d.suggested_qty>local.receipt.available_qty||d.suggested_qty>o.outstanding_qty)throw Error("Quantity exceeds capacity");local.receipt.available_qty-=d.suggested_qty;local.receipt.version++;o.outstanding_qty-=d.suggested_qty;o.version++;local.verified_allocations.push({allocation_id:"SYNTHETIC-APPROVAL-"+(local.verified_allocations.length+1),obligation_id:o.id,quantity:d.suggested_qty,approved_by:"retailer-demo"});refreshSynthetic();}}catch(error){failure("Settlement was blocked: "+error.message);}}
 const TOUR=[
 ["STEP 0 OF 4 · SETUP","Can two delivered units settle four owed?","Start with the same goods and two separate promises. Don't assume the delivery settled either.","▶ Start the guided walkthrough"],
 ["STEP 1 OF 4 · INVESTIGATE","The delivery cannot prove its own purpose.","Two units arrived, but no supplier statement says which claim they fulfil. SahiAaya keeps both obligations open and asks for one precise answer.","1 / Show the supplier's evidence →"],
@@ -95,7 +200,7 @@ async function advanceTour(){
 const b=$("tourNext");b.disabled=true;
 try{
 if(tourStep===0){if(!await reset("ambiguous"))throw Error("Could not load ambiguous case");tourStep=1;}
-else if(tourStep===1){if(!await reset("promotion_confirmed"))throw Error("Could not load promotion_confirmed case");tourStep=2;}
+else if(tourStep===1){if(!await respond("PROMO-17"))throw Error("Supplier confirmation could not be recorded");if(snapshot?.decision?.status!=="REVIEW_SETTLEMENT")throw Error("The agent did not verify that supplier evidence");tourStep=2;}
 else if(tourStep===2){if(!snapshot||snapshot.decision.status!=="REVIEW_SETTLEMENT")throw Error("Supplier evidence is not ready");await approve();if(snapshot?.verified_allocations?.length!==1)throw Error("Retailer approval was not confirmed");tourStep=3;}
 else if(tourStep===3){if(!await reset("conflict"))throw Error("Could not load conflict case");tourStep=4;}
 else{if(!await reset("ambiguous"))throw Error("Could not load ambiguous case");tourStep=1;}
@@ -104,8 +209,8 @@ updateTour();
 finally{b.disabled=false;}
 }
 async function initialize(){const list=$("scenarios");for(const [id,label] of SCENARIOS){const b=document.createElement("button");b.className="scenario";b.type="button";b.dataset.scenario=id;b.textContent=label;b.addEventListener("click",()=>reset(id));list.append(b);}
-$("tourNext").addEventListener("click",advanceTour);updateTour();$("short").addEventListener("click",()=>respond("SHORT-41"));$("promo").addEventListener("click",()=>respond("PROMO-17"));$("approve").addEventListener("click",approve);$("reset").addEventListener("click",()=>reset(selected));$("navProof").addEventListener("click",()=>$("proof").scrollIntoView({behavior:"smooth"}));$("navAbout").addEventListener("click",()=>$("about").scrollIntoView({behavior:"smooth"}));
-try{const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),1600);const res=await fetch("/api/health",{signal:controller.signal,headers:{accept:"application/json"}});clearTimeout(timeout);if(res.ok){const health=await res.json();if(health.backend==="falkor"&&health.status==="ok")kind="FALKORDB";else if(health.backend==="memory")kind="LOCAL_MEMORY";else throw Error("Unknown health state");}else if(res.status!==404)throw Error("Graph API health unavailable: HTTP "+res.status);}catch(e){if(e instanceof TypeError ||e.name==="AbortError"){kind="SIMULATION";}else{failure("Graph connection not ready. This is a synthetic preview. "+e.message);kind="SIMULATION";}}
+$("tourNext").addEventListener("click",advanceTour);$("heroStart").addEventListener("click",()=>{if(tourStep===0)advanceTour();$("tour").scrollIntoView({behavior:"smooth",block:"center"});});updateTour();$("short").addEventListener("click",()=>respond("SHORT-41"));$("promo").addEventListener("click",()=>respond("PROMO-17"));$("approve").addEventListener("click",approve);$("reset").addEventListener("click",()=>reset(selected));$("navProof").addEventListener("click",()=>$("proof").scrollIntoView({behavior:"smooth"}));$("navAbout").addEventListener("click",()=>$("about").scrollIntoView({behavior:"smooth"}));
+try{const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),1600);const res=await fetch("/api/health",{signal:controller.signal,headers:{accept:"application/json"}});clearTimeout(timeout);if(res.ok){const health=await res.json();if(health.backend==="FALKORDB"&&health.ok===true)kind="FALKORDB";else if(health.backend==="memory"&&health.ok===true)kind="LOCAL_MEMORY";else throw Error("Unknown health state");}else if(res.status!==404)throw Error("Graph API health unavailable: HTTP "+res.status);}catch(e){kind="UNAVAILABLE";failure("Graph API unavailable: "+e.message+". The app will not claim live settlement results.");}
 if(!await reset("ambiguous"))throw Error("Could not load ambiguous case");}
 initialize();
 </script>
