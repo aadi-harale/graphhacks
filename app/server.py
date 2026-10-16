@@ -114,3 +114,73 @@ def approve(receipt_id:str,inp:ApprovalIn):
         raise HTTPException(status_code=404,detail="Receipt not found")
     except Exception as exc:
         raise HTTPException(status_code=503,detail=f"Settlement failed: {exc}")
+
+
+# SahiAaya Resolve: user-entered, fictional multi-delivery histories.
+# Localhost-only Docker mode. Public Vercel stays a read-only synthetic walkthrough.
+from .resolve import CaseIn, ResolveStore
+
+def resolve_store():
+    return ResolveStore(store())
+
+def require_local_mutations():
+    if os.getenv("ALLOW_DEMO_MUTATIONS") != "1":
+        raise HTTPException(status_code=403, detail="Local synthetic-case writes are disabled")
+
+@app.get("/api/resolve/cases")
+def resolve_cases():
+    try:
+        return {"cases": resolve_store().list_cases(), "synthetic_only": True}
+    except Exception as exc:
+        raise HTTPException(status_code=503,detail=f"Case listing failed: {exc}")
+
+@app.post("/api/resolve/cases")
+def resolve_import(inp: CaseIn):
+    require_local_mutations()
+    try:
+        return resolve_store().import_case(inp)
+    except ValueError as exc:
+        raise HTTPException(status_code=409,detail=str(exc))
+    except Exception as exc:
+        raise HTTPException(status_code=503,detail=f"Synthetic case import failed: {exc}")
+
+@app.get("/api/resolve/cases/{case_id}/receipts/{receipt_id}")
+def resolve_investigate(case_id: str, receipt_id: str):
+    try:
+        return resolve_store().investigate(case_id, receipt_id)
+    except KeyError:
+        raise HTTPException(status_code=404,detail="Synthetic case or receipt not found")
+    except Exception as exc:
+        raise HTTPException(status_code=503,detail=f"Evidence investigation failed: {exc}")
+
+class ResolveAttributionIn(BaseModel):
+    claim_id: str = Field(pattern=r"^[a-zA-Z0-9_-]{2,32}$")
+    reference: str = Field(min_length=4,max_length=160)
+    expected_version: int = Field(ge=0)
+
+@app.post("/api/resolve/cases/{case_id}/receipts/{receipt_id}/attribute")
+def resolve_attribute(case_id: str, receipt_id: str, inp: ResolveAttributionIn):
+    require_local_mutations()
+    try:
+        return resolve_store().attribute(case_id,receipt_id,inp.claim_id,inp.reference,inp.expected_version)
+    except ValueError as exc:
+        raise HTTPException(status_code=409,detail=str(exc))
+    except Exception as exc:
+        raise HTTPException(status_code=503,detail=f"Attribution failed: {exc}")
+
+class ResolveApproveIn(BaseModel):
+    claim_id: str = Field(pattern=r"^[a-zA-Z0-9_-]{2,32}$")
+    quantity: int = Field(gt=0)
+    receipt_version: int = Field(ge=0)
+    claim_version: int = Field(ge=0)
+
+@app.post("/api/resolve/cases/{case_id}/receipts/{receipt_id}/approve")
+def resolve_approve(case_id: str, receipt_id: str, inp: ResolveApproveIn):
+    require_local_mutations()
+    try:
+        return resolve_store().approve(case_id,receipt_id,inp.claim_id,inp.quantity,
+                                       inp.receipt_version,inp.claim_version)
+    except ValueError as exc:
+        raise HTTPException(status_code=409,detail=str(exc))
+    except Exception as exc:
+        raise HTTPException(status_code=503,detail=f"Settlement rejected: {exc}")
