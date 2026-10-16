@@ -170,6 +170,13 @@ DETACH DELETE c""", p)
 RETURN c.id,c.supplier_id,c.sku ORDER BY c.id""", {"tenant": TENANT})
         return [{"case_id":x[0],"supplier_id":x[1],"sku":x[2]} for x in rows]
 
+    def case_receipts(self, case_id):
+        rows=self.read("""MATCH (c:ResolveCase {tenant:$tenant,id:$case,ready:true})-[:HAS_RECEIPT]->(r:ResolveReceipt)
+RETURN r.id,r.received_on,r.qty ORDER BY r.received_on,r.id""", {"tenant":TENANT,"case":case_id})
+        if not rows:
+            raise KeyError("Case not found")
+        return [{"id":x[0],"received_on":x[1],"qty":x[2]} for x in rows]
+
     def investigate(self, case_id: str, receipt_id: str):
         p = {"tenant": TENANT, "case": case_id, "receipt": receipt_id}
         rr = self.read(Q_RECEIPT, p)
@@ -177,6 +184,14 @@ RETURN c.id,c.supplier_id,c.sku ORDER BY c.id""", {"tenant": TENANT})
             raise KeyError("Case or receipt not found")
         rid, date_str, qty, available, unit, confirmed, rv, receipt_doc, supplier, sku, expected_unit = rr[0]
         candidates = self.read(Q_CANDIDATES, p)
+        all_claims=self.read("""MATCH (c:ResolveCase {tenant:$tenant,id:$case,ready:true})-[:HAS_OBLIGATION]->(o:ResolveObligation)
+MATCH (o)-[:SUPPORTED_BY]->(d:ResolveDocument)
+RETURN o.id,o.kind,o.remaining,o.eligible,d.ref ORDER BY o.id""",p)
+
+        candidate_ids={x[0] for x in candidates}
+        excluded=[{"id":x[0],"kind":x[1],"outstanding_qty":x[2],
+           "reason":"SCHEME_NOT_ELIGIBLE" if not x[3] else "DATE_OR_UNIT_NOT_ELIGIBLE",
+           "document_ref":x[4]} for x in all_claims if x[0] not in candidate_ids]
         statements = self.read(Q_STATEMENTS, p)
         allocations = self.read(Q_HISTORY, p)
         eligible = [c for c in candidates if c[3] > 0 and c[5]]
@@ -206,6 +221,7 @@ RETURN c.id,c.supplier_id,c.sku ORDER BY c.id""", {"tenant": TENANT})
           "supplier_id":supplier,"sku":sku, "expected_unit":expected_unit,
           "candidates":[{"id":x[0],"kind":x[1],"original_qty":x[2],"outstanding_qty":x[3],
               "version":x[4],"eligible":x[5],"document_ref":x[6]} for x in candidates],
+          "excluded_claims":excluded,
           "statements":[{"id":x[0],"target_id":x[1],"reference":x[2]} for x in statements],
           "allocations":[{"allocation_id":x[0],"claim_id":x[1],"qty":x[2],"proof":x[3]} for x in allocations],
           "decision":{"status":verdict,"title":title,"question":question,"suggested_claim":claim,"suggested_qty":n},
