@@ -178,6 +178,13 @@
 @media(max-width:900px){.hero-simple{grid-template-columns:minmax(0,1fr) 294px;gap:24px}.hero-simple h1{font-size:51px}}
 @media(max-width:760px){.hero-simple{grid-template-columns:1fr;gap:19px}.billbox-visual{display:block}.hero-simple h1{font-size:clamp(43px,8vw,60px)}.billbox-visual{max-width:520px}.billbox-head{padding-bottom:9px}.billbox-future{padding-top:10px}.journey-caption span{text-align:left}}
 @media(max-width:520px){.hero-simple{padding-top:0}.hero-simple h1{font-size:45px}.hero-simple .lead{font-size:15px}.hero-simple .one-line{font-size:12px}.hero-simple .hero-actions{gap:8px}.billbox-receipt{padding:10px 13px}.billbox-row{padding:7px 0}.billbox-row b{font-size:19px}.billbox-missing strong{font-size:20px}.billbox-future p{font-size:11px}.journey-caption span{font-size:10px}}
+
+.quick-claims{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:-7px;margin-bottom:16px}
+.quick-claim{border:1px solid #d6dfd3;border-radius:11px;background:#fff;padding:15px 19px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.quick-claim span{font-size:13px;color:#5d7261}
+.quick-claim strong{font-size:14px;color:#295b42;white-space:nowrap}
+#caseDetails>.case-grid{margin:14px 0 0}
+@media(max-width:650px){.quick-claims{grid-template-columns:1fr}.quick-claim{padding:13px 15px}.quick-claim span{font-size:12px}.quick-claim strong{font-size:13px}}
 </style>
 </head>
 <body>
@@ -219,10 +226,17 @@
 <div id="notice" class="notice" role="status">Demo with fictional information. No real supplier is contacted and no payment is made.</div>
 <div class="section-head"><div><div class="eyebrow">AN EXAMPLE OF WHAT SAHIAAYA DOES</div><h2>Did the shopkeeper get the missing goods back?</h2></div></div><div class="plain-verdict" aria-live="polite"><div class="plain-symbol" id="plainSymbol" aria-hidden="true">?</div><div><strong id="plainTitle">Don’t close either claim yet.</strong><p id="plainSummary">The supplier hasn’t said which of the two promises these soaps fulfil.</p></div></div>
 <details class="optional-section" id="otherScenarios"><summary>What if the supplier says something different? <span>Explore more examples</span></summary><div class="scenario-bar" id="scenarios" aria-label="Synthetic evidence scenarios"></div><p class="scenario-help">Same delivery, different supporting evidence.</p></details>
-<div class="case-grid">
+<div class="quick-claims" aria-label="Supplier promises still outstanding">
+ <div class="quick-claim"><span>Missing from previous bill</span><strong id="quickShort">2 soaps still owed</strong></div>
+ <div class="quick-claim"><span>Promised free soaps</span><strong id="quickPromo">2 soaps still owed</strong></div>
+</div>
+<details class="optional-section full-optional" id="caseDetails">
+ <summary>See how SahiAaya checked this <span>Supplier response · supporting evidence · recorded result</span></summary>
+ <div class="case-grid">
   <section class="card"><div class="card-head"><div class="doc-label">Receipt RCP-52 · SOAP-100G</div><span class="tag">MERCHANT OBSERVATION</span></div><h3>Today’s delivery</h3><div class="quantities"><div class="qty"><small>Recorded received</small><b id="received">2</b></div><div class="qty"><small>Remaining</small><b id="available">2</b></div><div class="qty"><small>Open promises</small><b id="open">2</b></div></div><div class="doc-label" style="margin-top:19px">Historical supplier obligations</div><div id="obligations"></div></section>
   <section class="card"><div class="card-head"><div class="doc-label">Evidence-gap agent</div><span class="tag warn" id="risk">REVIEW REQUIRED</span></div><h3>What to do next</h3><div class="investigator"><div class="status" id="status">INVESTIGATING</div><h4 id="decisionTitle">Reading evidence…</h4><p id="why"></p></div><div class="doc-label" style="margin-top:22px">Question to ask</div><div class="question" id="question" aria-live="polite"></div><div class="controls"><button class="btn secondary" id="short">Supplier: these replace missing soaps</button><button class="btn secondary" id="promo">Supplier: these are free soaps</button><button class="btn primary wide" id="approve">Shopkeeper confirms the settlement</button><button class="btn wide" id="reset">Reset this case</button></div><p class="helper">These are simulated replies. A real supplier message and the shopkeeper’s confirmation are required in practice.</p><div class="impact-strip" aria-label="Quantity outcome"><div class="impact-item"><b id="settledUnits">0</b><span>Units reviewed as settled in this scenario</span></div><div class="impact-item"><b id="owedUnits">4</b><span>Units still owed by supplier</span></div></div><div class="result-box"><strong id="outcomeTitle">Nothing has been settled.</strong><p id="outcomeDetail">The agent will not turn a plausible allocation into proof.</p></div></section>
 </div>
+</details>
 <details class="optional-section full-optional" id="newCaseDetails"><summary>Try a different delivery <span>Enter your own example · local FalkorDB</span></summary><section class="card case-intake" id="newCase" aria-label="Create a new supplier delivery case">
  <div class="case-intake-head">
    <div><div class="eyebrow">NEW · NOT A PRESET SCENARIO</div><h2>Try your own delivery history.</h2><p class="lead">Enter fictional goods and previous supplier promises, or upload a synthetic JSON history. SahiAaya creates new FalkorDB relationships and investigates what remains owed.</p></div>
@@ -327,7 +341,9 @@ function renderStory(s){
  for(const [id,kind] of states){const el=$(id);el.classList.remove("done","active");if(kind)el.classList.add(kind);}
 }
 function normalizeState(s){if(s&&s.backend==="FALKORDB"){return {...s,mode:"FALKORDB",verified_allocations:Array.isArray(s.allocations)?s.allocations:[],decision:{...s.decision,tool_trace:s.decision?.graph_tool_trace||[]}};}return s;}
-function render(s){s=normalizeState(s);snapshot=s;const d=s.decision;renderStory(s);assign("received",s.receipt.original_qty);assign("available",s.receipt.available_qty);assign("open",s.obligations.filter(x=>x.outstanding_qty>0).length);assign("settledUnits",s.verified_allocations.reduce((total,a)=>total+Number(a.quantity||0),0));assign("owedUnits",s.obligations.reduce((total,o)=>total+Number(o.outstanding_qty||0),0));
+function render(s){s=normalizeState(s);snapshot=s;const d=s.decision;renderStory(s);assign("received",s.receipt.original_qty);assign("available",s.receipt.available_qty);assign("open",s.obligations.filter(x=>x.outstanding_qty>0).length);const sh=s.obligations.find(x=>x.id==="SHORT-41"),pr=s.obligations.find(x=>x.id==="PROMO-17");
+assign("quickShort",sh?(sh.outstanding_qty?sh.outstanding_qty+" soaps still owed":"Settled ✓"):"—");
+assign("quickPromo",pr?(pr.outstanding_qty?pr.outstanding_qty+" soaps still owed":"Settled ✓"):"—");assign("settledUnits",s.verified_allocations.reduce((total,a)=>total+Number(a.quantity||0),0));assign("owedUnits",s.obligations.reduce((total,o)=>total+Number(o.outstanding_qty||0),0));
 const v=$("plainTitle"),p=$("plainSummary"),box=v.closest(".plain-verdict");
 box.classList.remove("problem","success");
 if(d.status==="REVIEW_SETTLEMENT"){v.textContent="The supplier says these soaps were free.";p.textContent="The shopkeeper can review this claim. The missing soaps are still owed.";box.classList.add("success");assign("plainSymbol","✓");}
