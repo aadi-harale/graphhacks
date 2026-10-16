@@ -15,6 +15,27 @@ jobs:
       - run: python -m scripts.proof_report
       - name: Check judge interface JavaScript and DOM bindings
         run: python -m scripts.check_frontend
+  ui-browser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install browser testing library
+        run: python -m pip install playwright==1.56.0
+      - name: Start static judge demo
+        run: |
+          python -m http.server 8765 --bind 127.0.0.1 --directory app/static >/tmp/sahiaaya-ui.log 2>&1 &
+          sleep 2
+      - name: Test first look, guided settlement and mobile layout
+        run: python -m scripts.ui_browser_check
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sahiaaya-browser-screenshots
+          path: docs/screenshots/judge-*.png
+          if-no-files-found: ignore
   falkordb-integration:
     runs-on: ubuntu-latest
     services:
