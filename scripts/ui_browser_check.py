@@ -110,7 +110,7 @@ def main():
         mobile = browser.new_page(viewport={"width": 390, "height": 844}, device_scale_factor=1, is_mobile=True, has_touch=True, reduced_motion="reduce")
         mobile.goto(URL, wait_until="domcontentloaded")
         expect(mobile.locator("#heroStart")).to_be_visible()
-        expect(mobile.locator(".visual-example")).to_be_visible()
+        expect(mobile.locator(".billbox-visual")).to_be_visible()
         expect(mobile.locator("#newCase")).to_be_hidden()
         expect(mobile.locator("#caseDetails")).not_to_have_attribute("open", "")
         expect(mobile.locator("#quickShort")).to_be_visible()
