@@ -28,7 +28,7 @@ The evidence chain below the interactive case shows how connected documents, the
 
 ## New: enter an unfamiliar fictional delivery history
 
-**The application is no longer limited to the fixed RCP-52 walkthrough.** In the local Docker app, scroll to **Try your own delivery history**, enter a supplier/SKU, outstanding shortage and promotional quantities, and quantities for two later deliveries—or upload a separate *fictional* JSON fixture.
+**The application is no longer limited to the fixed RCP-52 walkthrough.** In the local Docker app, scroll to **Try your own delivery history**, enter a supplier/SKU, the earlier **billed** and **actually received** counts, a documented promotional entitlement, and quantities for two later deliveries—or upload a separate *fictional* JSON fixture.
 
 This creates new FalkorDB nodes and candidate relationships and lets you investigate, attribute and review quantities for either receipt. Promotions are eligible only if their recorded date and purchase threshold are satisfied; invalid terms are shown as excluded, not silently accepted. Duplicate case IDs with different content are rejected.
 
