@@ -53,7 +53,7 @@ def main():
         expect(page.locator("#owedUnits")).to_have_text("4")
         if EXPECT_GRAPH:
             # The judge can enter unfamiliar numeric evidence instead of only clicking presets.
-            page.locator("#newShortage").fill("5")
+            page.locator("#newActual").fill("5")
             page.locator("#newReceiptTwo").fill("2")
             page.locator("#caseSubmit").click()
             expect(page.locator("#caseWorkbench")).to_be_visible()
