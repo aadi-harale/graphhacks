@@ -141,8 +141,8 @@
   <label>Supplier reference <input id="newSupplier" required value="fictional_kirana_supplier" pattern="[a-zA-Z0-9_-]{3,40}"></label>
   <label>Product / SKU <input id="newSku" required value="SOAP100" pattern="[a-zA-Z0-9_-]{2,40}"></label>
   <label>Unit <input id="newUnit" required value="piece" pattern="[a-zA-Z0-9_-]{2,24}"></label>
-  <label>Old shortage (units) <input id="newShortage" required type="number" value="3" min="1" max="1000"></label>
-  <label>Promotional goods owed (units) <input id="newPromotion" required type="number" value="2" min="1" max="1000"></label>
+  <label>Earlier invoice billed (units) <input id="newBilled" required type="number" value="10" min="1" max="1000"></label><label>Actually received (units) <input id="newActual" required type="number" value="7" min="0" max="1000"></label>
+  <label>Promotional goods owed (units) <input id="newPromotion" required type="number" value="2" min="1" max="1000"></label><label>Scheme minimum purchased <input id="newSchemeMinimum" required type="number" value="10" min="1" max="1000"></label><label>Purchased for scheme <input id="newSchemePurchased" required type="number" value="12" min="0" max="1000"></label>
   <label>First later delivery (units) <input id="newReceiptOne" required type="number" value="1" min="1" max="1000"></label>
   <label>Second later delivery (units) <input id="newReceiptTwo" required type="number" value="2" min="1" max="1000"></label>
   <label class="file-label">Or import a fresh fictional JSON history <input id="newHistoryFile" type="file" accept=".json,application/json"><small>The uploaded history takes precedence over the form. Use examples/fictional_second_supplier_case.json to test a different product.</small></label>
@@ -284,14 +284,16 @@ function setCaseAvailable(){
 function makeCaseInput(){
  const count=(id)=>Number($(id).value);
  const cid="retailer_"+Date.now().toString(36);
+ const shortage=count("newBilled")-count("newActual");
+ if(shortage<0)throw Error("The confirmed quantity cannot exceed the billed quantity in this simple shortage fixture");
  const unit=$("newUnit").value.trim();
  return {synthetic_only:true,case_id:cid,supplier_id:$("newSupplier").value.trim(),
  sku:$("newSku").value.trim(),unit:unit,
  obligations:[
-  {id:"SHORT_OLD",kind:"shortage",qty:count("newShortage"),created_on:"2026-10-01",document_ref:"fictional_invoice_record"},
+  ...(shortage>0?[{id:"SHORT_OLD",kind:"shortage",qty:shortage,created_on:"2026-10-01",document_ref:"fictional_invoice_billed_"+count("newBilled")+"_received_"+count("newActual")}]:[]),
   {id:"PROMO_OLD",kind:"promotion",qty:count("newPromotion"),created_on:"2026-10-02",
    earned_on:"2026-10-02",document_ref:"fictional_promotion_terms",
-   scheme_terms:{valid_from:"2026-09-01",valid_to:"2026-10-31",min_purchase:10,purchase_qty:12}}
+   scheme_terms:{valid_from:"2026-09-01",valid_to:"2026-10-31",min_purchase:count("newSchemeMinimum"),purchase_qty:count("newSchemePurchased")}}
  ],
  receipts:[
   {id:"LATER_A",received_on:"2026-10-08",qty:count("newReceiptOne"),unit:unit,retailer_confirmed:true,document_ref:"fictional_retailer_receipt_A"},
