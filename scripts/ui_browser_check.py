@@ -80,6 +80,8 @@ def main():
             # Reload demonstrates persisted graph history, not an in-memory frontend effect.
             page.reload(wait_until="domcontentloaded")
             expect(page.locator("#modeText")).to_contain_text("LIVE FALKORDB")
+            page.locator("#newCaseDetails summary").click()
+            expect(page.locator("#resumeCaseId")).to_be_visible()
             page.locator("#resumeCaseId").fill(case_id)
             page.locator("#resumeCaseButton").click()
             expect(page.locator("#caseAudit")).to_contain_text("2 units")
