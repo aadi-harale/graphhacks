@@ -60,6 +60,37 @@
 @media(max-width:1100px){.journey-steps{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:850px){.hero{grid-template-columns:1fr}.receipt-tile{display:none}.journey-steps{grid-template-columns:repeat(2,minmax(0,1fr))}.graph-steps{grid-template-columns:repeat(2,minmax(0,1fr))}.graph-step:after{display:none}}
 @media(max-width:520px){.hero h1{font-size:43px}.journey-caption{align-items:flex-start;flex-direction:column;gap:5px}.journey-steps{grid-template-columns:repeat(2,minmax(0,1fr))}.journey-step{display:block;min-height:114px}.journey-step .journey-index{margin-bottom:8px}.graph-steps{grid-template-columns:1fr}.story-graph{padding:17px}.story-graph-head{display:block}.graph-stamp{display:inline-block;margin:4px 0 11px}.graph-summary{display:block}.graph-summary span{display:block;text-align:left;margin-top:6px}}
+/* Multi-delivery case intake — deliberately separated from the public synthetic tour. */
+.case-intake{margin:25px 0;background:#fff}
+.case-intake-head{display:flex;justify-content:space-between;align-items:start;gap:20px;margin-bottom:20px}
+.case-intake-head h2{font-family:Georgia,serif;font-size:clamp(27px,2.5vw,38px);font-weight:500;letter-spacing:-.055em;margin:7px 0 10px}
+.case-intake-head .lead{font-size:13px;max-width:680px}
+.intake-form{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}
+.intake-form label,.case-content label{font-size:11px;font-weight:780;color:#516658;display:flex;flex-direction:column;gap:7px}
+.intake-form input,.case-content input,.case-content select,.case-bar select{min-width:0;width:100%;border:1px solid #c5d6c6;background:#f8faf5;border-radius:8px;padding:10px 11px;outline:none;color:#223b2d;font:inherit;font-size:13px}
+.intake-form input:focus,.case-content input:focus,.case-content select:focus{border-color:#245942;box-shadow:0 0 0 2px #e0edda}
+.intake-form .file-label{grid-column:span 2}
+.intake-form .file-label input{font-size:11px}
+.intake-form small{font-size:10px;color:#718171;line-height:1.5;font-weight:450}
+.intake-actions{grid-column:1/-1;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding-top:6px}
+.intake-actions .btn{min-height:45px}
+.intake-actions span{font-size:11px;color:#728473}
+.intake-message{margin:17px 0;border:1px solid #d8e1d4;background:#f3f7ef;border-radius:9px;padding:11px 13px;color:#506b56;font-size:12px;line-height:1.6}
+.intake-message.error{color:#943b33;background:#fcefeb;border-color:#ecc6bb}
+.case-bar{border-top:1px solid #dee8dc;display:flex;justify-content:space-between;align-items:center;padding-top:19px;gap:14px}
+.case-bar strong{font-size:16px}
+.case-bar label{font-size:11px;color:#607b66;display:flex;gap:10px;align-items:center}
+.case-bar select{min-width:155px}
+.case-content{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(230px,.7fr);gap:20px;margin-top:20px}
+.case-content .btn{width:100%;margin-top:12px}
+.case-content label{margin-top:10px}
+.case-claims{margin:12px 0 20px}
+.case-claims .claim-row{padding:12px 0}
+.case-audit{margin-top:18px;padding-top:15px;border-top:1px solid #e1e8df;font-size:12px;color:#617367}
+.case-audit strong{color:#274c39}
+.case-audit p{line-height:1.6}
+@media(max-width:1050px){.intake-form{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){.case-intake-head{display:block}.case-intake-head .tag{display:inline-block;margin-top:10px}.intake-form{grid-template-columns:1fr}.intake-form .file-label{grid-column:span 1}.case-content{grid-template-columns:1fr}.case-bar{display:block}.case-bar label{margin-top:12px}.intake-actions{display:block}.intake-actions span{display:block;margin-top:11px}}
 </style>
 </head>
 <body>
@@ -96,6 +127,31 @@
   <section class="card"><div class="card-head"><div class="doc-label">Receipt RCP-52 · SOAP-100G</div><span class="tag">MERCHANT OBSERVATION</span></div><h3>Today's inward delivery</h3><div class="quantities"><div class="qty"><small>Recorded received</small><b id="received">2</b></div><div class="qty"><small>Remaining</small><b id="available">2</b></div><div class="qty"><small>Open promises</small><b id="open">2</b></div></div><div class="doc-label" style="margin-top:19px">Historical supplier obligations</div><div id="obligations"></div><div class="result-box"><strong>Why this is not an ordinary bill mismatch</strong><p>Today's quantities match the delivery. The unresolved question lives across earlier bills, scheme terms, supplier messages and later evidence.</p></div></section>
   <section class="card"><div class="card-head"><div class="doc-label">Evidence-gap agent</div><span class="tag warn" id="risk">REVIEW REQUIRED</span></div><h3>The next correct action</h3><div class="investigator"><div class="status" id="status">INVESTIGATING</div><h4 id="decisionTitle">Reading evidence…</h4><p id="why"></p></div><div class="doc-label" style="margin-top:22px">Question prepared for supplier / retailer</div><div class="question" id="question" aria-live="polite"></div><div class="controls"><button class="btn secondary" id="short">Supplier says: replacement</button><button class="btn secondary" id="promo">Supplier says: promotion</button><button class="btn primary wide" id="approve">Retailer reviews &amp; records settlement</button><button class="btn wide" id="reset">Reset this case</button></div><p class="helper">Supplier responses on this page are simulated. Real settlement requires attributable supplier evidence and retailer-approved receipt confirmation.</p><div class="impact-strip" aria-label="Quantity outcome"><div class="impact-item"><b id="settledUnits">0</b><span>Units reviewed as settled in this scenario</span></div><div class="impact-item"><b id="owedUnits">4</b><span>Units still owed by supplier</span></div></div><div class="result-box"><strong id="outcomeTitle">Nothing has been settled.</strong><p id="outcomeDetail">The agent will not turn a plausible allocation into proof.</p></div></section>
 </div>
+<section class="card case-intake" id="newCase" aria-label="Create a new supplier delivery case">
+ <div class="case-intake-head">
+   <div><div class="eyebrow">NEW · NOT A PRESET SCENARIO</div><h2>Try your own delivery history.</h2><p class="lead">Enter fictional goods and previous supplier promises, or upload a synthetic JSON history. SahiAaya creates new FalkorDB relationships and investigates what remains owed.</p></div>
+   <span class="tag" id="caseMode">LOCAL GRAPH REQUIRED</span>
+ </div>
+ <form id="caseForm" class="intake-form">
+  <label>Supplier reference <input id="newSupplier" required value="fictional_kirana_supplier" pattern="[a-zA-Z0-9_-]{3,40}"></label>
+  <label>Product / SKU <input id="newSku" required value="SOAP100" pattern="[a-zA-Z0-9_-]{2,40}"></label>
+  <label>Unit <input id="newUnit" required value="piece" pattern="[a-zA-Z0-9_-]{2,24}"></label>
+  <label>Old shortage (units) <input id="newShortage" required type="number" value="3" min="1" max="1000"></label>
+  <label>Promotional goods owed (units) <input id="newPromotion" required type="number" value="2" min="1" max="1000"></label>
+  <label>First later delivery (units) <input id="newReceiptOne" required type="number" value="1" min="1" max="1000"></label>
+  <label>Second later delivery (units) <input id="newReceiptTwo" required type="number" value="2" min="1" max="1000"></label>
+  <label class="file-label">Or import a fresh fictional JSON history <input id="newHistoryFile" type="file" accept=".json,application/json"><small>The uploaded history takes precedence over the form. Use examples/fictional_second_supplier_case.json to test a different product.</small></label>
+  <div class="intake-actions"><button id="caseSubmit" type="submit" class="btn primary">Create case & investigate →</button><span>Local Docker only. No real invoices, names, phone numbers or external communications.</span></div>
+ </form>
+ <div class="intake-message" role="status" id="caseMessage">This feature writes synthetic cases to local FalkorDB. On the public Vercel preview, run the Docker version to use it.</div>
+ <div id="caseWorkbench" hidden>
+  <div class="case-bar"><strong id="customCaseTitle">Your new case</strong><label>Delivery <select id="caseReceiptSelect"></select></label></div>
+  <div id="caseDecision" class="investigator"><div class="status" id="caseDecisionStatus">WAITING</div><h4 id="caseDecisionTitle"></h4><p id="caseQuestion"></p></div>
+  <div class="case-content"><div><div class="doc-label">Connected obligations</div><div id="caseClaims" class="case-claims"></div><div class="doc-label">FalkorDB provenance</div><div id="casePath" class="lineage"></div></div>
+  <div><label for="caseTarget">Claim to attribute this delivery to</label><select id="caseTarget"></select><label for="caseReference">Fictional supplier reference</label><input id="caseReference" value="fictional_supplier_confirmation"><button id="caseAttribute" type="button" class="btn secondary wide">Record supplier attribution</button><button id="caseApprove" type="button" class="btn primary wide" disabled>Retailer review & record allocation</button><p class="helper">This is a synthetic response; a reference string is not independently verified supplier evidence.</p></div></div>
+  <div class="case-audit"><strong>Verified local ledger</strong><div id="caseAudit"></div></div>
+ </div>
+</section>
 <section class="story-graph" aria-label="Evidence chain explanation">
  <div class="story-graph-head"><div><span class="doc-label">THE CONNECTED EVIDENCE</span><h3>Why does the decision change?</h3><p>An invoice and a quantity alone cannot prove which older promise was fulfilled.</p></div><span class="graph-stamp" id="graphStamp">EXPLANATION VIEW</span></div>
  <div class="graph-steps" id="graphSteps" aria-live="polite"></div>
