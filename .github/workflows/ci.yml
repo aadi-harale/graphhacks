@@ -1,0 +1,36 @@
+name: Evidence policy and live FalkorDB tests
+on:
+  push:
+  pull_request:
+jobs:
+  policy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install -r requirements.txt
+      - run: python -m pytest -q tests/test_decisions.py tests/test_baseline.py
+      - run: python -m scripts.proof_report
+      - name: Check judge interface JavaScript and DOM bindings
+        run: python -m scripts.check_frontend
+  falkordb-integration:
+    runs-on: ubuntu-latest
+    services:
+      graph:
+        image: falkordb/falkordb:latest
+        ports:
+          - 6379:6379
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install -r requirements.txt
+      - name: Test Cypher-backed decisions, reviewed allocations and graph safety
+        env:
+          RUN_FALKOR_TESTS: "1"
+          FALKOR_HOST: "localhost"
+          FALKOR_PORT: "6379"
+        run: python -m pytest tests/test_falkor_integration.py tests/test_graph_safety.py -v

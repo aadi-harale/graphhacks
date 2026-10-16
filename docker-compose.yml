@@ -1,0 +1,16 @@
+services:
+  falkordb:
+    image: falkordb/falkordb:latest
+    ports:
+      - "127.0.0.1:6379:6379"
+  app:
+    build: .
+    environment:
+      FALKOR_HOST: falkordb
+      FALKOR_PORT: "6379"
+      ALLOW_DEMO_RESET: "1"
+      ALLOW_DEMO_MUTATIONS: "1"
+    ports:
+      - "127.0.0.1:8000:8000"
+    depends_on:
+      - falkordb
