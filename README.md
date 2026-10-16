@@ -4,6 +4,13 @@
 
 The agent connects historic shortage claims, documented promotions, supplier statements and confirmed receipt evidence, then identifies exactly what needs clarification before any settlement can be reviewed.
 
+## Judge experience and deployment modes (October 16, 2026)
+
+- **Public interactive preview:** https://sahiaaya-graphhacks.vercel.app/ — an isolated browser-side fictional walk-through. **Does not query FalkorDB.** No external supplier communication or payments.
+- **Real graph experience:** run the same UI via `docker compose up -d --build` on localhost:8000. The UI detects the FastAPI backend, which traverses actual FalkorDB evidence and stores reviewed synthetic allocations.
+- **Live verification:** GitHub Actions runs a FalkorDB service and adversarial graph tests. See the latest [Actions runs](https://github.com/aadi-harale/graphhacks/actions). At the time of this update the conflict guard has passed its live regression. Browser smoke and unknown-history adoption testing remain in progress.
+- **Judge demo:** [DEMO_JUDGE_GUIDE.md](DEMO_JUDGE_GUIDE.md) contains the exact three-minute story and truthful limitations.
+
 ## The demonstrated user problem
 
 A retailer is owed two replacement units from a short delivery, plus two promotional units. Two units arrive. Either obligation could plausibly match, but the supplier hasn't identified the purpose.
@@ -17,11 +24,10 @@ This does **not** prove what happened in the physical world. Quantities, invoice
 ```powershell
 git clone https://github.com/aadi-harale/graphhacks.git
 cd graphhacks
-git switch build/sahiaaya-evidencegap
 docker compose up -d --build
 ```
 
-Open **http://localhost:8000**. Initially click **Load synthetic case** to populate the isolated demo graph. The API refuses to serve a fabricated graph answer when FalkorDB is unreachable.
+Open **http://localhost:8000**. The case loads automatically. Select **Unattributed delivery**, **Promotion proof**, or **Conflicting statements** to inspect how evidence changes the agent's action. The API refuses to serve a fabricated graph answer when FalkorDB is unreachable.
 
 Run all tests, including **live** graph integration:
 
