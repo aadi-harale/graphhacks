@@ -55,3 +55,25 @@ jobs:
           FALKOR_HOST: "localhost"
           FALKOR_PORT: "6379"
         run: python -m pytest tests/test_falkor_integration.py tests/test_graph_safety.py -v
+      - name: End-to-end browser workflow using live FalkorDB
+        env:
+          FALKOR_HOST: localhost
+          FALKOR_PORT: "6379"
+          ALLOW_DEMO_RESET: "1"
+          ALLOW_DEMO_MUTATIONS: "1"
+          SAHIAAYA_UI_URL: http://127.0.0.1:8766/
+          SAHIAAYA_EXPECT_BACKEND: falkordb
+        run: |
+          python -m pip install playwright==1.56.0
+          uvicorn app.server:app --host 127.0.0.1 --port 8766 >/tmp/sahiaaya-fastapi.log 2>&1 &
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:8766/api/health >/dev/null; then break; fi
+            sleep 1
+          done
+          python -m scripts.ui_browser_check
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sahiaaya-live-graph-browser-screenshots
+          path: docs/screenshots/judge-live-*.png
+          if-no-files-found: ignore
