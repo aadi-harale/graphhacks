@@ -114,3 +114,39 @@ def test_live_graph_selected_tools_and_persistent_draft():
     rows=store.read("""MATCH (f:ResolveFollowUp {tenant:$tenant,id:$id})-[:FOR_RECEIPT]->(r:ResolveReceipt)
 RETURN f.action,f.question,r.id""",{"tenant":"demo_shop","id":first["draft"]["id"]})
     assert len(rows)==1 and rows[0][2]=="LATER_2"
+
+
+@ pytest.mark.skipif(__import__("os").getenv("RUN_FALKOR_TESTS")!="1",reason="Requires real FalkorDB and MCP")
+def test_actual_mcp_transport_and_graph_draft(monkeypatch):
+    """Mock only the model choices, NOT the MCP transport or FalkorDB data."""
+    import asyncio
+    import json
+    from pathlib import Path
+    from app.resolve import CaseIn, ResolveStore
+    from app.graph import FalkorStore
+    from app.track1_mcp_loop import run_agent_mcp
+
+    monkeypatch.setenv("ALLOW_DEMO_MUTATIONS","1")
+    graph=ResolveStore(FalkorStore(graph_name="sahiaaya_resolve"))
+    obj=json.loads((Path(__file__).resolve().parents[1]/"examples"/
+                   "fictional_two_delivery_case.json").read_text())
+    obj["case_id"]="ci_mcp_transport_receipts"
+    case=CaseIn.model_validate(obj)
+    graph.import_case(case)
+    result=asyncio.run(run_agent_mcp(case.case_id,"LATER_2",
+        "Which of these supplier promises did this receipt fulfil?",client=FakeModel([
+          "list_case_receipts","investigate_receipt","trace_claim_evidence",
+          "inspect_cross_delivery","create_followup_draft"])))
+    assert result["engine"]=="model_selected_mcp_graph_tools"
+    assert result["transport"].startswith("MCP")
+    assert {item["transport"] for item in result["tool_trace"]}=={"mcp_stdio"}
+    assert result["authoritative_decision"]["status"]=="ASK_SUPPLIER"
+    assert {p["obligation"] for p in result["evidence_paths"]}=={"SHORT_A","PROMO_B"}
+    assert result["draft"] and result["draft"]["status"]=="draft"
+    stored=graph.followups(case.case_id,"LATER_2")
+    assert len(stored)==1 and stored[0]["id"]==result["draft"]["id"]
+    # Same evidence/version cannot create another internal draft.
+    second=asyncio.run(run_agent_mcp(case.case_id,"LATER_2","Review again",
+         client=FakeModel(["investigate_receipt","trace_claim_evidence","create_followup_draft"])))
+    assert second["draft"]["id"]==result["draft"]["id"]
+    assert len(graph.followups(case.case_id,"LATER_2"))==1

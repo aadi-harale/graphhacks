@@ -288,6 +288,21 @@
 .simple-history-row:last-child{border-bottom:0}
 .simple-history-row span{font-size:12px;color:#6c806d}
 .simple-history-row strong{font-size:12px;color:#29573b;text-align:right}
+
+.agent-path-panel{background:#fff;border:1px solid #dce8d7;border-radius:11px;padding:16px;margin:16px 0}
+.agent-path-panel[hidden]{display:none}
+.agent-path-head,.agent-tool-header{display:flex;justify-content:space-between;gap:12px;align-items:center;margin:6px 0 12px}
+.agent-path-head strong,.agent-tool-header strong{font-size:13px;color:#224d38}
+.agent-path-head span,.agent-tool-header span{font-size:10px;color:#64826b}
+.agent-evidence-paths{display:grid;gap:9px}
+.agent-evidence-row{display:flex;align-items:stretch;gap:8px}
+.agent-evidence-node{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:7px;text-align:left;background:#f4f8f0;border:1px solid #ceddcb;border-radius:10px;padding:11px;cursor:pointer}
+.agent-evidence-node small{font-size:9px;font-weight:820;letter-spacing:.065em;text-transform:uppercase;color:#69816e}
+.agent-evidence-node strong{font-size:11px;color:#265841;overflow-wrap:anywhere}
+.agent-evidence-node.selected,.agent-evidence-node:focus-visible{outline:2px solid #397b58;background:#e0efe1}
+.agent-evidence-arrow{align-self:center;color:#467956;font-size:17px;font-weight:800}
+.agent-node-detail{padding:9px 0 0;color:#52755c;font-size:11px;line-height:1.5}
+@media(max-width:650px){.agent-evidence-row{display:grid;grid-template-columns:1fr}.agent-evidence-arrow{text-align:center;transform:rotate(90deg)}.agent-evidence-node{width:100%}.agent-path-head{display:block}.agent-path-head span{display:block;margin-top:6px}}
 </style>
 </head>
 <body>
@@ -433,7 +448,13 @@
   <p>It can choose graph tools, follow earlier supplier promises, discover competing claims and create a draft follow-up. Only the shopkeeper may approve settlement.</p>
   <div class="agent-control"><input id="agentQuestion" aria-label="Question for graph investigator" value="Which old promise could this delivery fulfil, and what evidence should I request?"><button id="agentRun" type="button" class="btn primary">Investigate with agent →</button></div>
   <div id="agentResult" class="agent-result" role="status">Requires a locally configured model key. The public preview does not run an agent.</div>
-  <ol id="agentTrace" class="agent-trace" aria-label="Graph tools chosen by the agent"></ol><div class="agent-history"><strong>Saved next steps in FalkorDB</strong><div id="agentSaved">No follow-up drafts yet.</div></div>
+  <div id="agentPathPanel" class="agent-path-panel" hidden>
+    <div class="agent-path-head"><strong>Connected evidence</strong><span>Click any record to inspect what the graph actually returned</span></div>
+    <div id="agentEvidencePaths" class="agent-evidence-paths" aria-label="FalkorDB evidence paths"></div>
+    <div id="agentNodeDetail" class="agent-node-detail" role="status">Choose a record to inspect its source ID.</div>
+   </div>
+   <div class="agent-tool-header"><strong>MCP tool decisions</strong><span id="agentTransport">Awaiting investigation</span></div>
+   <ol id="agentTrace" class="agent-trace" aria-label="Graph tools chosen by the agent"></ol><div class="agent-history"><strong>Saved next steps in FalkorDB</strong><div id="agentSaved">No follow-up drafts yet.</div></div>
  </div>
  </div>
 </section></details>
@@ -702,22 +723,46 @@ async function approveResolve(){
  }catch(err){setCaseMessage("Settlement rejected: "+err.message,true);}
 }
 
+function displayAgentPaths(paths){
+ const panel=$("agentPathPanel"),host=$("agentEvidencePaths");
+ host.replaceChildren();panel.hidden=!paths.length;
+ $("agentNodeDetail").textContent="Select an evidence record to read its source identifier.";
+ const stages=[["receipt","Receipt"],["obligation","Outstanding promise"],["document","Source document"]];
+ for(const record of paths){
+  const line=document.createElement("div");line.className="agent-evidence-row";
+  for(let i=0;i<stages.length;i++){
+   if(i){const arrow=document.createElement("span");arrow.className="agent-evidence-arrow";arrow.textContent="→";line.append(arrow);}
+   const [key,label]=stages[i],value=record[key]||"Unknown";
+   const b=document.createElement("button");b.type="button";b.className="agent-evidence-node";
+   const kicker=document.createElement("small");kicker.textContent=label;
+   const title=document.createElement("strong");title.textContent=value;
+   b.append(kicker,title);b.addEventListener("click",()=>{
+    for(const node of host.querySelectorAll(".agent-evidence-node"))node.classList.remove("selected");
+    b.classList.add("selected");
+    $("agentNodeDetail").textContent=label+": "+value+" · This relationship was returned by FalkorDB for the selected receipt.";
+   });
+   line.append(b);
+  }
+  host.append(line);
+ }
+}
+
 async function runInvestigationAgent(){
  const current=resolveSession?.state;
  if(kind!=="FALKORDB"||!current){assign("agentResult","Open a locally stored fictional case first. This site cannot run a hosted agent.");return;}
  $("agentRun").disabled=true;
  assign("agentResult","Investigating connected evidence using model-selected graph tools…");
- $("agentTrace").replaceChildren();
+ $("agentTrace").replaceChildren();displayAgentPaths([]);assign("agentTransport","Awaiting investigation");
  try{
   const r=await api("/api/agent/investigate",{case_id:resolveSession.id,receipt_id:current.receipt_id,question:$("agentQuestion").value});
   const decision=r.authoritative_decision;
+  displayAgentPaths(r.evidence_paths||[]);
+  assign("agentTransport",r.transport||"Tool transport unavailable");
+
   assign("agentResult","Graph policy: "+(decision?.status||"UNKNOWN").replaceAll("_"," ")+
     "\nAgent explanation: "+r.model_summary+
     "\nSaved draft: "+(r.draft?r.draft.question:"No action created")+
     "\nNote: drafts are internal. No supplier was contacted or payment made.");
-  for(const path of (r.evidence_paths||[])){
-   const li=document.createElement("li");li.textContent=path.receipt+" → "+path.obligation+" → "+path.document;$("agentTrace").append(li);
-  }
   for(const step of (r.tool_trace||[])){
    const li=document.createElement("li"),name=document.createElement("strong"),detail=document.createElement("span");
    name.textContent=step.tool;detail.textContent=step.result_kind;

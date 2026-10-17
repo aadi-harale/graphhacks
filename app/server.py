@@ -210,7 +210,7 @@ def resolve_approve(case_id: str, receipt_id: str, inp: ResolveApproveIn):
 
 # Track 01 agent. The model selects read-only graph tools and may create only an
 # internal fictional follow-up draft. No supplier send or settlement authorization.
-from .track1_agent import run_agent
+from .track1_mcp_loop import run_agent_mcp
 
 class AgentInvestigationIn(BaseModel):
     case_id: str = Field(pattern=r"^[a-zA-Z0-9_-]{3,40}$")
@@ -218,13 +218,15 @@ class AgentInvestigationIn(BaseModel):
     question: str = Field(min_length=4,max_length=300)
 
 @app.post("/api/agent/investigate")
-def track1_investigate(inp: AgentInvestigationIn):
+async def track1_investigate(inp: AgentInvestigationIn):
     require_local_mutations()
     if not os.getenv("OPENAI_API_KEY"):
         raise HTTPException(status_code=503,detail="Agent mode requires an explicitly configured OPENAI_API_KEY")
     try:
-        return run_agent(inp.case_id,inp.receipt_id,inp.question,resolve_store())
+        return await run_agent_mcp(inp.case_id,inp.receipt_id,inp.question)
     except ValueError as exc:
         raise HTTPException(status_code=422,detail=f"Agent tool call was rejected: {exc}")
     except RuntimeError as exc:
         raise HTTPException(status_code=503,detail=f"Agent not available: {exc}")
+    except Exception as exc:
+        raise HTTPException(status_code=503,detail="MCP agent unavailable. Check local graph, tool host and model provider logs.") from exc

@@ -58,7 +58,7 @@ jobs:
           RUN_FALKOR_TESTS: "1"
           FALKOR_HOST: "localhost"
           FALKOR_PORT: "6379"
-        run: python -m pytest tests/test_falkor_integration.py tests/test_graph_safety.py tests/test_resolve_intake.py -v
+        run: python -m pytest tests/test_falkor_integration.py tests/test_graph_safety.py tests/test_resolve_intake.py tests/test_track1_agent.py -v
       - name: End-to-end browser workflow using live FalkorDB
         env:
           FALKOR_HOST: localhost

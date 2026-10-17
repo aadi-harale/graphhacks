@@ -4,6 +4,7 @@ The public preview is synthetic; the Docker test exercises the actual
 FalkorDB-backed supplier response, guarded allocation and case storage.
 """
 import os
+import json
 from pathlib import Path
 from playwright.sync_api import sync_playwright, expect
 
@@ -91,6 +92,30 @@ def main():
             page.locator("#agentRun").click()
             expect(page.locator("#agentResult")).to_contain_text("Agent unavailable")
             expect(page.locator("#agentResult")).to_contain_text("OPENAI_API_KEY")
+            # UI-only response fixture: proves clickable evidence rendering,
+            # not real model behaviour. Real MCP/FalkorDB runs in Python CI.
+            simulated_agent={
+                "transport":"MCP stdio / ClientSession",
+                "authoritative_decision":{"status":"ASK_SUPPLIER"},
+                "model_summary":"Supplier attribution is missing.",
+                "evidence_paths":[
+                    {"receipt":"LATER_B","obligation":"SHORT_OLD","document":"fictional_invoice_record"},
+                    {"receipt":"LATER_B","obligation":"PROMO_OLD","document":"fictional_promotion_terms"}],
+                "tool_trace":[
+                    {"tool":"investigate_receipt","result_kind":"authoritative_decision"},
+                    {"tool":"trace_claim_evidence","result_kind":"graph_paths"}],
+                "draft":None
+            }
+            page.route("**/api/agent/investigate",lambda route:route.fulfill(
+                status=200,content_type="application/json",
+                body=json.dumps(simulated_agent)))
+            page.locator("#agentRun").click()
+            expect(page.locator("#agentEvidencePaths .agent-evidence-row")).to_have_count(2)
+            expect(page.locator("#agentTransport")).to_contain_text("MCP stdio")
+            page.locator("#agentEvidencePaths .agent-evidence-node").first.click()
+            expect(page.locator("#agentNodeDetail")).to_contain_text("LATER_B")
+            page.unroute("**/api/agent/investigate")
+
             expect(page.locator("#caseClaims .claim-row")).to_have_count(2)
             case_id=page.locator("#resumeCaseId").input_value()
             assert case_id.startswith("retailer_")

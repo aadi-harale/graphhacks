@@ -1,11 +1,12 @@
-"""Optional Track 01 MCP host: bounded read-only FalkorDB investigations.
+"""Track 01 MCP host: bounded FalkorDB reads and one guarded draft action.
 
 Install: pip install -r requirements-mcp.txt
 Run:     python -m app.track1_mcp   (stdio)
 A model hosted in an MCP-capable client can choose these graph tools.
 The local web app's agent uses the same underlying typed tools via function
-calling; it does not yet use MCP as its transport. No write tools are exposed.
+calling; it does not yet use MCP as its transport. The only write tool creates a fictional, internal follow-up draft.
 """
+import os
 from mcp.server import MCPServer
 from .graph import FalkorStore
 from .resolve import ResolveStore
@@ -40,6 +41,18 @@ def inspect_cross_delivery(case_id: str, receipt_id: str, claim_id: str) -> dict
     t=graph_tools(case_id,receipt_id)
     t.investigate_receipt()
     return t.inspect_cross_delivery(claim_id)
+
+@mcp.tool()
+def create_followup_draft(case_id: str, receipt_id: str, action: str) -> dict:
+    """Persist only an internal graph-linked clarification/review draft.
+    The policy checks the actual graph state. Nothing gets sent to suppliers.
+    """
+    if os.getenv("ALLOW_DEMO_MUTATIONS")!="1":
+        raise ValueError("Synthetic write tools disabled")
+    t=graph_tools(case_id,receipt_id)
+    t.investigate_receipt()
+    t.trace_claim_evidence()
+    return t.create_followup_draft(action)
 
 if __name__=="__main__":
     mcp.run()
