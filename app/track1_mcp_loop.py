@@ -29,6 +29,10 @@ async def run_agent_mcp(case_id: str, receipt_id: str, query: str, store=None,
         client=OpenAI()
 
     sess=AgentSession(case_id,receipt_id)
+    # These are the model's actual requested tool names and arguments, paired
+    # with the bounded evidence returned over MCP. No hidden reasoning is claimed.
+    successful_calls=0
+
     name=model or os.getenv("SAHIAAYA_AGENT_MODEL","gpt-4o-mini")
     messages=[{"role":"system","content":SYSTEM_PROMPT},
               {"role":"user","content":f"Investigate fictional case {case_id}, receipt {receipt_id}. {query[:280]}"}]
@@ -53,7 +57,7 @@ async def run_agent_mcp(case_id: str, receipt_id: str, query: str, store=None,
                 spec["description"]=advertised[spec["name"]].description or spec["description"]
                 model_tools.append({"type":"function","function":spec})
 
-            for _ in range(max_rounds):
+            for round_index in range(max_rounds):
                 response=await asyncio.to_thread(
                     client.chat.completions.create,model=name,messages=messages,
                     tools=model_tools,tool_choice="auto",temperature=0)
@@ -70,6 +74,10 @@ async def run_agent_mcp(case_id: str, receipt_id: str, query: str, store=None,
                             "evidence_paths":sess.evidence_paths,
                             "engine":"model_selected_mcp_graph_tools",
                             "transport":"MCP stdio / ClientSession",
+                            "provenance":"actual MCP responses; model tool selection" if client is not None else "unverified",
+                            "model_name":name,
+                            "tool_rounds":round_index+1,
+                            "successful_tool_calls":successful_calls,
                             "disclaimer":"Synthetic graph; drafts are not sent and settlement needs retailer approval."}
 
                 messages.append({"role":"assistant","content":msg.content,
@@ -113,13 +121,29 @@ async def run_agent_mcp(case_id: str, receipt_id: str, query: str, store=None,
                                                   "document":x["document"]} for x in content.get("paths",[])]
                         elif tool=="create_followup_draft":
                             sess.draft=content["draft"]
-                        sess.trace.append({"tool":tool,"args":params,"transport":"mcp_stdio",
+                        # The case contract permits only explicitly fictional records.
+                        # Keep actual tool results for judges instead of fabricated
+                        # summaries, but bound trace growth and never log credentials.
+                        raw_result=json.dumps(content,default=str,ensure_ascii=False)
+                        if len(raw_result)>18000:
+                            raise ValueError("MCP tool result exceeds auditable size limit")
+                        successful_calls+=1
+                        sess.trace.append({"round":round_index+1,"tool":tool,
+                                           "arguments":params,
+                                           "tool_purpose":schemas[tool] and next(
+                                               definition["function"]["description"]
+                                               for definition in TOOL_SCHEMAS
+                                               if definition["function"]["name"]==tool),
+                                           "transport":"mcp_stdio",
                                            "result_kind":content.get("kind","information"),
+                                           "result":content,
                                            "evidence_rows":content.get("evidence_rows",0)})
                         outcome=content
                     except (ValueError,TypeError,KeyError) as exc:
                         outcome={"kind":"blocked","error":str(exc)}
-                        sess.trace.append({"tool":tool,"transport":"mcp_stdio",
+                        sess.trace.append({"round":round_index+1,"tool":tool,
+                                           "arguments":params if isinstance(params,dict) else {},
+                                           "transport":"mcp_stdio",
                                            "result_kind":"blocked","reason":str(exc)})
                     messages.append({"role":"tool","tool_call_id":c.id,
                                      "content":json.dumps(outcome,default=str)})
