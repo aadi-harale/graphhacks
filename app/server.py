@@ -199,3 +199,25 @@ def resolve_approve(case_id: str, receipt_id: str, inp: ResolveApproveIn):
         raise HTTPException(status_code=409,detail=str(exc))
     except Exception as exc:
         raise HTTPException(status_code=503,detail=f"Settlement rejected: {exc}")
+
+
+# Track 01 agent. The model selects read-only graph tools and may create only an
+# internal fictional follow-up draft. No supplier send or settlement authorization.
+from .track1_agent import run_agent
+
+class AgentInvestigationIn(BaseModel):
+    case_id: str = Field(pattern=r"^[a-zA-Z0-9_-]{3,40}$")
+    receipt_id: str = Field(pattern=r"^[a-zA-Z0-9_-]{2,32}$")
+    question: str = Field(min_length=4,max_length=300)
+
+@app.post("/api/agent/investigate")
+def track1_investigate(inp: AgentInvestigationIn):
+    require_local_mutations()
+    if not os.getenv("OPENAI_API_KEY"):
+        raise HTTPException(status_code=503,detail="Agent mode requires an explicitly configured OPENAI_API_KEY")
+    try:
+        return run_agent(inp.case_id,inp.receipt_id,inp.question,resolve_store())
+    except ValueError as exc:
+        raise HTTPException(status_code=422,detail=f"Agent tool call was rejected: {exc}")
+    except RuntimeError as exc:
+        raise HTTPException(status_code=503,detail=f"Agent not available: {exc}")
