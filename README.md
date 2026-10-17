@@ -69,23 +69,26 @@ Inspect local logs with `docker compose logs -f app falkordb`. Stop with `docker
 
 The core graph queries in `app/graph.py` resolve which obligations share the receipt's supplier and SKU, traverse historical sources and promises, inspect attributable supplier statements, and atomically attempt a version-checked reviewed allocation. The deterministic agent in `app/agent.py` must read the graph-fetched context to select its next action.
 
-## Agent contract
+## Agent contract and graph safety
 
-Inputs: synthetic confirmed receipt, eligible obligations, historic source documents, supplier attribution and review state.
+Two clearly separated layers:
 
-Actions: `ASK_SUPPLIER`, `ASK_RETAILER`, `DISPUTE`, `REVIEW_SETTLEMENT`, `UNKNOWN`, `ALREADY_ALLOCATED`. A model is **not required** in this MVP; the current agent is deterministic and is not an LLM-driven planner. Approval is always separate.
+1. **Deterministic policy engine.** FalkorDB retrieves candidate obligations, prior receipts and documents. Policy returns ASK_SUPPLIER, ASK_RETAILER, DISPUTE, REVIEW_SETTLEMENT or another bounded state. Only the retailer approves settlement.
+2. **Model-directed Track 01 investigator.** With a configured API key, the model selects from five named tools. An actual MCP stdio ClientSession calls the FalkorDB-backed MCP host. Four tools read evidence; one may persist a policy-guarded INTERNAL follow-up draft. No free-form Cypher, supplier messaging or automatic settlement.
 
-Output: next action, exact evidence request, candidate claim IDs, traversed provenance and reviewed allocation history.
+The model is optional for simple receiving but required for the real agent demonstration. The public Vercel site is a fictional browser simulation, not a live graph or agent.
 
-## Endpoints
+## API endpoints
 
-- `GET /api/health`
-- `POST /api/demo/reset` — requires local `ALLOW_DEMO_RESET=1`
-- `GET /api/investigate/RCP-52`
-- `POST /api/investigate/RCP-52/simulate-supplier-response`
-- `POST /api/investigate/RCP-52/approve-demo-settlement`
+- GET /api/health — local graph health
+- POST /api/demo/reset, GET /api/investigate/RCP-52 — predefined walkthrough
+- POST /api/investigate/RCP-52/simulate-supplier-response and /approve-demo-settlement — reviewed synthetic case actions
+- POST /api/resolve/cases, GET /api/resolve/cases/{case_id}/receipts/{receipt_id} — unfamiliar synthetic histories
+- POST /api/agent/investigate — real model-selected MCP graph tools and a guarded internal draft; requires OPENAI_API_KEY
+- GET /api/resolve/cases/{case_id}/receipts/{receipt_id}/followups — saved draft history
+- POST /api/resolve/cases/{case_id}/receipts/{receipt_id}/attribute and /approve — separate retailer-reviewed actions
 
-**These endpoints are unauthenticated. Do not expose on the public internet.**
+**These local mutation endpoints are not authenticated. Do not expose them or the FalkorDB service to the public internet.** Real deployment requires authorization and authentication.
 
 ## Tests and honest comparison
 
