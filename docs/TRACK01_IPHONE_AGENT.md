@@ -67,6 +67,31 @@ docker compose exec -e RUN_FALKOR_TESTS=1 app pytest tests/test_track1_agent.py 
 
 For actual model selection, set `OPENAI_API_KEY` in your local shell **before** launching Docker. Click **Investigate with agent**, confirm the returned engine is `model_selected_mcp_graph_tools`, inspect its MCP tool sequence and graph paths, then reopen the saved case and follow-up. Do not represent the automated fake-model tool selection as a real model run.
 
+## Acceptance gates: model, MCP and graph evidence
+
+**CI verification:** real FalkorDB + real MCP stdio transport + a controlled injected model. This confirms the tool interface, graph traversals, receipt-versus-source-evidence counterfactual, conflicts, scheme ineligibility and allocation guards. It does **not** prove that an actual model chooses tools intelligently.
+
+**Live model acceptance (must be done on a machine with an API key):**
+
+~~~powershell
+git pull origin main
+if (-not $env:OPENAI_API_KEY) { throw "Configure an API key locally; do not commit it" }
+docker compose up -d --build
+docker compose exec -e RUN_FALKOR_TESTS=1 app pytest tests/test_track1_agent.py tests/test_track1_counterfactual.py -v
+docker compose exec app python -m scripts.live_model_gate --accept-api-cost
+New-Item -ItemType Directory -Force -Path .\artifacts | Out-Null
+docker cp "$(docker compose ps -q app):/app/artifacts/real_model" ".\artifacts"
+python -m pip install playwright
+python -m playwright install chromium
+python -m scripts.record_real_judge
+~~~
+
+The acceptance runner randomizes synthetic case, supplier, SKU and source-reference identifiers. Six distinct source conditions are tested: multiple competing obligations with no attribution, a supported assignment, conflicting statements, an ineligible promotion, an already-allocated receipt, and an unknown pack unit. It saves a JSON report per case with the *actual* model tool names, validated arguments, MCP results, evidence paths, subsequent tool decisions, final authoritative policy and persisted draft. Every scenario must pass. It separately reports whether tool choices differed across cases. If the model never changes path or fails a safety check, the gate fails instead of reporting a win.
+
+The browser video recorder also fails closed if the model is unavailable, no persisted draft appears or the reviewed settlement doesn't succeed. A failed attempt is labeled UNVERIFIED_attempt.webm, not a real-model success recording. Successful runs create recordings/sahiaaya_live_real_model.webm and evidence screenshots. The video is silent; record narration separately. API usage may incur charges.
+
+The public Vercel preview is a fictional UI illustration and cannot run the hosted MCP model. Do not publish local unauthenticated mutation endpoints, real retailer information or model API keys.
+
 ## The judge-facing demo (2 minutes 30 seconds)
 
 1. **0:00–0:23 — Simple real-life problem.** Shopkeeper invoiced for 50 soaps, physically received 48; shortage recorded. Supplier also owed a separate documented promotion. Fictional example.
@@ -82,11 +107,13 @@ Record from the **local Docker application, not merely Vercel**. Public Vercel c
 
 - [x] The repo has real FalkorDB graph query and bounded reviewed-settlement integration tests.
 - [x] Model function-call **contract** tested with fake model messages and verified read-only graph tools.
+- [x] Actual MCP ClientSession transport tested with injected model decisions and live FalkorDB.
+- [x] Graph-backed same-quantity evidence counterfactual, conflict, ineligibility, already-allocated replay and undocumented-promotion rejection tested.
 - [ ] Actual tool selection demonstrated with a **real** model and the selected model's API key (no such key is stored or assumed).
 - [ ] Complete agent session on unfamiliar case, including saved draft, recorded on video with FalkorDB query paths.
 - [ ] Compare against normal typed SQL supplier-ledger investigation on equally informed input. Existing SQL baseline matches simple status decisions, so **no graph-exclusivity or accuracy superiority claim** is justified.
 - [ ] Clarity: unfamiliar human understands need and result in first 20 seconds.
-- [ ] Final README names Track 01, graph model, Cypher tools, instructions and AI-coding disclosure.
+- [x] README and architecture distinguish deterministic policy, model-directed MCP tool selection, public simulation and fake-model verification.
 - [ ] Submission and video complete before October 18, 23:59 IST.
 
 The current agent refit is a **stronger Track 01 fit** but no winner guarantee. It remains a fictional local MVP; no direct supplier authenticity check, real money recovery or real-store pilot was performed.
