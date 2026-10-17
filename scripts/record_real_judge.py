@@ -23,6 +23,7 @@ def main():
                                     reduced_motion="reduce")
         page=context.new_page()
         errors=[]
+        verified=False
         page.on("pageerror",lambda e:errors.append(str(e)))
         try:
             page.goto(URL,wait_until="domcontentloaded")
@@ -82,6 +83,7 @@ def main():
             if errors:
                 raise RuntimeError("Browser errors: "+repr(errors))
             page.wait_for_timeout(1200)
+            verified=True
             print("PASS: real graph, model, MCP trace, human-reviewed allocation",
                   "case:",case_id,"recording:",DEST)
         finally:
@@ -89,7 +91,7 @@ def main():
             page.close()
             context.close()
             if video is not None:
-                video.save_as(str(DEST/"sahiaaya_live_real_model.webm"))
+                video.save_as(str(DEST/("sahiaaya_live_real_model.webm" if verified else "UNVERIFIED_attempt.webm")))
             browser.close()
 
 if __name__=="__main__":
