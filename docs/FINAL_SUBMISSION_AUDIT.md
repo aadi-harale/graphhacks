@@ -1,24 +1,24 @@
 # SahiAaya — Track 01 final submission evidence audit
 
 **Audit date:** October 17, 2026  
-**Scope:** Current public \`main\` of [aadi-harale/graphhacks](https://github.com/aadi-harale/graphhacks). Review only; **no application code or UI changes in this final documentation reconciliation**.  
+**Scope:** Current public `main` of [aadi-harale/graphhacks](https://github.com/aadi-harale/graphhacks). Review only; **no application code or UI changes in this final documentation reconciliation**.  
 **Verdict:** **PARTIALLY VERIFIED — do not claim winner-ready or fully live-model-verified.**
 
 ## 1. Exact execution architecture, with no contradictions
 
 The repo contains two distinct paths:
 
-1. **Original preset walkthrough — deterministic graph policy.** \`app/graph.py\` retrieves fictional supplier, invoice, receipt and historical evidence through FalkorDB. \`app/agent.py:investigate\` applies human-written policy rules to propose \`ASK_SUPPLIER\`, \`DISPUTE\`, \`REVIEW_SETTLEMENT\`, \`UNKNOWN\` or other bounded outcomes. A separate retailer-approved action is required for settlement. This is **not an LLM agent**.
-2. **Track 01 unfamiliar-case investigator — model-directed function selection, MCP transport.** The live endpoint \`POST /api/agent/investigate\` in \`app/server.py\` calls \`app/track1_mcp_loop.py:run_agent_mcp\`. It retrieves descriptions for five bounded tools from the \`app/track1_mcp.py\` host, exposes those as function definitions to an OpenAI-compatible model, and receives the **model's chosen function name and arguments**. It then executes the chosen tool through a **real MCP Python \`ClientSession\` over stdio**. The MCP host runs predefined Cypher against the \`sahiaaya_resolve\` FalkorDB graph. Four tools read connected evidence; the fifth may persist only a policy-guarded internal follow-up draft. Actual settlement is a separate retailer-reviewed route. **MCP does not choose tools; the model chooses function calls and MCP transports/executes them.**
+1. **Original preset walkthrough — deterministic graph policy.** `app/graph.py` retrieves fictional supplier, invoice, receipt and historical evidence through FalkorDB. `app/agent.py:investigate` applies human-written policy rules to propose `ASK_SUPPLIER`, `DISPUTE`, `REVIEW_SETTLEMENT`, `UNKNOWN` or other bounded outcomes. A separate retailer-approved action is required for settlement. This is **not an LLM agent**.
+2. **Track 01 unfamiliar-case investigator — model-directed function selection, MCP transport.** The live endpoint `POST /api/agent/investigate` in `app/server.py` calls `app/track1_mcp_loop.py:run_agent_mcp`. It retrieves descriptions for five bounded tools from the `app/track1_mcp.py` host, exposes those as function definitions to an OpenAI-compatible model, and receives the **model's chosen function name and arguments**. It then executes the chosen tool through a **real MCP Python `ClientSession` over stdio**. The MCP host runs predefined Cypher against the `sahiaaya_resolve` FalkorDB graph. Four tools read connected evidence; the fifth may persist only a policy-guarded internal follow-up draft. Actual settlement is a separate retailer-reviewed route. **MCP does not choose tools; the model chooses function calls and MCP transports/executes them.**
 
-The original helper \`app/track1_agent.py:run_agent\` can invoke tools directly, but **the current live web endpoint does not call that helper**. Consequently, its existence must not be used to imply that the running web agent bypasses MCP.
+The original helper `app/track1_agent.py:run_agent` can invoke tools directly, but **the current live web endpoint does not call that helper**. Consequently, its existence must not be used to imply that the running web agent bypasses MCP.
 
 No model can submit unrestricted Cypher through the documented agent tool catalog. No supplier is actually contacted and there is no autonomous settlement.
 
 ## 2. Verified evidence from repository CI
 
-**Application-code baseline SHA:** [\`3450661ca0b2037c8e098df9bb449fd3c0c55832\`](https://github.com/aadi-harale/graphhacks/commit/3450661ca0b2037c8e098df9bb449fd3c0c55832).  
-**Inspected passing GitHub Actions run:** [\`39025651473\`](https://github.com/aadi-harale/graphhacks/actions/runs/39025651473).
+**Application-code baseline SHA:** [`3450661ca0b2037c8e098df9bb449fd3c0c55832`](https://github.com/aadi-harale/graphhacks/commit/3450661ca0b2037c8e098df9bb449fd3c0c55832).  
+**Inspected passing GitHub Actions run:** [`39025651473`](https://github.com/aadi-harale/graphhacks/actions/runs/39025651473).
 
 | Check | Exact observed result | Meaning |
 | --- | --- | --- |
@@ -28,16 +28,16 @@ No model can submit unrestricted Cypher through the documented agent tool catalo
 | Live FalkorDB browser job | **PASSED** | Local FastAPI/FalkorDB-backed receiving, supplier simulation and guarded approval. Agent API test without a key confirms honest unavailable state; a UI-only mocked agent response tests clickable evidence paths. |
 | Static/UI, syntax and proof report | **PASSED** in policy job | Compilation, UI DOM bindings and fair deterministic baseline. |
 
-**Counterfactual actually proved in deterministic + real-graph tests:** for an otherwise unchanged **2-unit receipt**, before source attribution the policy returns \`ASK_SUPPLIER\`; after a source reference identifies a promotional claim, it returns \`REVIEW_SETTLEMENT\`; incompatible active supplier statements instead produce \`DISPUTE\`. Expired promotion data produces \`NEEDS_REVIEW\`, unknown units produce \`UNKNOWN_UNIT\`, and settled receipts return \`ALREADY_ALLOCATED\`. This proves a graph-backed **policy** response to evidence changes. It does **not** prove an independent real model chose different investigative paths.
+**Counterfactual actually proved in deterministic + real-graph tests:** for an otherwise unchanged **2-unit receipt**, before source attribution the policy returns `ASK_SUPPLIER`; after a source reference identifies a promotional claim, it returns `REVIEW_SETTLEMENT`; incompatible active supplier statements instead produce `DISPUTE`. Expired promotion data produces `NEEDS_REVIEW`, unknown units produce `UNKNOWN_UNIT`, and settled receipts return `ALREADY_ALLOCATED`. This proves a graph-backed **policy** response to evidence changes. It does **not** prove an independent real model chose different investigative paths.
 
-**SQL control:** \`app/baseline.py\` is intentionally fair; equivalent structured evidence reproduces the same deterministic allocation decisions. No graph-only mathematical, latency, accuracy or commercial superiority is established.
+**SQL control:** `app/baseline.py` is intentionally fair; equivalent structured evidence reproduces the same deterministic allocation decisions. No graph-only mathematical, latency, accuracy or commercial superiority is established.
 
 ## 3. Unrun/blocked critical gates
 
 At audit time, the task execution environment was inspected:
 
-- \`OPENAI_API_KEY\`: **absent**
-- \`docker\` executable: **unavailable**
+- `OPENAI_API_KEY`: **absent**
+- `docker` executable: **unavailable**
 - Docker daemon: **unavailable**
 - Privately configured external machine or its recordings: **not accessible or supplied**
 
@@ -52,11 +52,11 @@ Consequently:
 | Already allocated / duplicated receipt | **NOT RUN** |
 | Unknown unit or insufficient evidence | **NOT RUN** |
 
-**Real-model tool names, arguments, next choices, source paths and final answers: NONE VERIFIED.** No genuine model call, API response, evidence transcript, or locally recorded video can be cited from this audit. The \`scripts/live_model_gate.py\` and \`scripts/record_real_judge.py\` files are runnable acceptance utilities, **not evidence that they have run successfully**.
+**Real-model tool names, arguments, next choices, source paths and final answers: NONE VERIFIED.** No genuine model call, API response, evidence transcript, or locally recorded video can be cited from this audit. The `scripts/live_model_gate.py` and `scripts/record_real_judge.py` files are runnable acceptance utilities, **not evidence that they have run successfully**.
 
-The six-case runner creates new randomized synthetic supplier/SKU/document identities and requires \`--accept-api-cost\`. It stores per-case actual function requests, MCP returns, graph paths, decision states and safe follow-up drafts. Its summary reports differing tool sequences, refusing an all-green conclusion on safety or decision failures. Results must be inspected by the user before claiming model reasoning.
+The six-case runner creates new randomized synthetic supplier/SKU/document identities and requires `--accept-api-cost`. It stores per-case actual function requests, MCP returns, graph paths, decision states and safe follow-up drafts. Its summary reports differing tool sequences, refusing an all-green conclusion on safety or decision failures. Results must be inspected by the user before claiming model reasoning.
 
-**Recording status:** no verified video. \`record_real_judge.py\` is designed to label an interrupted/failed recording \`UNVERIFIED_attempt.webm\`; only completion of its real local model/MCP, evidence, follow-up and approval checks produces the claimed \`sahiaaya_live_real_model.webm\`. This design has **not** been proven against a live model in this audit.
+**Recording status:** no verified video. `record_real_judge.py` is designed to label an interrupted/failed recording `UNVERIFIED_attempt.webm`; only completion of its real local model/MCP, evidence, follow-up and approval checks produces the claimed `sahiaaya_live_real_model.webm`. This design has **not** been proven against a live model in this audit.
 
 ## 4. Exact local acceptance commands (Windows PowerShell)
 
@@ -75,9 +75,9 @@ python -m playwright install chromium
 python -m scripts.record_real_judge
 ~~~
 
-After running, inspect \`artifacts/real_model/summary.json\` and each case JSON: \`execution_kind=REAL_MODEL_API_NOT_MOCKED\`, \`model_execution=configured_api_client\`, \`engine=model_selected_mcp_graph_tools\`, \`transport=MCP stdio / ClientSession\`, actual \`tool_trace\` including bounded returned \`result\` objects, noninvented \`evidence_paths\`, correct authoritative policy status, and safe \`draft\`. For different evidence conditions, compare **actual model-selected tool sequences**, not merely deterministic verdicts. Confirm the draft remains after reopening the graph case. Only then inspect the silent recorded video against the real application state and narrate the canonical 2:50 guide.
+After running, inspect `artifacts/real_model/summary.json` and each case JSON: `execution_kind=REAL_MODEL_API_NOT_MOCKED`, `model_execution=configured_api_client`, `engine=model_selected_mcp_graph_tools`, `transport=MCP stdio / ClientSession`, actual `tool_trace` including bounded returned `result` objects, noninvented `evidence_paths`, correct authoritative policy status, and safe `draft`. For different evidence conditions, compare **actual model-selected tool sequences**, not merely deterministic verdicts. Confirm the draft remains after reopening the graph case. Only then inspect the silent recorded video against the real application state and narrate the canonical 2:50 guide.
 
-The local instance binds to \`127.0.0.1\`. **Do not publish unauthenticated mutation endpoints.** The [Vercel preview](https://sahiaaya-graphhacks.vercel.app/) is intentionally a browser-side synthetic illustration, not a hosted FalkorDB/LLM service.
+The local instance binds to `127.0.0.1`. **Do not publish unauthenticated mutation endpoints.** The [Vercel preview](https://sahiaaya-graphhacks.vercel.app/) is intentionally a browser-side synthetic illustration, not a hosted FalkorDB/LLM service.
 
 ## 5. Submission-readiness status and limitations
 
