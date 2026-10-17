@@ -303,6 +303,13 @@
 .agent-evidence-arrow{align-self:center;color:#467956;font-size:17px;font-weight:800}
 .agent-node-detail{padding:9px 0 0;color:#52755c;font-size:11px;line-height:1.5}
 @media(max-width:650px){.agent-evidence-row{display:grid;grid-template-columns:1fr}.agent-evidence-arrow{text-align:center;transform:rotate(90deg)}.agent-evidence-node{width:100%}.agent-path-head{display:block}.agent-path-head span{display:block;margin-top:6px}}
+
+.agent-trace-item{display:block!important;padding:12px!important}
+.agent-trace-bar{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.agent-trace-item details{padding-top:7px;margin-top:8px;border-top:1px solid #e1e9df}
+.agent-trace-item details summary{cursor:pointer;font-size:11px;color:#3d7452;font-weight:650;line-height:1.4}
+.agent-trace-item pre{background:#f4f8f0;border:1px solid #dfe7d8;border-radius:8px;padding:11px;max-height:330px;overflow:auto;font-size:10px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere;margin:9px 0 2px}
+@media(max-width:650px){.agent-trace-bar{display:block}.agent-trace-bar span{display:block;margin-top:4px}}
 </style>
 </head>
 <body>
@@ -759,14 +766,29 @@ async function runInvestigationAgent(){
   displayAgentPaths(r.evidence_paths||[]);
   assign("agentTransport",r.transport||"Tool transport unavailable");
 
-  assign("agentResult","Graph policy: "+(decision?.status||"UNKNOWN").replaceAll("_"," ")+
-    "\nAgent explanation: "+r.model_summary+
-    "\nSaved draft: "+(r.draft?r.draft.question:"No action created")+
-    "\nNote: drafts are internal. No supplier was contacted or payment made.");
+  assign("agentResult","Decision: "+(decision?.status||"UNKNOWN").replaceAll("_"," ")+
+    "\nWhat needs to happen: "+(decision?.question||"Review the source documents.")+
+    "\nAgent explanation: "+(r.model_summary||"No additional model explanation.")+
+    "\nGraph action: "+(r.draft?"Internal follow-up saved — "+r.draft.question:"No action created")+
+    "\nRun type: "+(r.model_execution==="configured_api_client"?"Real configured model + MCP":"Model execution not independently verified")+
+    "\nNo supplier was contacted and no settlement was approved by the agent.");
   for(const step of (r.tool_trace||[])){
-   const li=document.createElement("li"),name=document.createElement("strong"),detail=document.createElement("span");
-   name.textContent=step.tool;detail.textContent=step.result_kind;
-   li.append(name,detail);$("agentTrace").append(li);
+   const li=document.createElement("li");li.className="agent-trace-item";
+   const bar=document.createElement("div");bar.className="agent-trace-bar";
+   const name=document.createElement("strong"),kind=document.createElement("span");
+   name.textContent=(step.round?"Step "+step.round+" · ":"")+step.tool;
+   kind.textContent=step.result_kind||"unknown";
+   bar.append(name,kind);li.append(bar);
+   const details=document.createElement("details"),summary=document.createElement("summary");
+   summary.textContent="Inspect requested arguments and returned graph evidence";
+   const pre=document.createElement("pre");
+   pre.textContent=JSON.stringify({
+    arguments:step.arguments||step.args||{},
+    purpose:step.tool_purpose||"Bounded, pre-defined graph tool",
+    mcp_result:step.result||null,
+    blocked_reason:step.reason||null
+   },null,2);
+   details.append(summary,pre);li.append(details);$("agentTrace").append(li);
   }
   await loadAgentDrafts();
  }catch(e){assign("agentResult","Agent unavailable: "+e.message+". The graph-only receiving workflow remains available.");}
