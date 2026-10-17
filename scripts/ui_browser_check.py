@@ -24,6 +24,7 @@ def main():
         expect(page.locator("#simpleHeading")).to_contain_text("check your delivery")
         expect(page.locator("#workspaceDetails")).not_to_have_attribute("open","")
         expect(page.locator("#newCase")).to_be_hidden()
+        expect(page.locator("#simpleHistory")).to_be_hidden()
         if EXPECT_GRAPH:
             expect(page.locator("#modeText")).to_contain_text("LIVE FALKORDB")
         else:
@@ -47,6 +48,8 @@ def main():
         page.locator("#simpleNext").click()
         expect(page.locator("#simpleHeading")).to_contain_text("Two more soaps arrived")
         expect(page.locator("#simpleChoices")).to_be_visible()
+        expect(page.locator("#simpleHistory")).to_be_visible()
+        expect(page.locator("#simpleHistory")).to_contain_text("Old invoice")
         expect(page.locator("#simpleBalanceShort")).to_have_text("2 still owed")
         page.screenshot(path="docs/screenshots/judge-live-followup.png" if EXPECT_GRAPH else "docs/screenshots/judge-followup.png",full_page=True)
 
