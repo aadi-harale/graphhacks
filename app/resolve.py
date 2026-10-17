@@ -170,6 +170,14 @@ DETACH DELETE c""", p)
 RETURN c.id,c.supplier_id,c.sku ORDER BY c.id""", {"tenant": TENANT})
         return [{"case_id":x[0],"supplier_id":x[1],"sku":x[2]} for x in rows]
 
+    def followups(self, case_id, receipt_id):
+        rows=self.read("""MATCH (c:ResolveCase {tenant:$tenant,id:$case,ready:true})-[:HAS_RECEIPT]->(r:ResolveReceipt {id:$receipt})
+MATCH (f:ResolveFollowUp {tenant:$tenant})-[:FOR_RECEIPT]->(r)
+RETURN f.id,f.action,f.question,f.status,f.source_version ORDER BY f.id""",
+            {"tenant":TENANT,"case":case_id,"receipt":receipt_id})
+        return [{"id":x[0],"action":x[1],"question":x[2],"status":x[3],
+                 "receipt_version":x[4]} for x in rows]
+
     def case_receipts(self, case_id):
         rows=self.read("""MATCH (c:ResolveCase {tenant:$tenant,id:$case,ready:true})-[:HAS_RECEIPT]->(r:ResolveReceipt)
 RETURN r.id,r.received_on,r.qty ORDER BY r.received_on,r.id""", {"tenant":TENANT,"case":case_id})

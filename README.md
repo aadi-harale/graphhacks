@@ -4,6 +4,14 @@
 
 The agent connects historic shortage claims, documented promotions, supplier statements and confirmed receipt evidence, then identifies exactly what needs clarification before any settlement can be reviewed.
 
+## Track 01: Agents That Act on Connected Data — iPhone 18 Pro
+
+**Target track confirmed in the [official rules](https://www.wemakedevs.org/hackathons/falkordb/rules).** We use a model-directed, bounded graph investigation agent to choose graph tools, trace source evidence across deliveries and create a durable *internal* clarification draft. Deterministic policies and explicit retailer approval still govern actual settlement. This is not a model that writes arbitrary Cypher or sends messages to real suppliers.
+
+**Important runtime distinction:** The public Vercel site is a synthetic browser-only explanation. The local Docker app runs real FalkorDB tools; actual model-chosen tool selection additionally requires a user-configured `OPENAI_API_KEY` and may incur API charges. Fake-model integration tests verify the tool contract, **not** the reliability of an untested live model.
+
+Full agent architecture, read-only optional MCP tool host, exact go/no-go and demo script: [docs/TRACK01_IPHONE_AGENT.md](docs/TRACK01_IPHONE_AGENT.md).
+
 ## Judge experience and deployment modes (October 16, 2026)
 
 - **Public interactive preview:** https://sahiaaya-graphhacks.vercel.app/ — an isolated browser-side fictional walk-through. **Does not query FalkorDB.** No external supplier communication or payments.
