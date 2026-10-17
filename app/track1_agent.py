@@ -27,6 +27,7 @@ class AgentSession:
     inspected: bool = False
     evidence_traced: bool = False
     decision: dict | None = None
+    evidence_paths: list = field(default_factory=list)
     trace: list = field(default_factory=list)
     draft: dict | None = None
 
@@ -74,6 +75,7 @@ RETURN r.id,o.id,o.kind,d.ref,o.eligible ORDER BY o.id""",p)
 MATCH (s:ResolveStatement {active:true})-[:ABOUT]->(r)
 RETURN s.target_id,s.reference ORDER BY s.target_id""",p)
         self.session.evidence_traced=True
+        self.session.evidence_paths=[{"receipt":x[0],"obligation":x[1],"document":x[3]} for x in rows]
         return {"kind":"graph_paths","evidence_rows":len(rows),
                 "paths":[{"receipt":x[0],"obligation":x[1],"type":x[2],
                           "document":x[3],"eligible":x[4]} for x in rows],
@@ -151,7 +153,8 @@ def run_agent(case_id: str, receipt_id: str, query: str, store, client=None,
             return {"case_id":case_id,"receipt_id":receipt_id,
                     "model_summary":msg.content or "",
                     "authoritative_decision":sess.decision,
-                    "draft":sess.draft,"tool_trace":sess.trace,"engine":"model_selected_graph_tools",
+                    "draft":sess.draft,"tool_trace":sess.trace,
+                    "evidence_paths":sess.evidence_paths,"engine":"model_selected_graph_tools",
                     "disclaimer":"Synthetic local graph; drafts are not sent and no settlement is automatic."}
         messages.append({"role":"assistant","content":msg.content,
                          "tool_calls":[{"id":c.id,"type":"function",
