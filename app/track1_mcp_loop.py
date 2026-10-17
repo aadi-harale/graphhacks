@@ -38,14 +38,22 @@ async def run_agent_mcp(case_id: str, receipt_id: str, query: str, store=None,
     async with stdio_client(server) as (read,write):
         async with ClientSession(read,write) as mcp:
             await mcp.initialize()
-            exposed={t.name for t in (await mcp.list_tools()).tools}
-            if not set(schemas).issubset(exposed):
+            # Discover the actual MCP-advertised catalog. The agent never sees
+            # case_id/receipt_id as writable parameters; they are injected from
+            # the original validated request when the selected MCP tool runs.
+            advertised={t.name:t for t in (await mcp.list_tools()).tools}
+            if not set(schemas).issubset(advertised):
                 raise RuntimeError("MCP host missing required investigation tools")
+            model_tools=[]
+            for definition in TOOL_SCHEMAS:
+                spec=dict(definition["function"])
+                spec["description"]=advertised[spec["name"]].description or spec["description"]
+                model_tools.append({"type":"function","function":spec})
 
             for _ in range(max_rounds):
                 response=await asyncio.to_thread(
                     client.chat.completions.create,model=name,messages=messages,
-                    tools=TOOL_SCHEMAS,tool_choice="auto",temperature=0)
+                    tools=model_tools,tool_choice="auto",temperature=0)
                 msg=response.choices[0].message
                 calls=msg.tool_calls or []
                 if not calls:
