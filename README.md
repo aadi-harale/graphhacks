@@ -2,7 +2,7 @@
 
 **Bill vs Box. Promise vs Proof.** A graph-grounded supplier resolution agent for independent Indian retailers, built for Graph Hacks × FalkorDB (Oct 15–18, 2026).
 
-The agent connects historic shortage claims, documented promotions, supplier statements and confirmed receipt evidence, then identifies exactly what needs clarification before any settlement can be reviewed.
+The local application has two separate capabilities: a **deterministic, FalkorDB-backed settlement policy** that checks recorded evidence and a **model-directed investigation path** that can ask bounded graph questions and save an internal follow-up draft. The agent never approves settlements. Live model performance has **not** been verified in this audit.
 
 ## Track 01 — Agents That Act on Connected Data
 
@@ -13,9 +13,9 @@ A shopkeeper receives fewer items than billed, then faces an ambiguous replaceme
 ### Judge experience
 
 - **[Public preview](https://sahiaaya-graphhacks.vercel.app/):** KaamSabha-style **Check delivery → Follow up → Resolve**. A clearly disclosed *browser-only synthetic walkthrough*. This cannot establish live FalkorDB or model operation.
-- **Actual Track 01 demo:** `docker compose up -d --build`, open http://localhost:8000, use **Enter your own case** and **Investigate with agent**. The model chooses bounded tools, the web API invokes them through **MCP stdio ClientSession**, and FalkorDB returns connected evidence and saves an internal follow-up. A locally supplied `OPENAI_API_KEY` is required for real model selection.
+- **Actual Track 01 demo:** `docker compose up -d --build`, open http://localhost:8000, use **Enter your own case** and **Investigate with agent**. When configured with a real model API key, the model may choose bounded function calls; the FastAPI backend invokes the selected tools through an **MCP stdio ClientSession** and retrieves FalkorDB evidence. MCP is the tool **transport**, not the tool-selection algorithm. A locally supplied `OPENAI_API_KEY` is required for real model selection.
 - **Explainable, safe output:** graph paths, named MCP tools, authoritative graph-policy verdict, source-referenced follow-up draft, and human-approved settlement. No real supplier is contacted or money moved.
-- **Verification:** GitHub Actions tests the actual MCP client/server transport against a live FalkorDB service while simulating model tool choices. That proves transport and guardrails, **not** real-model quality. A real-key end-to-end run and video remain required.
+- **Verification:** GitHub Actions tests the actual MCP client/server transport against a live FalkorDB service while simulating model tool choices. That proves transport and guardrails, **not** real-model quality. **No real-key model execution or verified local recording is available yet**. They are mandatory remaining acceptance gates.
 
 **[Track 01 architecture, run instructions and submission gates](docs/TRACK01_IPHONE_AGENT.md)** · **[Full browser and FalkorDB CI](https://github.com/aadi-harale/graphhacks/actions)**
 
@@ -25,9 +25,9 @@ A shopkeeper receives fewer items than billed, then faces an ambiguous replaceme
 
 This creates new FalkorDB nodes and candidate relationships and lets you investigate, attribute and review quantities for either receipt. Promotions are eligible only if their recorded date and purchase threshold are satisfied; invalid terms are shown as excluded, not silently accepted. Duplicate case IDs with different content are rejected.
 
-**Persistence safeguard:** the preset guided demo operates in the resettable graph \`sahiaaya_proof\`; imported histories live in the separate \`sahiaaya_resolve\` graph. Refresh the page, enter the generated case ID under **Reopen graph case**, and verify that reviewed allocations remain present even if the preset demo was reset.
+**Persistence safeguard:** the preset guided demo operates in the resettable graph `sahiaaya_proof`; imported histories live in the separate `sahiaaya_resolve` graph. Refresh the page, enter the generated case ID under **Reopen graph case**, and verify that reviewed allocations remain present even if the preset demo was reset.
 
-Try \`examples/fictional_second_supplier_case.json\` for a second supplier with an expired promotional scheme. See [docs/NEW_CASE_WORKFLOW.md](docs/NEW_CASE_WORKFLOW.md) for the data format, endpoints, trust assumptions and exact demonstration.
+Try `examples/fictional_second_supplier_case.json` for a second supplier with an expired promotional scheme. See [docs/NEW_CASE_WORKFLOW.md](docs/NEW_CASE_WORKFLOW.md) for the data format, endpoints, trust assumptions and exact demonstration.
 
 **Limits:** These are typed, explicitly synthetic receipts and scheme terms—not independently authenticated real invoices. This local demo has no production identity, supplier messaging, real payments or security model for public mutation endpoints. The [Vercel preview](https://sahiaaya-graphhacks.vercel.app/) intentionally disables the new-case writer because it does not host FalkorDB.
 
@@ -47,7 +47,7 @@ cd graphhacks
 docker compose up -d --build
 ```
 
-Open **http://localhost:8000**. The case loads automatically. Select **Unattributed delivery**, **Promotion proof**, or **Conflicting statements** to inspect how evidence changes the agent's action. The API refuses to serve a fabricated graph answer when FalkorDB is unreachable.
+Open **http://localhost:8000**. The shopkeeper-first UI starts with **Check delivery → Follow up → Resolve**. The existing synthetic case and additional scenarios are available in **Advanced workspace**. For model-directed graph investigation, choose **Enter your own case**, then **Investigate with agent**; this additionally requires a locally configured API key. The API refuses to serve a fabricated graph answer when FalkorDB is unreachable.
 
 Run all tests, including **live** graph integration:
 
@@ -60,6 +60,8 @@ Inspect local logs with `docker compose logs -f app falkordb`. Stop with `docker
 
 ## Graph model and actual Cypher role
 
+**Two related, distinct graph schemas exist in this repository.** The relationships immediately below describe the original `app/graph.py` / `app/agent.py` walkthrough. New, user-entered histories use the `Resolve*` schema described afterward; these should not be presented as identical.
+
 - `(:Receipt)-[:FROM_SUPPLIER]->(:Supplier)` and `(:Receipt)-[:FOR_SKU]->(:SKU)`
 - `(:Obligation)-[:OWED_BY]->(:Supplier)` and `(:Obligation)-[:FOR_SKU]->(:SKU)`
 - `(:Obligation)-[:AROSE_FROM]->(:SourceRecord)-[:SUPPORTED_BY]->(:Document)`
@@ -67,16 +69,16 @@ Inspect local logs with `docker compose logs -f app falkordb`. Stop with `docker
 - `(:Statement)-[:ABOUT_RECEIPT]->(:Receipt)` and `(:Statement)-[:SUPPORTED_BY]->(:Document)`
 - `(:Allocation)-[:USES_RECEIPT]->(:Receipt)`, `(:Allocation)-[:SETTLES]->(:Obligation)`, `(:RetailerApproval)-[:APPROVES]->(:Allocation)`
 
-The core graph queries in `app/graph.py` resolve which obligations share the receipt's supplier and SKU, traverse historical sources and promises, inspect attributable supplier statements, and atomically attempt a version-checked reviewed allocation. The deterministic agent in `app/agent.py` must read the graph-fetched context to select its next action.
+`app/graph.py` uses prewritten Cypher and the deterministic `app/agent.py` policy for the preset walkthrough. The new-case engine in `app/resolve.py` instead traverses `(ResolveCase)-[:HAS_RECEIPT]->(ResolveReceipt)-[:POTENTIALLY_FULFILLS]->(ResolveObligation)-[:SUPPORTED_BY]->(ResolveDocument)`, relevant supplier statements, and prior allocation records. Its policy evaluates evidence and blocks unsupported/duplicate settlement. `app/track1_agent.py` exposes bounded tools on this new-case graph. The live web API (`app/server.py`) calls `run_agent_mcp` in `app/track1_mcp_loop.py`; it does **not** use the legacy direct-function `run_agent()` helper for this endpoint.
 
 ## Agent contract and graph safety
 
 Two clearly separated layers:
 
 1. **Deterministic policy engine.** FalkorDB retrieves candidate obligations, prior receipts and documents. Policy returns ASK_SUPPLIER, ASK_RETAILER, DISPUTE, REVIEW_SETTLEMENT or another bounded state. Only the retailer approves settlement.
-2. **Model-directed Track 01 investigator.** With a configured API key, the model selects from five named tools. An actual MCP stdio ClientSession calls the FalkorDB-backed MCP host. Four tools read evidence; one may persist a policy-guarded INTERNAL follow-up draft. No free-form Cypher, supplier messaging or automatic settlement.
+2. **Model-directed Track 01 investigator.** The model receives a bounded function catalog derived from the MCP host, selects tool calls via the model provider's function-calling API, and the application executes those calls using MCP stdio `ClientSession` and prewritten FalkorDB queries. Four tools read evidence; one may persist a policy-guarded **internal draft**. MCP handles transport; **real model tool selection has not yet been run or inspected**. No free-form Cypher, supplier messaging or automatic settlement.
 
-The model is optional for simple receiving but required for the real agent demonstration. The public Vercel site is a fictional browser simulation, not a live graph or agent.
+The model is optional for simple receiving but required for the Track 01 agent demonstration. CI proves **MCP transport with an injected/mock model** and live FalkorDB, not real-model decisions. The public Vercel site is a fictional browser simulation, not a live graph or agent. [Read the dated submission verification audit](docs/FINAL_SUBMISSION_AUDIT.md).
 
 ## API endpoints
 
@@ -100,7 +102,7 @@ python -m scripts.proof_report
 
 The fair SQLite baseline, in `app/baseline.py`, uses the **same** receipt, claims and supplier statements. It is expected to reproduce the same deterministic decisions. A graph database is not uniquely capable of the underlying allocation arithmetic.
 
-Competitive advantage remains **unproven**: we must show connected provenance retrieval reduces manual investigation work on unfamiliar histories, not just that the graph stores data.
+Competitive advantage remains **unproven**: a fair SQLite baseline reproduces deterministic decisions given equivalent evidence. The demonstrated graph role is connected provenance retrieval and auditable graph-backed actions; no measured SQL performance or accuracy advantage is claimed.
 
 See [BUILD_GATES.md](BUILD_GATES.md) for acceptance gates, [SECURITY.md](SECURITY.md) for deployment restrictions, and [CLAUDE.md](CLAUDE.md) for evidence-first engineering practice.
 
