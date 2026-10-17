@@ -159,6 +159,13 @@ def resolve_case_receipts(case_id: str):
     except Exception as exc:
         raise HTTPException(status_code=503,detail=f"Case retrieval failed: {exc}")
 
+@app.get("/api/resolve/cases/{case_id}/receipts/{receipt_id}/followups")
+def resolve_followups(case_id: str, receipt_id: str):
+    try:
+        return {"followups":resolve_store().followups(case_id,receipt_id)}
+    except Exception as exc:
+        raise HTTPException(status_code=503,detail=f"Follow-up lookup failed: {exc}")
+
 @app.get("/api/resolve/cases/{case_id}/receipts/{receipt_id}")
 def resolve_investigate(case_id: str, receipt_id: str):
     try:
