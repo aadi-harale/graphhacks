@@ -201,6 +201,93 @@
 .agent-history{border-top:1px solid #cfddc9;margin-top:12px;padding-top:12px;font-size:12px}
 .agent-history strong{display:block;margin-bottom:6px;color:#25513a}
 .agent-history p{background:#fff;border:1px solid #dce7d8;border-radius:7px;padding:10px;line-height:1.6;color:#45654c;margin:5px 0}
+
+/* KaamSabha-inspired: one user action, one clear outcome, advanced controls on demand. */
+.frame{display:block;min-height:100vh}
+.rail{padding:17px max(20px,calc((100vw - 1170px)/2));min-height:70px;display:flex;flex-direction:row;align-items:center;justify-content:space-between;gap:15px}
+.rail .brand{font-size:25px}.rail .brand-sub{font-size:9px}
+.rail .nav,.rail .rail-section,.rail .rail-bottom{display:none}
+.main{width:100%}
+.topbar{border-bottom:1px solid #dde3d6;min-height:48px;padding:10px max(24px,calc((100vw - 1170px)/2));background:#fafbf7}
+.crumb{font-size:11px}.mode{font-size:10px;padding:6px 10px}
+.content{max-width:1220px;padding:43px 24px 90px;margin:0 auto}
+.simple-home{margin:0 auto;max-width:1080px}
+.simple-intro{text-align:center;margin:0 auto 30px;max-width:760px}
+.simple-intro .eyebrow{font-size:10px;color:#50765b;letter-spacing:.19em}
+.simple-intro h1{font-size:clamp(39px,4.7vw,63px);font-family:Georgia,"Times New Roman",serif;font-weight:500;letter-spacing:-.061em;line-height:1.08;margin:14px 0}
+.simple-intro h1 em{font-style:normal;color:#296546}
+.simple-intro p{font-size:15px;line-height:1.6;color:#627368;margin:0 auto;max-width:620px}
+.simple-progress{display:grid;grid-template-columns:repeat(3,1fr);max-width:770px;margin:0 auto 23px;gap:8px}
+.simple-progress-step{display:flex;align-items:center;gap:9px;padding:10px 15px;border:1px solid #dce3d8;background:#fff;border-radius:11px;color:#68796d;font-size:12px;font-weight:770;white-space:nowrap}
+.simple-progress-step span{background:#f0f3eb;color:#6d7d70;border-radius:6px;width:23px;height:23px;display:grid;place-items:center;font-size:10px}
+.simple-progress-step.is-active{background:#e3efe1;border-color:#9fc5a5;color:#205639}
+.simple-progress-step.is-active span{background:#285f43;color:white}
+.simple-progress-step.is-done{color:#377353;background:#f2f8f0}
+.simple-progress-step.is-done span{background:#d8ead7;color:#255e40}
+.simple-workspace{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;align-items:stretch}
+.simple-form-card,.simple-result-card{background:#fff;border:1px solid #d8e1d6;box-shadow:0 15px 45px rgba(32,65,42,.055);border-radius:19px;padding:29px 29px 26px;min-height:408px}
+.simple-result-card{background:#f1f5e9;display:flex;flex-direction:column;border-color:#d0dfcb}
+.simple-card-label{color:#66806a;letter-spacing:.135em;font-size:10px;font-weight:830;display:flex;align-items:center;gap:10px}
+.simple-small-tag{margin-left:auto;background:#e2eee1;color:#49745a;border-radius:25px;padding:5px 10px;font-size:9px;font-weight:850;letter-spacing:.065em}
+.simple-label-icon{display:grid;place-items:center;color:#36714d;background:#e6f0e3;width:22px;height:22px;border-radius:7px;font-size:13px}
+.simple-form-card h2,.simple-result-card h2{font-size:27px;font-family:Georgia,serif;font-weight:500;letter-spacing:-.035em;margin:18px 0 23px}
+.simple-field{display:block;font-size:12px;color:#607766;font-weight:730;margin-bottom:15px}
+.simple-field input{margin-top:9px;width:100%;background:#fafcf8;border:1px solid #c9d8ca;border-radius:11px;padding:12px 14px;color:#234936;font-weight:730;font-size:20px;min-height:49px}
+.simple-field input[type=text]{font-size:16px;font-weight:600}
+.simple-field input:focus{outline:2px solid #9ac6a0;outline-offset:1px}
+.simple-input-pair{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.simple-mini-note{display:flex;align-items:center;gap:9px;color:#718472;font-size:11px;margin:3px 0 19px}
+.simple-mini-note icon{display:inline-grid;place-items:center;background:#dff0db;color:#2b7645;border-radius:50%;height:18px;width:18px;font-style:normal;font-weight:900}
+.simple-button{border:0;border-radius:12px;padding:14px 18px;min-height:49px;font-size:13px;font-weight:830;display:flex;align-items:center;justify-content:space-between;gap:13px;width:100%}
+.simple-button-main{background:#1d543b;color:white}
+.simple-button-main:hover:not(:disabled){background:#133f2c}
+.simple-button:disabled{opacity:.5;cursor:not-allowed}
+.simple-illustration{display:flex;align-items:center;justify-content:center;height:75px;margin:22px auto 3px}
+.simple-icon-square{height:69px;width:69px;border-radius:21px;background:#dfeada;color:#3f7450;font-size:35px;display:grid;place-items:center}
+.simple-result-card h2{margin:12px 0 10px;font-size:30px;line-height:1.2;text-align:center}
+.simple-result-card>p{color:#586e5d;font-size:13px;line-height:1.6;text-align:center;margin:0 auto 16px;max-width:360px}
+.simple-missing{margin:11px 0 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 17px;border-radius:11px;background:#fff3e7;border:1px solid #f0dabe}
+.simple-missing span{font-size:12px;color:#8c6036}
+.simple-missing strong{font-size:20px;color:#9b4f28;white-space:nowrap}
+.simple-result-card #simpleNext{margin-top:auto}
+.simple-choices{margin:5px 0 12px;display:grid;gap:7px}
+.simple-choices>p{font-size:12px;text-align:left;line-height:1.5;margin:0 0 5px;color:#58715f}
+.simple-choices button{font-size:12px;font-weight:760;text-align:left;padding:12px 14px;border:1px solid #c4d7c6;background:white;color:#245c3b;border-radius:10px}
+.simple-choices button:hover:not(:disabled){background:#e0f0df}
+.simple-choices button.simple-choice-quiet{font-size:11px;color:#8b5e40;border-color:#e5d7c4;background:#fffaf4}
+.simple-balances{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:13px 0 2px}
+.simple-balances>div{background:#fff;border:1px solid #d9e6d5;border-radius:10px;padding:13px}
+.simple-balances span{display:block;font-size:10px;color:#647b67}
+.simple-balances strong{display:block;font-size:15px;color:#22593e;margin-top:5px}
+.simple-error{padding:10px;border-radius:9px;background:#feece6;color:#943c2c;font-size:12px;text-align:left!important}
+.simple-bottom{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:13px 1px 25px;color:#7b8d7c;font-size:11px}
+.simple-bottom>span{display:flex;align-items:center;gap:7px}
+.simple-privacy-dot{background:#bc8747;height:7px;width:7px;border-radius:50%;display:inline-block}
+.simple-text-button{background:transparent;color:#2f6547;border:0;font-size:12px;font-weight:750;text-decoration:underline;text-underline-offset:4px}
+.simple-secondary{display:flex;align-items:center;gap:11px;background:#eef3e9;border:1px solid #d6e1d0;border-radius:14px;padding:17px 20px}
+.simple-secondary>div{flex:1;min-width:0}
+.simple-secondary strong{font-size:13px;display:block;color:#224d35}
+.simple-secondary>div span{font-size:11px;display:block;margin-top:5px;color:#6a806d}
+.simple-outline-button{background:white;border:1px solid #bdd0bd;border-radius:9px;padding:11px 13px;font-size:11px;color:#286143;font-weight:780;white-space:nowrap}
+.simple-outline-button:hover{background:#e2eee1}
+.full-workspace-details{margin:16px auto 0;max-width:1080px}
+.full-workspace-details>summary{display:flex;align-items:center;justify-content:center;gap:10px;text-align:center;font-size:11px;color:#61806a;cursor:pointer;padding:15px;list-style:none}
+.full-workspace-details>summary::before{content:'+';display:inline-grid;place-items:center;font-size:18px;color:#477654}
+.full-workspace-details[open]>summary::before{content:'−'}
+.full-workspace-details>summary span{color:#8da091}
+.full-workspace-details>.journey{margin-top:12px}
+.full-workspace-details>.notice{margin-top:13px}
+.simple-home [hidden]{display:none!important}
+@media(max-width:900px){.content{padding-top:32px}.simple-workspace{gap:12px}.simple-form-card,.simple-result-card{padding:23px;min-height:390px}.simple-secondary{flex-wrap:wrap}.simple-secondary>div{flex-basis:100%}}
+@media(max-width:680px){.content{padding:25px 16px 60px}.simple-workspace{grid-template-columns:1fr}.simple-intro{margin-bottom:20px}.simple-intro h1{font-size:clamp(34px,9vw,49px)}.simple-intro p{font-size:13px}.simple-form-card,.simple-result-card{min-height:0;padding:21px}.simple-form-card h2{font-size:23px;margin:13px 0 16px}.simple-result-card h2{font-size:26px}.simple-progress-step{font-size:10px;padding:9px 8px;gap:5px}.simple-progress-step span{width:19px;height:19px}.simple-result-card{min-height:260px}.simple-illustration{height:50px;margin:11px auto 4px}.simple-icon-square{height:53px;width:53px;font-size:27px;border-radius:16px}.simple-secondary .simple-outline-button{flex:1}.full-workspace-details>summary span{display:none}}
+@media(max-width:390px){.simple-progress{gap:4px}.simple-progress-step{font-size:9px}.simple-input-pair{gap:7px}.simple-field input{font-size:18px}.simple-bottom{align-items:flex-start}}
+
+.simple-history{margin-top:17px;border-top:1px solid #e2e8de;padding-top:15px}
+.simple-history-heading{font-size:10px;font-weight:840;color:#55775e;letter-spacing:.12em;margin-bottom:7px}
+.simple-history-row{display:flex;justify-content:space-between;align-items:center;gap:13px;padding:12px 3px;border-bottom:1px dashed #dce6db}
+.simple-history-row:last-child{border-bottom:0}
+.simple-history-row span{font-size:12px;color:#6c806d}
+.simple-history-row strong{font-size:12px;color:#29573b;text-align:right}
 </style>
 </head>
 <body>
@@ -209,8 +296,71 @@
   <div><div class="rail-section">Workspace</div><div class="nav"><button class="active"><i>01</i> Case desk</button><button id="navProof"><i>02</i> Proof trail</button><button id="navAbout"><i>03</i> How it works</button></div></div>
   <div class="rail-bottom"><strong>Built for the shopkeeper.</strong>Not another inventory dashboard.<br>One clear next action when a supplier's promise is uncertain.</div>
 </aside><div class="main">
-<header class="topbar"><div class="crumb">SahiAaya / <strong>Supplier resolution</strong> / Sample case RCP-52</div><div class="mode" id="mode"><span class="dot"></span><span id="modeText">Checking graph connection…</span></div></header>
+<header class="topbar"><div class="crumb">Demo shop / <strong>Check a delivery</strong></div><div class="mode" id="mode"><span class="dot"></span><span id="modeText">Checking graph connection…</span></div></header>
 <main class="content">
+<section class="simple-home" id="simpleHome" aria-label="SahiAaya simple receiving workflow">
+  <div class="simple-intro">
+    <div class="eyebrow">SAHIAAYA · MADE FOR SMALL SHOPS</div>
+    <h1>Never lose track of what<br><em>your supplier owes.</em></h1>
+    <p>Check a delivery, spot missing goods, and follow up until they're actually received.</p>
+  </div>
+  <div class="simple-progress" aria-label="Three step receiving workflow">
+    <div id="simpleStep1" class="simple-progress-step is-active"><span>01</span> Check delivery</div>
+    <div id="simpleStep2" class="simple-progress-step"><span>02</span> Follow up</div>
+    <div id="simpleStep3" class="simple-progress-step"><span>03</span> Resolve</div>
+  </div>
+  <div class="simple-workspace">
+    <section class="simple-form-card" aria-label="Compare supplier bill with received goods">
+      <div class="simple-card-label"><span class="simple-label-icon">▣</span> TODAY'S DELIVERY <span class="simple-small-tag">TRY THE DEMO</span></div>
+      <h2>What did you receive?</h2>
+      <label class="simple-field">Item <input id="simpleProduct" type="text" value="Soap bars" maxlength="32" autocomplete="off" aria-label="Name of the item"></label>
+      <div class="simple-input-pair">
+       <label class="simple-field">Supplier billed <input id="simpleBilled" type="number" value="50" min="1" max="9999" inputmode="numeric"></label>
+       <label class="simple-field">You received <input id="simpleCounted" type="number" value="48" min="0" max="9999" inputmode="numeric"></label>
+      </div>
+      <div class="simple-mini-note"><icon aria-hidden="true">✓</icon><span>No signup. Everything in this example is fictional.</span></div>
+      <button id="simpleCheck" class="simple-button simple-button-main" type="button">Check delivery <span aria-hidden="true">→</span></button>
+      <div class="simple-history" id="simpleHistory" hidden>
+        <div class="simple-history-heading">WHAT SAHIAAYA REMEMBERS</div>
+        <div class="simple-history-row"><span>Old invoice</span><strong>2 soaps missing</strong></div>
+        <div class="simple-history-row"><span>Free-goods offer</span><strong>2 soaps promised</strong></div>
+        <div class="simple-history-row"><span>Later delivery</span><strong>2 soaps arrived</strong></div>
+      </div>
+    </section>
+    <section class="simple-result-card" aria-label="Delivery outcome" aria-live="polite">
+      <div class="simple-card-label">SAHIAAYA'S RESULT <span id="simpleCaseTag" class="simple-small-tag">READY</span></div>
+      <div class="simple-illustration" id="simpleIllustration"><div class="simple-icon-square"><span id="simpleIllustrationIcon">↗</span></div></div>
+      <h2 id="simpleHeading">Let's check your delivery.</h2>
+      <p id="simpleDetail">Enter the quantities from the supplier's bill and the goods you actually received.</p>
+      <div id="simpleMissingPanel" class="simple-missing" hidden>
+        <span>Still owed by supplier</span><strong id="simpleMissingAmount">2 items</strong>
+      </div>
+      <div id="simpleChoices" class="simple-choices" hidden>
+        <p>Supplier says today's extra soaps are:</p>
+        <button id="simpleChooseReplacement" type="button">↳ Replacement for the missing 2</button>
+        <button id="simpleChoosePromo" type="button">✳ Free promotional soaps</button>
+        <button id="simpleChooseConflict" type="button" class="simple-choice-quiet">Two conflicting answers</button>
+      </div>
+      <button id="simpleNext" class="simple-button simple-button-main" type="button" hidden></button>
+      <div id="simpleBalances" class="simple-balances" hidden>
+       <div><span>Missing soaps</span><strong id="simpleBalanceShort">2 still owed</strong></div>
+       <div><span>Free soaps</span><strong id="simpleBalancePromo">2 still owed</strong></div>
+      </div>
+      <p id="simpleError" class="simple-error" role="alert" hidden></p>
+    </section>
+  </div>
+  <div class="simple-bottom">
+    <span><span class="simple-privacy-dot"></span><span id="simpleModeCaption">Interactive fictional example · not real supplier communication</span></span>
+    <button id="simpleRestart" class="simple-text-button" type="button">↻ Start over</button>
+  </div>
+  <div class="simple-secondary">
+    <div><strong>Want to see how it knows?</strong><span>Explore the supplier history, graph evidence, and agent tools.</span></div>
+    <button id="simpleShowProof" class="simple-outline-button" type="button">Explore the full case <span>↗</span></button>
+    <button id="simpleTryOwn" class="simple-outline-button" type="button">Enter your own case <span>→</span></button>
+  </div>
+</section>
+<details id="workspaceDetails" class="full-workspace-details">
+ <summary>Advanced workspace <span>History · Claims · FalkorDB evidence · Agent</span></summary>
 <section class="hero hero-simple" aria-label="What SahiAaya does for a shopkeeper">
  <div class="hero-text">
   <div class="eyebrow">SAHIAAYA · BILL VS BOX · PROMISE VS PROOF</div>
@@ -294,6 +444,7 @@
  <div class="graph-summary"><strong id="graphSummaryTitle">Missing supplier attribution</strong><span id="graphSummaryDetail">The retailer still has two outstanding obligations.</span></div>
 </section>
 <div class="under" id="proof"><section class="card"><div class="card-head"><div class="doc-label">Evidence trail</div><span class="tag">CONNECTIONS</span></div><h3>Why did SahiAaya decide this?</h3><ul class="evidence-list" id="evidenceList"></ul><div id="paths"></div><details><summary>Inspect machine decision and graph tool trace</summary><pre id="raw"></pre></details></section><section class="card"><div class="card-head"><div class="doc-label">Reviewed outcome</div><span class="tag">AUDIT</span></div><h3>What actually changed?</h3><ul class="ledger" id="audit"></ul><div class="result-box"><strong>No invented recoveries</strong><p>We report proposed allocations, supplier statements and reviewed settlements separately. No money is shown as saved until a real adjustment is proven.</p></div></section></div></details>
+</details>
 <footer class="foot" id="about"><strong>Current experience:</strong> <span id="runtimeDisclosure">Public synthetic walkthrough. Real FalkorDB reasoning is available in the separate local Docker application.</span> <a href="https://github.com/aadi-harale/graphhacks" target="_blank" rel="noopener noreferrer">Source and local FalkorDB setup →</a><br><br>Graph Hacks × FalkorDB 2026 · Track 01 — Agents That Act on Connected Data · Built with AI development assistance. No real retailer information is used.</footer>
 </main></div></div>
 <script>
@@ -577,10 +728,151 @@ async function runInvestigationAgent(){
  finally{$("agentRun").disabled=false;}
 }
 
+
+/* Simple merchant story. Billed-vs-received math is local; later-delivery steps
+   call the existing real FalkorDB API in Docker or labeled synthetic fixture
+   in the public preview. Never pretend a model or supplier was contacted. */
+let simplePhase=0, simpleShortage=0, simpleAttribution=null, simpleBusy=false;
+function simpleText(id,value){document.getElementById(id).textContent=String(value);}
+function simpleShowError(message){
+ const el=$("simpleError");el.hidden=false;el.textContent=message;
+}
+function simpleHideError(){const el=$("simpleError");el.hidden=true;el.textContent="";}
+function simpleSetStep(phase){
+ for(let n=1;n<=3;n++){
+  const el=$("simpleStep"+n);el.classList.toggle("is-done",phase>=n+1);
+  el.classList.toggle("is-active",Math.min(3,Math.max(1,phase<2?1:phase<4?2:3))===n);
+ }
+}
+function simpleBalances(){
+ let short=2,promo=2;
+ if(snapshot){
+  const find=id=>snapshot.obligations?.find(x=>x.id===id);
+  const allocated=id=>(snapshot.verified_allocations||[]).some(a=>a.obligation_id===id);
+  short=find("SHORT-41")?.outstanding_qty??(allocated("SHORT-41")?0:2);
+  promo=find("PROMO-17")?.outstanding_qty??(allocated("PROMO-17")?0:2);
+ }
+ simpleText("simpleBalanceShort",short===0?"Settled ✓":short+" still owed");
+ simpleText("simpleBalancePromo",promo===0?"Settled ✓":promo+" still owed");
+}
+function simpleDisplay(){
+ const heading=$("simpleHeading"),detail=$("simpleDetail"),tag=$("simpleCaseTag"),
+       next=$("simpleNext"),choices=$("simpleChoices"),missing=$("simpleMissingPanel"),balances=$("simpleBalances");
+ choices.hidden=true;missing.hidden=true;balances.hidden=true;next.hidden=true;
+ $("simpleHistory").hidden=simplePhase<2;
+ $("simpleCheck").textContent=simplePhase>=2?"Delivery checked ✓":"Check delivery →";
+ const item=$("simpleProduct").value.trim()||"items";const singular=item.toLowerCase()==="soap bars"?"soap":"item";
+ let icon="↗";
+ if(simplePhase===0){heading.textContent="Let's check your delivery.";detail.textContent="Enter what the bill says and what you counted in the box.";tag.textContent="READY";}
+ else if(simplePhase===1){
+  if(simpleShortage===0){heading.textContent="Everything arrived.";detail.textContent="The counted quantity matches the bill. No shortage is recorded in this example.";tag.textContent="MATCHED";icon="✓";}
+  else if(simpleShortage<0){heading.textContent="There are extra items.";detail.textContent="You received more than the bill shows. Check the quantities before recording a claim.";tag.textContent="REVIEW";icon="!";}
+  else{heading.textContent=simpleShortage+" "+(simpleShortage===1?singular:singular==="soap"?"soaps":item)+" missing.";
+   detail.textContent="The shopkeeper can ask for the missing quantity. SahiAaya keeps track until the supplier makes it right.";tag.textContent="SHORTAGE FOUND";icon="!";
+   missing.hidden=false;simpleText("simpleMissingAmount",simpleShortage+" still owed");
+   next.hidden=false;next.textContent=simpleShortage===2?"Follow the missing 2 →":"Try the 2-item follow-up example →";}
+ }
+ else if(simplePhase===2){
+  heading.textContent="Two more soaps arrived.";
+  detail.textContent="But the supplier also owes two free promotional soaps. What was this delivery actually for?";
+  tag.textContent="NEEDS CLARIFICATION";icon="?";choices.hidden=false;balances.hidden=false;simpleBalances();
+ }
+ else if(simplePhase===3){
+  heading.textContent=simpleAttribution==="SHORT-41"?"The supplier says these replace the shortage.":"The supplier says these are free soaps.";
+  detail.textContent="The supplier's answer supports a proposal. The shopkeeper still has to check and approve it.";
+  tag.textContent="AWAITING REVIEW";icon="↳";balances.hidden=false;simpleBalances();next.hidden=false;next.textContent="Confirm and record settlement →";
+ }
+ else if(simplePhase===4){
+  const allocated=(snapshot?.verified_allocations||[]).some(a=>a.obligation_id===simpleAttribution);
+  if(!allocated){heading.textContent="No settlement was recorded.";detail.textContent="The graph did not confirm an allocation. Check the evidence and try again.";tag.textContent="NOT VERIFIED";icon="!";}
+  else if(simpleAttribution==="SHORT-41"){heading.textContent="Missing soaps replaced.";detail.textContent="The shopkeeper confirmed the replacement. The separate free-soaps promise remains open.";tag.textContent="RECORDED";icon="✓";}
+  else{heading.textContent="Free soaps recorded.";detail.textContent="Those free soaps are accounted for. The original two missing soaps are STILL owed.";tag.textContent="RECORDED";icon="✓";}
+  balances.hidden=false;simpleBalances();
+ }
+ else if(simplePhase===5){heading.textContent="Don't settle yet.";detail.textContent="The supplier gave conflicting answers. SahiAaya keeps both promises open until there's clear proof.";tag.textContent="CONFLICT FOUND";icon="!";balances.hidden=false;simpleBalances();}
+ simpleText("simpleIllustrationIcon",icon);
+ simpleSetStep(simplePhase);
+ for(const id of ["simpleBilled","simpleCounted","simpleProduct"]){$(id).disabled=simplePhase>=2;}
+ $("simpleCheck").disabled=simplePhase>=2;
+ simpleText("simpleModeCaption",kind==="FALKORDB"?"Local FalkorDB connected · fictional supplier data":kind==="SIMULATION"?"Interactive fictional example · no real supplier contacted":"Graph unavailable · no live claim actions");
+}
+function simpleCheckDelivery(){
+ if(simpleBusy)return;
+ simpleHideError();
+ const billed=Number($("simpleBilled").value),counted=Number($("simpleCounted").value);
+ if(!Number.isSafeInteger(billed)||!Number.isSafeInteger(counted)||billed<1||billed>9999||counted<0||counted>9999){
+  simpleShowError("Enter two valid whole-number quantities.");
+  return;
+ }
+ if(!$("simpleProduct").value.trim()){simpleShowError("Enter an item name.");return;}
+ simpleShortage=billed-counted;simplePhase=1;simpleDisplay();
+}
+async function simpleFollowUp(){
+ if(simpleBusy)return;
+ simpleHideError();
+ simpleBusy=true;
+ try{
+  if(simplePhase===1){
+   if(simpleShortage!==2){
+    simpleShowError("This follow-up example uses 2 missing soaps. For another amount, use “Enter your own case” with local FalkorDB.");
+    return;
+   }
+   if(!await reset("ambiguous"))throw Error("Couldn't load the supplier history.");
+   simplePhase=2;
+  }else if(simplePhase===3){
+   const target=simpleAttribution;
+   await approve();
+   if(!(snapshot?.verified_allocations||[]).some(a=>a.obligation_id===target))
+    throw Error("Settlement was not confirmed. The claim has not been closed.");
+   simplePhase=4;
+  }
+  simpleDisplay();
+ }catch(e){simpleShowError(e.message);}
+ finally{simpleBusy=false;}
+}
+async function simpleReply(target){
+ if(simpleBusy||simplePhase!==2)return;
+ simpleBusy=true;simpleHideError();
+ try{
+  if(target==="conflict"){
+   if(!await reset("conflict"))throw Error("Couldn't load the conflicting evidence.");
+   simplePhase=5;simpleAttribution=null;
+  }else{
+   if(!await respond(target))throw Error("Could not record the fictional supplier reply.");
+   if(snapshot?.decision?.status!=="REVIEW_SETTLEMENT")throw Error("The evidence does not support a settlement proposal.");
+   simpleAttribution=target;simplePhase=3;
+  }
+  simpleDisplay();
+ }catch(e){simpleShowError(e.message);}
+ finally{simpleBusy=false;}
+}
+function simpleReset(){
+ if(simpleBusy)return;
+ simplePhase=0;simpleShortage=0;simpleAttribution=null;simpleHideError();
+ for(const id of ["simpleBilled","simpleCounted","simpleProduct"]){$(id).disabled=false;}
+ $("simpleCheck").disabled=false;simpleDisplay();
+}
+function simpleOpenAdvanced(section){
+ $("workspaceDetails").open=true;
+ if(section==="case")$("newCaseDetails").open=true;
+ if(section==="proof"){$("caseDetails").open=true;$("evidenceDetails").open=true;}
+ const target=section==="case"?$("newCase"):section==="proof"?$("caseDetails"):$("workspaceDetails");
+ target.scrollIntoView({behavior:"smooth",block:"start"});
+}
+
 async function initialize(){const list=$("scenarios");for(const [id,label] of SCENARIOS){const b=document.createElement("button");b.className="scenario";b.type="button";b.dataset.scenario=id;b.textContent=label;b.addEventListener("click",()=>reset(id));list.append(b);}
-$("caseForm").addEventListener("submit",e=>{e.preventDefault();createResolveCase();});$("agentRun").addEventListener("click",runInvestigationAgent);$("resumeCaseButton").addEventListener("click",reopenResolveCase);$("caseReceiptSelect").addEventListener("change",loadResolveReceipt);$("caseAttribute").addEventListener("click",attributeResolve);$("caseApprove").addEventListener("click",approveResolve);setCaseAvailable();$("tourNext").addEventListener("click",advanceTour);$("heroStart").addEventListener("click",()=>{$("tour").classList.remove("is-collapsed");if(tourStep===0)advanceTour();$("tour").scrollIntoView({behavior:"smooth",block:"center"});});updateTour();$("short").addEventListener("click",()=>respond("SHORT-41"));$("promo").addEventListener("click",()=>respond("PROMO-17"));$("approve").addEventListener("click",approve);$("reset").addEventListener("click",()=>reset(selected));$("navProof").addEventListener("click",()=>$("proof").scrollIntoView({behavior:"smooth"}));$("navAbout").addEventListener("click",()=>$("about").scrollIntoView({behavior:"smooth"}));
+$("simpleCheck").addEventListener("click",simpleCheckDelivery);
+$("simpleNext").addEventListener("click",simpleFollowUp);
+$("simpleChooseReplacement").addEventListener("click",()=>simpleReply("SHORT-41"));
+$("simpleChoosePromo").addEventListener("click",()=>simpleReply("PROMO-17"));
+$("simpleChooseConflict").addEventListener("click",()=>simpleReply("conflict"));
+$("simpleRestart").addEventListener("click",simpleReset);
+$("simpleShowProof").addEventListener("click",()=>simpleOpenAdvanced("proof"));
+$("simpleTryOwn").addEventListener("click",()=>simpleOpenAdvanced("case"));
+simpleDisplay();
+$("caseForm").addEventListener("submit",e=>{e.preventDefault();createResolveCase();});$("agentRun").addEventListener("click",runInvestigationAgent);$("resumeCaseButton").addEventListener("click",reopenResolveCase);$("caseReceiptSelect").addEventListener("change",loadResolveReceipt);$("caseAttribute").addEventListener("click",attributeResolve);$("caseApprove").addEventListener("click",approveResolve);setCaseAvailable();$("tourNext").addEventListener("click",advanceTour);updateTour();$("short").addEventListener("click",()=>respond("SHORT-41"));$("promo").addEventListener("click",()=>respond("PROMO-17"));$("approve").addEventListener("click",approve);$("reset").addEventListener("click",()=>reset(selected));$("navProof").addEventListener("click",()=>$("proof").scrollIntoView({behavior:"smooth"}));$("navAbout").addEventListener("click",()=>$("about").scrollIntoView({behavior:"smooth"}));
 try{const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),1600);const res=await fetch("/api/health",{signal:controller.signal,headers:{accept:"application/json"}});clearTimeout(timeout);if(res.ok){const health=await res.json();if(health.backend==="FALKORDB"&&health.ok===true)kind="FALKORDB";else if(health.backend==="memory"&&health.ok===true)kind="LOCAL_MEMORY";else throw Error("Unknown health state");}else if(res.status!==404)throw Error("Graph API health unavailable: HTTP "+res.status);}catch(e){kind="UNAVAILABLE";failure("Graph API unavailable: "+e.message+". The app will not claim live settlement results.");}
-if(!await reset("ambiguous"))throw Error("Could not load ambiguous case");}
+if(!await reset("ambiguous"))throw Error("Could not load ambiguous case");simpleDisplay();}
 initialize();
 </script>
 </body></html>
