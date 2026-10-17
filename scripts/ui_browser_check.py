@@ -48,6 +48,7 @@ def main():
         expect(page.locator("#simpleHeading")).to_contain_text("Two more soaps arrived")
         expect(page.locator("#simpleChoices")).to_be_visible()
         expect(page.locator("#simpleBalanceShort")).to_have_text("2 still owed")
+        page.screenshot(path="docs/screenshots/judge-live-followup.png" if EXPECT_GRAPH else "docs/screenshots/judge-followup.png",full_page=True)
 
         # A supplier statement supports a PROPOSAL, never automatic closure.
         page.locator("#simpleChoosePromo").click()
@@ -61,6 +62,7 @@ def main():
         expect(page.locator("#simpleBalancePromo")).to_have_text("Settled ✓")
         expect(page.locator("#simpleBalanceShort")).to_have_text("2 still owed")
         expect(page.locator("#audit li")).to_have_count(1)
+        page.screenshot(path="docs/screenshots/judge-live-outcome.png" if EXPECT_GRAPH else "docs/screenshots/judge-outcome.png",full_page=True)
 
         # Negative control: contradiction cannot silently settle anything.
         page.locator("#simpleRestart").click()
