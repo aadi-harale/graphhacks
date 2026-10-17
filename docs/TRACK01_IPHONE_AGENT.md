@@ -25,9 +25,19 @@ Track requirements and organizer's October 15 primary-source explanation:
 
 The deterministic core still controls actual allocation safety. Existing retailer-review endpoints are **not agent tools**. A fabricated model sentence can neither change the canonical decision nor bypass the graph-write guard.
 
-### Read-only MCP
+### Live MCP path
 
-`app/track1_mcp.py` exposes four bounded **read-only** tools through the official MCP Python SDK, installable via `requirements-mcp.txt`. Model selection in the web API currently uses OpenAI function calling to the same underlying tools; it does **not** itself use MCP as the transport. We disclose this distinction rather than claim the entire agent is MCP-orchestrated.
+The web API now calls `run_agent_mcp`. The model chooses among five bounded function definitions, then an **MCP Python ClientSession over stdio** calls `app.track1_mcp`. The MCP server executes human-written Cypher against the `sahiaaya_resolve` graph. Four tools are read-only; `create_followup_draft` is the sole mutation tool and is guarded by evidence retrieval, current policy, source-version checks and local-only mutation mode.
+
+```text
+Question → model chooses tool → MCP ClientSession → typed MCP tool
+         → FalkorDB Cypher → evidence and path → model chooses next tool
+         → guarded internal follow-up DRAFT → persistent graph node
+```
+
+The model never generates Cypher, sends a supplier message or approves settlement. **MCP is now the actual transport of the local web agent**, not just an optional stand-alone endpoint.
+
+**Proof level:** GitHub CI validates a fake model choosing tools over an authentic MCP stdio connection and actual FalkorDB graph; it checks the saved draft can be re-read. This does NOT prove that the live OpenAI model selects the right tools, because there is no configured model key in CI.
 
 ## How to run real agent mode
 
@@ -43,9 +53,19 @@ Open http://localhost:8000. Under **Try a different delivery**, import `examples
 
 The model is configured via `SAHIAAYA_AGENT_MODEL` (default `gpt-4o-mini`), which can be overridden in your local environment. The backend has a bounded maximum number of rounds and disallows free-form Cypher, external messages and settlement write tools.
 
-The optional MCP entrypoint is `python -m app.track1_mcp` (stdio, no tools can mutate a claim).
+You can also launch the MCP host independently using `python -m app.track1_mcp` (stdio). It exposes four read-only tools and one strictly guarded internal-draft writer; no settlement endpoint or supplier send is exposed.
 
 **Do not paste or commit API keys into source, screenshots or GitHub.**
+
+## How to verify the actual MCP transport
+
+```powershell
+docker compose up -d --build
+# In the repository directory, CI runs this same graph-backed test:
+docker compose exec -e RUN_FALKOR_TESTS=1 app pytest tests/test_track1_agent.py -v
+```
+
+For actual model selection, set `OPENAI_API_KEY` in your local shell **before** launching Docker. Click **Investigate with agent**, confirm the returned engine is `model_selected_mcp_graph_tools`, inspect its MCP tool sequence and graph paths, then reopen the saved case and follow-up. Do not represent the automated fake-model tool selection as a real model run.
 
 ## The judge-facing demo (2 minutes 30 seconds)
 
