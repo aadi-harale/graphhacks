@@ -10,6 +10,8 @@ services:
       FALKOR_PORT: "6379"
       ALLOW_DEMO_RESET: "1"
       ALLOW_DEMO_MUTATIONS: "1"
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      SAHIAAYA_AGENT_MODEL: ${SAHIAAYA_AGENT_MODEL:-gpt-4o-mini}
     ports:
       - "127.0.0.1:8000:8000"
     depends_on:
