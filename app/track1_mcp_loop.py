@@ -22,6 +22,7 @@ async def run_agent_mcp(case_id: str, receipt_id: str, query: str, store=None,
     from mcp import ClientSession, StdioServerParameters
     from mcp.client.stdio import stdio_client
 
+    model_execution="configured_api_client" if client is None else "injected_client"
     if client is None:
         if not os.getenv("OPENAI_API_KEY"):
             raise RuntimeError("Set OPENAI_API_KEY to enable real model tool selection")
@@ -74,7 +75,7 @@ async def run_agent_mcp(case_id: str, receipt_id: str, query: str, store=None,
                             "evidence_paths":sess.evidence_paths,
                             "engine":"model_selected_mcp_graph_tools",
                             "transport":"MCP stdio / ClientSession",
-                            "provenance":"actual MCP responses; model tool selection" if client is not None else "unverified",
+                            "model_execution":model_execution,
                             "model_name":name,
                             "tool_rounds":round_index+1,
                             "successful_tool_calls":successful_calls,
@@ -86,6 +87,7 @@ async def run_agent_mcp(case_id: str, receipt_id: str, query: str, store=None,
                                                for c in calls]})
                 for c in calls:
                     tool=c.function.name
+                    params={}
                     try:
                         if tool not in schemas:
                             raise ValueError("Tool not in bounded catalog")
@@ -130,7 +132,7 @@ async def run_agent_mcp(case_id: str, receipt_id: str, query: str, store=None,
                         successful_calls+=1
                         sess.trace.append({"round":round_index+1,"tool":tool,
                                            "arguments":params,
-                                           "tool_purpose":schemas[tool] and next(
+                                           "tool_purpose":next(
                                                definition["function"]["description"]
                                                for definition in TOOL_SCHEMAS
                                                if definition["function"]["name"]==tool),
