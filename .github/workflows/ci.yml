@@ -16,6 +16,8 @@ jobs:
           python -m pip install -r requirements-mcp.txt
           python -c "from app.track1_mcp import mcp; assert mcp is not None"
       - run: python -m pytest -q tests/test_decisions.py tests/test_baseline.py tests/test_resolve_intake.py tests/test_track1_agent.py tests/test_track1_counterfactual.py
+      - name: Compile real-model acceptance and recording utilities
+        run: python -m compileall -q app scripts
       - run: python -m scripts.proof_report
       - name: Check judge interface JavaScript and DOM bindings
         run: python -m scripts.check_frontend
