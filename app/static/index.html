@@ -198,6 +198,9 @@
 .agent-trace li{font-size:11px;padding:9px 12px;background:#fff;border:1px solid #d9e6d6;border-radius:7px;display:flex;justify-content:space-between;align-items:center;gap:12px}
 .agent-trace li span{color:#739078}
 @media(max-width:650px){.agent-control{display:block}.agent-control input,.agent-control .btn{width:100%;margin:4px 0}.agent-head{display:block}}
+.agent-history{border-top:1px solid #cfddc9;margin-top:12px;padding-top:12px;font-size:12px}
+.agent-history strong{display:block;margin-bottom:6px;color:#25513a}
+.agent-history p{background:#fff;border:1px solid #dce7d8;border-radius:7px;padding:10px;line-height:1.6;color:#45654c;margin:5px 0}
 </style>
 </head>
 <body>
@@ -280,7 +283,7 @@
   <p>It can choose graph tools, follow earlier supplier promises, discover competing claims and create a draft follow-up. Only the shopkeeper may approve settlement.</p>
   <div class="agent-control"><input id="agentQuestion" aria-label="Question for graph investigator" value="Which old promise could this delivery fulfil, and what evidence should I request?"><button id="agentRun" type="button" class="btn primary">Investigate with agent →</button></div>
   <div id="agentResult" class="agent-result" role="status">Requires a locally configured model key. The public preview does not run an agent.</div>
-  <ol id="agentTrace" class="agent-trace" aria-label="Graph tools chosen by the agent"></ol>
+  <ol id="agentTrace" class="agent-trace" aria-label="Graph tools chosen by the agent"></ol><div class="agent-history"><strong>Saved next steps in FalkorDB</strong><div id="agentSaved">No follow-up drafts yet.</div></div>
  </div>
  </div>
 </section></details>
@@ -475,11 +478,25 @@ async function reopenResolveCase(){
   setCaseMessage("Saved history retrieved from FalkorDB; changes and reviewed allocations persist.",false);
  }catch(err){setCaseMessage("Could not reopen case: "+err.message,true);}
 }
+async function loadAgentDrafts(){
+ if(!resolveSession||kind!=="FALKORDB")return;
+ const rid=$("caseReceiptSelect").value;
+ const host=$("agentSaved");host.replaceChildren();
+ try{
+  const data=await api("/api/resolve/cases/"+encodeURIComponent(resolveSession.id)+"/receipts/"+encodeURIComponent(rid)+"/followups");
+  if(!data.followups.length){host.textContent="No follow-up drafts yet.";return;}
+  for(const f of data.followups){
+   const item=document.createElement("p");
+   item.textContent=f.action.replaceAll("_"," ")+" · "+f.question+" · "+f.status+" (receipt version "+f.receipt_version+")";
+   host.append(item);
+  }
+ }catch(err){host.textContent="Could not read graph history: "+err.message;}
+}
 async function loadResolveReceipt(){
  if(!resolveSession)return;
  try{
   const s=await api("/api/resolve/cases/"+encodeURIComponent(resolveSession.id)+"/receipts/"+encodeURIComponent($("caseReceiptSelect").value));
-  resolveSession.state=s;renderResolveCase(s);
+  resolveSession.state=s;renderResolveCase(s);await loadAgentDrafts();
  }catch(err){setCaseMessage("Could not investigate receipt: "+err.message,true);}
 }
 function renderResolveCase(s){
@@ -547,11 +564,15 @@ async function runInvestigationAgent(){
     "\nAgent explanation: "+r.model_summary+
     "\nSaved draft: "+(r.draft?r.draft.question:"No action created")+
     "\nNote: drafts are internal. No supplier was contacted or payment made.");
+  for(const path of (r.evidence_paths||[])){
+   const li=document.createElement("li");li.textContent=path.receipt+" → "+path.obligation+" → "+path.document;$("agentTrace").append(li);
+  }
   for(const step of (r.tool_trace||[])){
    const li=document.createElement("li"),name=document.createElement("strong"),detail=document.createElement("span");
    name.textContent=step.tool;detail.textContent=step.result_kind;
    li.append(name,detail);$("agentTrace").append(li);
   }
+  await loadAgentDrafts();
  }catch(e){assign("agentResult","Agent unavailable: "+e.message+". The graph-only receiving workflow remains available.");}
  finally{$("agentRun").disabled=false;}
 }
