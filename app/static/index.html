@@ -281,6 +281,13 @@
 @media(max-width:900px){.content{padding-top:32px}.simple-workspace{gap:12px}.simple-form-card,.simple-result-card{padding:23px;min-height:390px}.simple-secondary{flex-wrap:wrap}.simple-secondary>div{flex-basis:100%}}
 @media(max-width:680px){.content{padding:25px 16px 60px}.simple-workspace{grid-template-columns:1fr}.simple-intro{margin-bottom:20px}.simple-intro h1{font-size:clamp(34px,9vw,49px)}.simple-intro p{font-size:13px}.simple-form-card,.simple-result-card{min-height:0;padding:21px}.simple-form-card h2{font-size:23px;margin:13px 0 16px}.simple-result-card h2{font-size:26px}.simple-progress-step{font-size:10px;padding:9px 8px;gap:5px}.simple-progress-step span{width:19px;height:19px}.simple-result-card{min-height:260px}.simple-illustration{height:50px;margin:11px auto 4px}.simple-icon-square{height:53px;width:53px;font-size:27px;border-radius:16px}.simple-secondary .simple-outline-button{flex:1}.full-workspace-details>summary span{display:none}}
 @media(max-width:390px){.simple-progress{gap:4px}.simple-progress-step{font-size:9px}.simple-input-pair{gap:7px}.simple-field input{font-size:18px}.simple-bottom{align-items:flex-start}}
+
+.simple-history{margin-top:17px;border-top:1px solid #e2e8de;padding-top:15px}
+.simple-history-heading{font-size:10px;font-weight:840;color:#55775e;letter-spacing:.12em;margin-bottom:7px}
+.simple-history-row{display:flex;justify-content:space-between;align-items:center;gap:13px;padding:12px 3px;border-bottom:1px dashed #dce6db}
+.simple-history-row:last-child{border-bottom:0}
+.simple-history-row span{font-size:12px;color:#6c806d}
+.simple-history-row strong{font-size:12px;color:#29573b;text-align:right}
 </style>
 </head>
 <body>
@@ -313,6 +320,12 @@
       </div>
       <div class="simple-mini-note"><icon aria-hidden="true">✓</icon><span>No signup. Everything in this example is fictional.</span></div>
       <button id="simpleCheck" class="simple-button simple-button-main" type="button">Check delivery <span aria-hidden="true">→</span></button>
+      <div class="simple-history" id="simpleHistory" hidden>
+        <div class="simple-history-heading">WHAT SAHIAAYA REMEMBERS</div>
+        <div class="simple-history-row"><span>Old invoice</span><strong>2 soaps missing</strong></div>
+        <div class="simple-history-row"><span>Free-goods offer</span><strong>2 soaps promised</strong></div>
+        <div class="simple-history-row"><span>Later delivery</span><strong>2 soaps arrived</strong></div>
+      </div>
     </section>
     <section class="simple-result-card" aria-label="Delivery outcome" aria-live="polite">
       <div class="simple-card-label">SAHIAAYA'S RESULT <span id="simpleCaseTag" class="simple-small-tag">READY</span></div>
@@ -746,6 +759,8 @@ function simpleDisplay(){
  const heading=$("simpleHeading"),detail=$("simpleDetail"),tag=$("simpleCaseTag"),
        next=$("simpleNext"),choices=$("simpleChoices"),missing=$("simpleMissingPanel"),balances=$("simpleBalances");
  choices.hidden=true;missing.hidden=true;balances.hidden=true;next.hidden=true;
+ $("simpleHistory").hidden=simplePhase<2;
+ $("simpleCheck").textContent=simplePhase>=2?"Delivery checked ✓":"Check delivery →";
  const item=$("simpleProduct").value.trim()||"items";const singular=item.toLowerCase()==="soap bars"?"soap":"item";
  let icon="↗";
  if(simplePhase===0){heading.textContent="Let's check your delivery.";detail.textContent="Enter what the bill says and what you counted in the box.";tag.textContent="READY";}
