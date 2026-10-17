@@ -51,6 +51,8 @@ def main():
             expect(page.locator("#agentTransport")).to_contain_text("MCP stdio")
             expect(page.locator("#agentTrace .agent-trace-item").first).to_be_visible()
             expect(page.locator("#agentEvidencePaths .agent-evidence-row")).to_have_count(2)
+            expect(page.locator("#agentSaved")).not_to_contain_text("No follow-up drafts yet.")
+
             page.locator("#agentWorkbench").scroll_into_view_if_needed()
             page.wait_for_timeout(1500)
             page.screenshot(path=str(DEST/"02_real_agent.png"),full_page=False)
@@ -69,6 +71,14 @@ def main():
             expect(page.locator("#caseAudit")).to_contain_text("2 units")
             expect(page.locator("#caseDecisionStatus")).to_have_text("ALREADY ALLOCATED")
             page.screenshot(path=str(DEST/"04_retailer_approved.png"),full_page=False)
+            # Verify durable graph-linked follow-up after reopening the case.
+            page.reload(wait_until="domcontentloaded")
+            expect(page.locator("#modeText")).to_contain_text("LIVE FALKORDB")
+            page.locator("#simpleTryOwn").click()
+            page.locator("#resumeCaseId").fill(case_id)
+            page.locator("#resumeCaseButton").click()
+            expect(page.locator("#agentSaved")).not_to_contain_text("No follow-up drafts yet.")
+            page.screenshot(path=str(DEST/"05_saved_followup_after_reload.png"),full_page=False)
             if errors:
                 raise RuntimeError("Browser errors: "+repr(errors))
             page.wait_for_timeout(1200)
