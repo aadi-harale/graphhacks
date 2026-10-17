@@ -4,41 +4,20 @@
 
 The agent connects historic shortage claims, documented promotions, supplier statements and confirmed receipt evidence, then identifies exactly what needs clarification before any settlement can be reviewed.
 
-## Track 01: Agents That Act on Connected Data — iPhone 18 Pro
+## Track 01 — Agents That Act on Connected Data
 
-**Target track confirmed in the [official rules](https://www.wemakedevs.org/hackathons/falkordb/rules).** We use a model-directed, bounded graph investigation agent to choose graph tools, trace source evidence across deliveries and create a durable *internal* clarification draft. Deterministic policies and explicit retailer approval still govern actual settlement. This is not a model that writes arbitrary Cypher or sends messages to real suppliers.
+**Prize track: iPhone 18 Pro.** Official rules: https://www.wemakedevs.org/hackathons/falkordb/rules .
 
-**Important runtime distinction:** The public Vercel site is a synthetic browser-only explanation. The local Docker app runs real FalkorDB tools; actual model-chosen tool selection additionally requires a user-configured `OPENAI_API_KEY` and may incur API charges. Fake-model integration tests verify the tool contract, **not** the reliability of an untested live model.
+A shopkeeper receives fewer items than billed, then faces an ambiguous replacement delivery: was the supplier fulfilling the old shortage or a separate promotion? SahiAaya uses FalkorDB to investigate previous receipts, obligations, source documents and supplier statements, then drafts a precise follow-up. The shopkeeper reviews any eventual allocation.
 
-Full agent architecture, read-only optional MCP tool host, exact go/no-go and demo script: [docs/TRACK01_IPHONE_AGENT.md](docs/TRACK01_IPHONE_AGENT.md).
+### Judge experience
 
-## Judge experience and deployment modes (October 16, 2026)
+- **[Public preview](https://sahiaaya-graphhacks.vercel.app/):** KaamSabha-style **Check delivery → Follow up → Resolve**. A clearly disclosed *browser-only synthetic walkthrough*. This cannot establish live FalkorDB or model operation.
+- **Actual Track 01 demo:** `docker compose up -d --build`, open http://localhost:8000, use **Enter your own case** and **Investigate with agent**. The model chooses bounded tools, the web API invokes them through **MCP stdio ClientSession**, and FalkorDB returns connected evidence and saves an internal follow-up. A locally supplied `OPENAI_API_KEY` is required for real model selection.
+- **Explainable, safe output:** graph paths, named MCP tools, authoritative graph-policy verdict, source-referenced follow-up draft, and human-approved settlement. No real supplier is contacted or money moved.
+- **Verification:** GitHub Actions tests the actual MCP client/server transport against a live FalkorDB service while simulating model tool choices. That proves transport and guardrails, **not** real-model quality. A real-key end-to-end run and video remain required.
 
-- **Public interactive preview:** https://sahiaaya-graphhacks.vercel.app/ — an isolated browser-side fictional walk-through. **Does not query FalkorDB.** No external supplier communication or payments.
-- **Real graph experience:** run the same UI via `docker compose up -d --build` on localhost:8000. The UI detects the FastAPI backend, which traverses actual FalkorDB evidence and stores reviewed synthetic allocations.
-- **Live verification:** GitHub Actions runs a FalkorDB service and adversarial graph tests. See the latest [Actions runs](https://github.com/aadi-harale/graphhacks/actions). At the time of this update the conflict guard has passed its live regression. Browser smoke and unknown-history adoption testing remain in progress.
-- **Judge demo:** [DEMO_JUDGE_GUIDE.md](DEMO_JUDGE_GUIDE.md) contains the exact three-minute story and truthful limitations.
-
-## Judge-first home screen (October 16)
-
-The public first screen now answers only three questions: **Who?** A small shopkeeper. **What went wrong?** Two missing soaps and two promised free soaps are still due; only two arrived. **What does SahiAaya do?** It checks the supplier history before claiming a promise is fulfilled.
-
-The single primary button opens the guided proof → supplier response → retailer review story. Contradictory evidence, new-case import, Cypher traces and audit history remain available in clearly labeled optional disclosures. They are not hidden from reviewers; they are simply not mandatory reading on first visit. The public Vercel demonstration remains client-side and fictional; local Docker runs FalkorDB.
-
-## First look: understand the whole product in 60 seconds
-
-The interface now opens with the **retailer's real question**: two units arrived, but there are two different older promises for four units total. Click **See SahiAaya solve this →** to follow:
-
-1. **Receive** — observe and confirm the goods.
-2. **Connect** — recover earlier shortage and promotion obligations.
-3. **Ask** — use the actual simulated supplier-response operation to attribute this receipt.
-4. **Approve** — let the retailer review the suggested allocation; record two units settled and two still owed, or block the action if statements conflict.
-
-The evidence chain below the interactive case shows how connected documents, the receipt, a supplier statement and retailer approval affect the final verdict. The public page is explicitly **a synthetic, client-only walkthrough**; Docker runs the same interface with actual FalkorDB Cypher queries. A real FalkorDB-backed browser video remains a distinct submission requirement.
-
-**Reproducible browser checks:** `scripts/ui_browser_check.py` runs desktop and 390-pixel mobile Playwright checks in GitHub Actions. It covers the guided positive case, contradiction negative control and horizontal mobile overflow. Screenshots are attached as the `sahiaaya-browser-screenshots` Actions artifact.
-
-**Design reference evidence:** the [October 7 First Commit recap](https://www.wemakedevs.org/blogs/first-commit-hackathon-recap-and-whats-next) credits Suraksha's clear human need, Beacon's approved response and CampusEvac's two-player coordination; [FalkorDB's August 18 recap](https://www.falkordb.com/blog/memory-meets-motion-the-falkordb-standouts/) describes Atrium's connected evidence changing a teaching action. The [September 30 Hack for Humanity recap](https://www.falkordb.com/blog/how-builders-at-hack-for-humanity-used-falkordb-to-solve-real-community-problems/) documents accessible input/output with evidence-backed graph decisions. We applied these **product-interaction lessons**, not an unverified claim about their visual aesthetics.
+**[Track 01 architecture, run instructions and submission gates](docs/TRACK01_IPHONE_AGENT.md)** · **[Full browser and FalkorDB CI](https://github.com/aadi-harale/graphhacks/actions)**
 
 ## New: enter an unfamiliar fictional delivery history
 
