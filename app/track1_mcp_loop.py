@@ -81,10 +81,10 @@ async def run_agent_mcp(case_id: str, receipt_id: str, query: str, store=None,
                             raise ValueError("Inspect and trace evidence before drafting")
                         # IDs come from validated request, never model-controlled parameters.
                         result=await mcp.call_tool(tool,{"case_id":case_id,"receipt_id":receipt_id,**params})
-                        if result.isError:
+                        if result.is_error:
                             raise ValueError("MCP operation rejected: "+
                                              "; ".join(getattr(c,"text","") for c in result.content)[:300])
-                        content=getattr(result,"structuredContent",None)
+                        content=getattr(result,"structured_content",None)
                         if content is None:
                             raw=next((getattr(c,"text",None) for c in result.content if getattr(c,"text",None)),None)
                             if raw is None:raise ValueError("MCP tool returned no evidence")
