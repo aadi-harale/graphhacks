@@ -228,3 +228,5 @@ async def track1_investigate(inp: AgentInvestigationIn):
         raise HTTPException(status_code=422,detail=f"Agent tool call was rejected: {exc}")
     except RuntimeError as exc:
         raise HTTPException(status_code=503,detail=f"Agent not available: {exc}")
+    except Exception as exc:
+        raise HTTPException(status_code=503,detail="MCP agent unavailable. Check local graph, tool host and model provider logs.") from exc
