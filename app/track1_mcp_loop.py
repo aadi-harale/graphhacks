@@ -33,8 +33,11 @@ async def run_agent_mcp(case_id: str, receipt_id: str, query: str, store=None,
     messages=[{"role":"system","content":SYSTEM_PROMPT},
               {"role":"user","content":f"Investigate fictional case {case_id}, receipt {receipt_id}. {query[:280]}"}]
     schemas={item["function"]["name"]:item["function"]["parameters"] for item in TOOL_SCHEMAS}
+    # The graph tool host needs database/local-mode settings, never a model API key.
+    child_env={k:v for k,v in os.environ.items() if k not in
+               ("OPENAI_API_KEY","OPENAI_ORG_ID","OPENAI_PROJECT_ID")}
     server=StdioServerParameters(command=sys.executable,args=["-m","app.track1_mcp"],
-                                env=dict(os.environ))
+                                env=child_env)
     async with stdio_client(server) as (read,write):
         async with ClientSession(read,write) as mcp:
             await mcp.initialize()
