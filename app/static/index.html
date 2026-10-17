@@ -201,6 +201,86 @@
 .agent-history{border-top:1px solid #cfddc9;margin-top:12px;padding-top:12px;font-size:12px}
 .agent-history strong{display:block;margin-bottom:6px;color:#25513a}
 .agent-history p{background:#fff;border:1px solid #dce7d8;border-radius:7px;padding:10px;line-height:1.6;color:#45654c;margin:5px 0}
+
+/* KaamSabha-inspired: one user action, one clear outcome, advanced controls on demand. */
+.frame{display:block;min-height:100vh}
+.rail{padding:17px max(20px,calc((100vw - 1170px)/2));min-height:70px;display:flex;flex-direction:row;align-items:center;justify-content:space-between;gap:15px}
+.rail .brand{font-size:25px}.rail .brand-sub{font-size:9px}
+.rail .nav,.rail .rail-section,.rail .rail-bottom{display:none}
+.main{width:100%}
+.topbar{border-bottom:1px solid #dde3d6;min-height:48px;padding:10px max(24px,calc((100vw - 1170px)/2));background:#fafbf7}
+.crumb{font-size:11px}.mode{font-size:10px;padding:6px 10px}
+.content{max-width:1220px;padding:43px 24px 90px;margin:0 auto}
+.simple-home{margin:0 auto;max-width:1080px}
+.simple-intro{text-align:center;margin:0 auto 30px;max-width:760px}
+.simple-intro .eyebrow{font-size:10px;color:#50765b;letter-spacing:.19em}
+.simple-intro h1{font-size:clamp(39px,4.7vw,63px);font-family:Georgia,"Times New Roman",serif;font-weight:500;letter-spacing:-.061em;line-height:1.08;margin:14px 0}
+.simple-intro h1 em{font-style:normal;color:#296546}
+.simple-intro p{font-size:15px;line-height:1.6;color:#627368;margin:0 auto;max-width:620px}
+.simple-progress{display:grid;grid-template-columns:repeat(3,1fr);max-width:770px;margin:0 auto 23px;gap:8px}
+.simple-progress-step{display:flex;align-items:center;gap:9px;padding:10px 15px;border:1px solid #dce3d8;background:#fff;border-radius:11px;color:#68796d;font-size:12px;font-weight:770;white-space:nowrap}
+.simple-progress-step span{background:#f0f3eb;color:#6d7d70;border-radius:6px;width:23px;height:23px;display:grid;place-items:center;font-size:10px}
+.simple-progress-step.is-active{background:#e3efe1;border-color:#9fc5a5;color:#205639}
+.simple-progress-step.is-active span{background:#285f43;color:white}
+.simple-progress-step.is-done{color:#377353;background:#f2f8f0}
+.simple-progress-step.is-done span{background:#d8ead7;color:#255e40}
+.simple-workspace{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;align-items:stretch}
+.simple-form-card,.simple-result-card{background:#fff;border:1px solid #d8e1d6;box-shadow:0 15px 45px rgba(32,65,42,.055);border-radius:19px;padding:29px 29px 26px;min-height:408px}
+.simple-result-card{background:#f1f5e9;display:flex;flex-direction:column;border-color:#d0dfcb}
+.simple-card-label{color:#66806a;letter-spacing:.135em;font-size:10px;font-weight:830;display:flex;align-items:center;gap:10px}
+.simple-small-tag{margin-left:auto;background:#e2eee1;color:#49745a;border-radius:25px;padding:5px 10px;font-size:9px;font-weight:850;letter-spacing:.065em}
+.simple-label-icon{display:grid;place-items:center;color:#36714d;background:#e6f0e3;width:22px;height:22px;border-radius:7px;font-size:13px}
+.simple-form-card h2,.simple-result-card h2{font-size:27px;font-family:Georgia,serif;font-weight:500;letter-spacing:-.035em;margin:18px 0 23px}
+.simple-field{display:block;font-size:12px;color:#607766;font-weight:730;margin-bottom:15px}
+.simple-field input{margin-top:9px;width:100%;background:#fafcf8;border:1px solid #c9d8ca;border-radius:11px;padding:12px 14px;color:#234936;font-weight:730;font-size:20px;min-height:49px}
+.simple-field input[type=text]{font-size:16px;font-weight:600}
+.simple-field input:focus{outline:2px solid #9ac6a0;outline-offset:1px}
+.simple-input-pair{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.simple-mini-note{display:flex;align-items:center;gap:9px;color:#718472;font-size:11px;margin:3px 0 19px}
+.simple-mini-note icon{display:inline-grid;place-items:center;background:#dff0db;color:#2b7645;border-radius:50%;height:18px;width:18px;font-style:normal;font-weight:900}
+.simple-button{border:0;border-radius:12px;padding:14px 18px;min-height:49px;font-size:13px;font-weight:830;display:flex;align-items:center;justify-content:space-between;gap:13px;width:100%}
+.simple-button-main{background:#1d543b;color:white}
+.simple-button-main:hover:not(:disabled){background:#133f2c}
+.simple-button:disabled{opacity:.5;cursor:not-allowed}
+.simple-illustration{display:flex;align-items:center;justify-content:center;height:75px;margin:22px auto 3px}
+.simple-icon-square{height:69px;width:69px;border-radius:21px;background:#dfeada;color:#3f7450;font-size:35px;display:grid;place-items:center}
+.simple-result-card h2{margin:12px 0 10px;font-size:30px;line-height:1.2;text-align:center}
+.simple-result-card>p{color:#586e5d;font-size:13px;line-height:1.6;text-align:center;margin:0 auto 16px;max-width:360px}
+.simple-missing{margin:11px 0 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 17px;border-radius:11px;background:#fff3e7;border:1px solid #f0dabe}
+.simple-missing span{font-size:12px;color:#8c6036}
+.simple-missing strong{font-size:20px;color:#9b4f28;white-space:nowrap}
+.simple-result-card #simpleNext{margin-top:auto}
+.simple-choices{margin:5px 0 12px;display:grid;gap:7px}
+.simple-choices>p{font-size:12px;text-align:left;line-height:1.5;margin:0 0 5px;color:#58715f}
+.simple-choices button{font-size:12px;font-weight:760;text-align:left;padding:12px 14px;border:1px solid #c4d7c6;background:white;color:#245c3b;border-radius:10px}
+.simple-choices button:hover:not(:disabled){background:#e0f0df}
+.simple-choices button.simple-choice-quiet{font-size:11px;color:#8b5e40;border-color:#e5d7c4;background:#fffaf4}
+.simple-balances{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:13px 0 2px}
+.simple-balances>div{background:#fff;border:1px solid #d9e6d5;border-radius:10px;padding:13px}
+.simple-balances span{display:block;font-size:10px;color:#647b67}
+.simple-balances strong{display:block;font-size:15px;color:#22593e;margin-top:5px}
+.simple-error{padding:10px;border-radius:9px;background:#feece6;color:#943c2c;font-size:12px;text-align:left!important}
+.simple-bottom{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:13px 1px 25px;color:#7b8d7c;font-size:11px}
+.simple-bottom>span{display:flex;align-items:center;gap:7px}
+.simple-privacy-dot{background:#bc8747;height:7px;width:7px;border-radius:50%;display:inline-block}
+.simple-text-button{background:transparent;color:#2f6547;border:0;font-size:12px;font-weight:750;text-decoration:underline;text-underline-offset:4px}
+.simple-secondary{display:flex;align-items:center;gap:11px;background:#eef3e9;border:1px solid #d6e1d0;border-radius:14px;padding:17px 20px}
+.simple-secondary>div{flex:1;min-width:0}
+.simple-secondary strong{font-size:13px;display:block;color:#224d35}
+.simple-secondary>div span{font-size:11px;display:block;margin-top:5px;color:#6a806d}
+.simple-outline-button{background:white;border:1px solid #bdd0bd;border-radius:9px;padding:11px 13px;font-size:11px;color:#286143;font-weight:780;white-space:nowrap}
+.simple-outline-button:hover{background:#e2eee1}
+.full-workspace-details{margin:16px auto 0;max-width:1080px}
+.full-workspace-details>summary{display:flex;align-items:center;justify-content:center;gap:10px;text-align:center;font-size:11px;color:#61806a;cursor:pointer;padding:15px;list-style:none}
+.full-workspace-details>summary::before{content:'+';display:inline-grid;place-items:center;font-size:18px;color:#477654}
+.full-workspace-details[open]>summary::before{content:'−'}
+.full-workspace-details>summary span{color:#8da091}
+.full-workspace-details>.journey{margin-top:12px}
+.full-workspace-details>.notice{margin-top:13px}
+.simple-home [hidden]{display:none!important}
+@media(max-width:900px){.content{padding-top:32px}.simple-workspace{gap:12px}.simple-form-card,.simple-result-card{padding:23px;min-height:390px}.simple-secondary{flex-wrap:wrap}.simple-secondary>div{flex-basis:100%}}
+@media(max-width:680px){.content{padding:25px 16px 60px}.simple-workspace{grid-template-columns:1fr}.simple-intro{margin-bottom:20px}.simple-intro h1{font-size:clamp(34px,9vw,49px)}.simple-intro p{font-size:13px}.simple-form-card,.simple-result-card{min-height:0;padding:21px}.simple-form-card h2{font-size:23px;margin:13px 0 16px}.simple-result-card h2{font-size:26px}.simple-progress-step{font-size:10px;padding:9px 8px;gap:5px}.simple-progress-step span{width:19px;height:19px}.simple-result-card{min-height:260px}.simple-illustration{height:50px;margin:11px auto 4px}.simple-icon-square{height:53px;width:53px;font-size:27px;border-radius:16px}.simple-secondary .simple-outline-button{flex:1}.full-workspace-details>summary span{display:none}}
+@media(max-width:390px){.simple-progress{gap:4px}.simple-progress-step{font-size:9px}.simple-input-pair{gap:7px}.simple-field input{font-size:18px}.simple-bottom{align-items:flex-start}}
 </style>
 </head>
 <body>
@@ -211,6 +291,63 @@
 </aside><div class="main">
 <header class="topbar"><div class="crumb">SahiAaya / <strong>Supplier resolution</strong> / Sample case RCP-52</div><div class="mode" id="mode"><span class="dot"></span><span id="modeText">Checking graph connection…</span></div></header>
 <main class="content">
+<section class="simple-home" id="simpleHome" aria-label="SahiAaya simple receiving workflow">
+  <div class="simple-intro">
+    <div class="eyebrow">SAHIAAYA · MADE FOR SMALL SHOPS</div>
+    <h1>Never lose track of what<br><em>your supplier owes.</em></h1>
+    <p>Check a delivery, spot missing goods, and follow up until they're actually received.</p>
+  </div>
+  <div class="simple-progress" aria-label="Three step receiving workflow">
+    <div id="simpleStep1" class="simple-progress-step is-active"><span>01</span> Check delivery</div>
+    <div id="simpleStep2" class="simple-progress-step"><span>02</span> Follow up</div>
+    <div id="simpleStep3" class="simple-progress-step"><span>03</span> Resolve</div>
+  </div>
+  <div class="simple-workspace">
+    <section class="simple-form-card" aria-label="Compare supplier bill with received goods">
+      <div class="simple-card-label"><span class="simple-label-icon">▣</span> TODAY'S DELIVERY <span class="simple-small-tag">TRY THE DEMO</span></div>
+      <h2>What did you receive?</h2>
+      <label class="simple-field">Item <input id="simpleProduct" type="text" value="Soap bars" maxlength="32" autocomplete="off" aria-label="Name of the item"></label>
+      <div class="simple-input-pair">
+       <label class="simple-field">Supplier billed <input id="simpleBilled" type="number" value="50" min="1" max="9999" inputmode="numeric"></label>
+       <label class="simple-field">You received <input id="simpleCounted" type="number" value="48" min="0" max="9999" inputmode="numeric"></label>
+      </div>
+      <div class="simple-mini-note"><icon aria-hidden="true">✓</icon><span>No signup. Everything in this example is fictional.</span></div>
+      <button id="simpleCheck" class="simple-button simple-button-main" type="button">Check delivery <span aria-hidden="true">→</span></button>
+    </section>
+    <section class="simple-result-card" aria-label="Delivery outcome" aria-live="polite">
+      <div class="simple-card-label">SAHIAAYA'S RESULT <span id="simpleCaseTag" class="simple-small-tag">READY</span></div>
+      <div class="simple-illustration" id="simpleIllustration"><div class="simple-icon-square"><span id="simpleIllustrationIcon">↗</span></div></div>
+      <h2 id="simpleHeading">Let's check your delivery.</h2>
+      <p id="simpleDetail">Enter the quantities from the supplier's bill and the goods you actually received.</p>
+      <div id="simpleMissingPanel" class="simple-missing" hidden>
+        <span>Still owed by supplier</span><strong id="simpleMissingAmount">2 items</strong>
+      </div>
+      <div id="simpleChoices" class="simple-choices" hidden>
+        <p>Supplier says today's extra soaps are:</p>
+        <button id="simpleChooseReplacement" type="button">↳ Replacement for the missing 2</button>
+        <button id="simpleChoosePromo" type="button">✳ Free promotional soaps</button>
+        <button id="simpleChooseConflict" type="button" class="simple-choice-quiet">Two conflicting answers</button>
+      </div>
+      <button id="simpleNext" class="simple-button simple-button-main" type="button" hidden></button>
+      <div id="simpleBalances" class="simple-balances" hidden>
+       <div><span>Missing soaps</span><strong id="simpleBalanceShort">2 still owed</strong></div>
+       <div><span>Free soaps</span><strong id="simpleBalancePromo">2 still owed</strong></div>
+      </div>
+      <p id="simpleError" class="simple-error" role="alert" hidden></p>
+    </section>
+  </div>
+  <div class="simple-bottom">
+    <span><span class="simple-privacy-dot"></span><span id="simpleModeCaption">Interactive fictional example · not real supplier communication</span></span>
+    <button id="simpleRestart" class="simple-text-button" type="button">↻ Start over</button>
+  </div>
+  <div class="simple-secondary">
+    <div><strong>Want to see how it knows?</strong><span>Explore the supplier history, graph evidence, and agent tools.</span></div>
+    <button id="simpleShowProof" class="simple-outline-button" type="button">Explore the full case <span>↗</span></button>
+    <button id="simpleTryOwn" class="simple-outline-button" type="button">Enter your own case <span>→</span></button>
+  </div>
+</section>
+<details id="workspaceDetails" class="full-workspace-details">
+ <summary>Advanced workspace <span>History · Claims · FalkorDB evidence · Agent</span></summary>
 <section class="hero hero-simple" aria-label="What SahiAaya does for a shopkeeper">
  <div class="hero-text">
   <div class="eyebrow">SAHIAAYA · BILL VS BOX · PROMISE VS PROOF</div>
@@ -294,6 +431,7 @@
  <div class="graph-summary"><strong id="graphSummaryTitle">Missing supplier attribution</strong><span id="graphSummaryDetail">The retailer still has two outstanding obligations.</span></div>
 </section>
 <div class="under" id="proof"><section class="card"><div class="card-head"><div class="doc-label">Evidence trail</div><span class="tag">CONNECTIONS</span></div><h3>Why did SahiAaya decide this?</h3><ul class="evidence-list" id="evidenceList"></ul><div id="paths"></div><details><summary>Inspect machine decision and graph tool trace</summary><pre id="raw"></pre></details></section><section class="card"><div class="card-head"><div class="doc-label">Reviewed outcome</div><span class="tag">AUDIT</span></div><h3>What actually changed?</h3><ul class="ledger" id="audit"></ul><div class="result-box"><strong>No invented recoveries</strong><p>We report proposed allocations, supplier statements and reviewed settlements separately. No money is shown as saved until a real adjustment is proven.</p></div></section></div></details>
+</details>
 <footer class="foot" id="about"><strong>Current experience:</strong> <span id="runtimeDisclosure">Public synthetic walkthrough. Real FalkorDB reasoning is available in the separate local Docker application.</span> <a href="https://github.com/aadi-harale/graphhacks" target="_blank" rel="noopener noreferrer">Source and local FalkorDB setup →</a><br><br>Graph Hacks × FalkorDB 2026 · Track 01 — Agents That Act on Connected Data · Built with AI development assistance. No real retailer information is used.</footer>
 </main></div></div>
 <script>
