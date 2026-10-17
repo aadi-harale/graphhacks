@@ -185,6 +185,19 @@
 .quick-claim strong{font-size:14px;color:#295b42;white-space:nowrap}
 #caseDetails>.case-grid{margin:14px 0 0}
 @media(max-width:650px){.quick-claims{grid-template-columns:1fr}.quick-claim{padding:13px 15px}.quick-claim span{font-size:12px}.quick-claim strong{font-size:13px}}
+
+.agent-workbench{background:#f0f6e9;border:1px solid #c7dbbd;border-radius:13px;padding:20px;margin-top:22px}
+.agent-workbench .agent-head{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.agent-workbench h3{font-family:Georgia,serif;font-size:25px;font-weight:500;letter-spacing:-.04em;margin:9px 0 7px}
+.agent-workbench p{font-size:12px;line-height:1.65;color:#58705a;margin:0 0 17px}
+.agent-control{display:flex;gap:8px;align-items:center}
+.agent-control input{min-width:0;flex:1;border:1px solid #bcd2bd;padding:12px;border-radius:9px;font-size:12px;background:#fff}
+.agent-control .btn{white-space:nowrap;min-height:43px}
+.agent-result{border-top:1px solid #d5e3cf;margin-top:15px;padding-top:13px;font-size:12px;line-height:1.7;color:#486a50;white-space:pre-line}
+.agent-trace{display:grid;gap:6px;margin:10px 0 0;padding:0;list-style:none}
+.agent-trace li{font-size:11px;padding:9px 12px;background:#fff;border:1px solid #d9e6d6;border-radius:7px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.agent-trace li span{color:#739078}
+@media(max-width:650px){.agent-control{display:block}.agent-control input,.agent-control .btn{width:100%;margin:4px 0}.agent-head{display:block}}
 </style>
 </head>
 <body>
@@ -261,6 +274,14 @@
   <div class="case-content"><div><div class="doc-label">Connected obligations</div><div id="caseClaims" class="case-claims"></div><div class="doc-label">FalkorDB provenance</div><div id="casePath" class="lineage"></div></div>
   <div><label for="caseTarget">Claim to attribute this delivery to</label><select id="caseTarget"></select><label for="caseReference">Fictional supplier reference</label><input id="caseReference" value="fictional_supplier_confirmation"><button id="caseAttribute" type="button" class="btn secondary wide">Record supplier attribution</button><button id="caseApprove" type="button" class="btn primary wide" disabled>Retailer review & record allocation</button><p class="helper">This is a synthetic response; a reference string is not independently verified supplier evidence.</p></div></div>
   <div class="case-audit"><strong>Verified local ledger</strong><div id="caseAudit"></div></div>
+ <div class="agent-workbench" id="agentWorkbench">
+  <div class="agent-head"><span class="eyebrow">TRACK 01 · GRAPH INVESTIGATION AGENT</span><span class="tag">LOCAL GRAPH + MODEL REQUIRED</span></div>
+  <h3>Ask SahiAaya to investigate, not just check quantities.</h3>
+  <p>It can choose graph tools, follow earlier supplier promises, discover competing claims and create a draft follow-up. Only the shopkeeper may approve settlement.</p>
+  <div class="agent-control"><input id="agentQuestion" aria-label="Question for graph investigator" value="Which old promise could this delivery fulfil, and what evidence should I request?"><button id="agentRun" type="button" class="btn primary">Investigate with agent →</button></div>
+  <div id="agentResult" class="agent-result" role="status">Requires a locally configured model key. The public preview does not run an agent.</div>
+  <ol id="agentTrace" class="agent-trace" aria-label="Graph tools chosen by the agent"></ol>
+ </div>
  </div>
 </section></details>
 <details class="optional-section full-optional" id="evidenceDetails"><summary>Why did SahiAaya make this decision? <span>View evidence and settlement history</span></summary>
@@ -513,8 +534,30 @@ async function approveResolve(){
  }catch(err){setCaseMessage("Settlement rejected: "+err.message,true);}
 }
 
+async function runInvestigationAgent(){
+ const current=resolveSession?.state;
+ if(kind!=="FALKORDB"||!current){assign("agentResult","Open a locally stored fictional case first. This site cannot run a hosted agent.");return;}
+ $("agentRun").disabled=true;
+ assign("agentResult","Investigating connected evidence using model-selected graph tools…");
+ $("agentTrace").replaceChildren();
+ try{
+  const r=await api("/api/agent/investigate",{case_id:resolveSession.id,receipt_id:current.receipt_id,question:$("agentQuestion").value});
+  const decision=r.authoritative_decision;
+  assign("agentResult","Graph policy: "+(decision?.status||"UNKNOWN").replaceAll("_"," ")+
+    "\nAgent explanation: "+r.model_summary+
+    "\nSaved draft: "+(r.draft?r.draft.question:"No action created")+
+    "\nNote: drafts are internal. No supplier was contacted or payment made.");
+  for(const step of (r.tool_trace||[])){
+   const li=document.createElement("li"),name=document.createElement("strong"),detail=document.createElement("span");
+   name.textContent=step.tool;detail.textContent=step.result_kind;
+   li.append(name,detail);$("agentTrace").append(li);
+  }
+ }catch(e){assign("agentResult","Agent unavailable: "+e.message+". The graph-only receiving workflow remains available.");}
+ finally{$("agentRun").disabled=false;}
+}
+
 async function initialize(){const list=$("scenarios");for(const [id,label] of SCENARIOS){const b=document.createElement("button");b.className="scenario";b.type="button";b.dataset.scenario=id;b.textContent=label;b.addEventListener("click",()=>reset(id));list.append(b);}
-$("caseForm").addEventListener("submit",e=>{e.preventDefault();createResolveCase();});$("resumeCaseButton").addEventListener("click",reopenResolveCase);$("caseReceiptSelect").addEventListener("change",loadResolveReceipt);$("caseAttribute").addEventListener("click",attributeResolve);$("caseApprove").addEventListener("click",approveResolve);setCaseAvailable();$("tourNext").addEventListener("click",advanceTour);$("heroStart").addEventListener("click",()=>{$("tour").classList.remove("is-collapsed");if(tourStep===0)advanceTour();$("tour").scrollIntoView({behavior:"smooth",block:"center"});});updateTour();$("short").addEventListener("click",()=>respond("SHORT-41"));$("promo").addEventListener("click",()=>respond("PROMO-17"));$("approve").addEventListener("click",approve);$("reset").addEventListener("click",()=>reset(selected));$("navProof").addEventListener("click",()=>$("proof").scrollIntoView({behavior:"smooth"}));$("navAbout").addEventListener("click",()=>$("about").scrollIntoView({behavior:"smooth"}));
+$("caseForm").addEventListener("submit",e=>{e.preventDefault();createResolveCase();});$("agentRun").addEventListener("click",runInvestigationAgent);$("resumeCaseButton").addEventListener("click",reopenResolveCase);$("caseReceiptSelect").addEventListener("change",loadResolveReceipt);$("caseAttribute").addEventListener("click",attributeResolve);$("caseApprove").addEventListener("click",approveResolve);setCaseAvailable();$("tourNext").addEventListener("click",advanceTour);$("heroStart").addEventListener("click",()=>{$("tour").classList.remove("is-collapsed");if(tourStep===0)advanceTour();$("tour").scrollIntoView({behavior:"smooth",block:"center"});});updateTour();$("short").addEventListener("click",()=>respond("SHORT-41"));$("promo").addEventListener("click",()=>respond("PROMO-17"));$("approve").addEventListener("click",approve);$("reset").addEventListener("click",()=>reset(selected));$("navProof").addEventListener("click",()=>$("proof").scrollIntoView({behavior:"smooth"}));$("navAbout").addEventListener("click",()=>$("about").scrollIntoView({behavior:"smooth"}));
 try{const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),1600);const res=await fetch("/api/health",{signal:controller.signal,headers:{accept:"application/json"}});clearTimeout(timeout);if(res.ok){const health=await res.json();if(health.backend==="FALKORDB"&&health.ok===true)kind="FALKORDB";else if(health.backend==="memory"&&health.ok===true)kind="LOCAL_MEMORY";else throw Error("Unknown health state");}else if(res.status!==404)throw Error("Graph API health unavailable: HTTP "+res.status);}catch(e){kind="UNAVAILABLE";failure("Graph API unavailable: "+e.message+". The app will not claim live settlement results.");}
 if(!await reset("ambiguous"))throw Error("Could not load ambiguous case");}
 initialize();
