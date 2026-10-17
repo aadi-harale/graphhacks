@@ -60,7 +60,6 @@ def test_faked_tool_decisions_include_real_query_paths_and_safe_followup():
     assert result["authoritative_decision"]["status"]=="ASK_SUPPLIER"
     assert result["draft"]["status"]=="draft"
     assert "Supplier: were the two new units" in s.writes[0][1]["question"]
-    assert "CREATE" not in result["model_summary"] or True
 
 def test_agent_cannot_skip_graph_evidence_or_override_policy():
     s=FakeStore(status="ASK_SUPPLIER")
@@ -111,6 +110,7 @@ def test_live_graph_selected_tools_and_persistent_draft():
     again=tools.dispatch("create_followup_draft",{"action":"request_supplier"})
     assert first["draft"]==again["draft"]
     assert first["draft"]["status"]=="draft"
+    assert store.followups(case.case_id,"LATER_2")[0]["id"]==first["draft"]["id"]
     rows=store.read("""MATCH (f:ResolveFollowUp {tenant:$tenant,id:$id})-[:FOR_RECEIPT]->(r:ResolveReceipt)
 RETURN f.action,f.question,r.id""",{"tenant":"demo_shop","id":first["draft"]["id"]})
     assert len(rows)==1 and rows[0][2]=="LATER_2"
