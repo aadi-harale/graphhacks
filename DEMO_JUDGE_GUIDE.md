@@ -1,6 +1,8 @@
 # SahiAaya — Track 01 judge demonstration (2 minutes 50 seconds)
 
-**Record from the real local FalkorDB + MCP + model application. The public Vercel page is a fictional browser simulator. Do not mislabel mock-model tests as real model reasoning.**
+**Status: rehearsal plan only — no verified real-model video has been produced or reviewed in this audit.** Film from the local FalkorDB + MCP + configured-model application. Public Vercel is a fictional browser simulator. Model **function calls select tools**; the selected requests travel through MCP to FalkorDB. Mocked model choices in CI establish transport and safety, **not** genuine model tool selection.
+
+The walkthrough below is the **single canonical 2:50 script**; older 2:30 timing in the architecture guide was superseded.
 
 ## On-screen story
 
@@ -33,9 +35,9 @@ python -m playwright install chromium
 python -m scripts.record_real_judge
 ~~~
 
-The acceptance gate generates six unfamiliar fictional case IDs, invokes a real configured model and collects actual MCP tool requests and responses; it fails if the expected policy outcome or provenance/transport checks are not met. Results are saved to artifacts/real_model/summary.json and individual case JSON files. It also reports whether different model-selected tool sequences occurred. Never call a failed or unavailable run a live model pass.
+**When executed with a real API key**, the acceptance gate generates six fresh fictional case IDs, invokes the configured model and collects actual MCP tool requests and responses; it fails if the expected policy outcome or provenance/transport checks are not met. Results are saved to artifacts/real_model/summary.json and individual case JSON files. It also reports whether different model-selected tool sequences occurred. Never call a failed or unavailable run a live model pass.
 
-The Playwright recorder uses the real localhost Docker app, saves a SILENT recordings/sahiaaya_live_real_model.webm and screenshots, and requires a real-model tool trace, saved internal follow-up and separately approved settlement. Add narration separately.
+The Playwright recorder is **prepared, not executed here**. It uses the real localhost Docker app and demands a configured-model/MCP trace, a saved internal follow-up, and separately approved settlement. Only a verified completion can produce `recordings/sahiaaya_live_real_model.webm`; a failed attempt is named `UNVERIFIED_attempt.webm`. The video is silent; add narration separately. Inspect all footage before submission.
 
 ## Judge proof checklist
 
@@ -46,6 +48,12 @@ The Playwright recorder uses the real localhost Docker app, saves a SILENT recor
 - Supplier attribution plus separate retailer approval, with old obligation correctly outstanding.
 - Same receipt quantity plus changed source evidence changes the policy action.
 - Contradictions, expired schemes, missing promotion documentation, unknown units, duplicate allocation and unsafe writes are handled conservatively.
+
+## Gate status as of the October 17 submission audit
+
+**Passed in GitHub Actions on application-code commit `3450661`:** 23 policy tests + 9 graph-only skips; 26 live FalkorDB/MCP tests; synthetic and live graph-browser jobs. Tests with tool-choice doubles are **not** paid-model reasoning.
+
+**Blocked in this audit environment:** no `OPENAI_API_KEY`, no Docker binary/daemon. Consequently, **six real-model scenarios = NOT RUN**, **real-model tool-choice evidence = NONE VERIFIED**, **local filmed judge run = NOT RECORDED**, and **video-to-implementation review = NOT POSSIBLE**. See [final submission report](docs/FINAL_SUBMISSION_AUDIT.md). The user must run the commands on a machine with Docker and a privately configured API key.
 
 ## Honest limitations
 

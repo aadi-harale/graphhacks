@@ -6,7 +6,7 @@
 
 The previous SahiAaya EvidenceGap system was graph-backed but **not itself a model-directed agent**: the next action was chosen by a deterministic Python branch, and the public Vercel preview operated entirely without a live graph.
 
-The new **Track 01 Graph Investigator** exposes bounded tools to a real function-calling model. The model selects which ones to use; all source facts come from FalkorDB. The code refuses any approval or unsupported write. The only available agent write creates an **internal draft follow-up** connected to the investigated receipt.
+The **Track 01 Graph Investigator** exposes a bounded tool catalog to a function-calling model. With a provider API key, that model can choose functions based on previous results. In CI, those choices are **injected**; MCP transport and FalkorDB results are real. Genuine model tool choices have not been captured. The code refuses any approval or unsupported write. The only available agent write creates an **internal draft follow-up** connected to the investigated receipt.
 
 Track requirements and organizer's October 15 primary-source explanation:
 - https://www.wemakedevs.org/hackathons/falkordb
@@ -27,7 +27,7 @@ The deterministic core still controls actual allocation safety. Existing retaile
 
 ### Live MCP path
 
-The web API now calls `run_agent_mcp`. The model chooses among five bounded function definitions, then an **MCP Python ClientSession over stdio** calls `app.track1_mcp`. The MCP server executes human-written Cypher against the `sahiaaya_resolve` graph. Four tools are read-only; `create_followup_draft` is the sole mutation tool and is guarded by evidence retrieval, current policy, source-version checks and local-only mutation mode.
+The web API calls `run_agent_mcp`, discovers five bounded tools from the MCP host, and advertises them to an OpenAI-compatible **function-calling model**. The model chooses tool names and arguments; the application executes them through **MCP Python ClientSession over stdio** and `app.track1_mcp`. The MCP server executes human-written Cypher against the `sahiaaya_resolve` graph. Four tools are read-only; `create_followup_draft` is the sole mutation tool and is guarded by evidence retrieval, current policy, source-version checks and local-only mutation mode.
 
 ```text
 Question → model chooses tool → MCP ClientSession → typed MCP tool
@@ -35,9 +35,9 @@ Question → model chooses tool → MCP ClientSession → typed MCP tool
          → guarded internal follow-up DRAFT → persistent graph node
 ```
 
-The model never generates Cypher, sends a supplier message or approves settlement. **MCP is now the actual transport of the local web agent**, not just an optional stand-alone endpoint.
+The model is never offered arbitrary-Cypher, supplier-message or settlement-approval tools. **MCP is the tool-execution transport, not the tool-choice mechanism.** The endpoint uses this route, but only injected-model MCP runs are verified so far.
 
-**Proof level:** GitHub CI validates a fake model choosing tools over an authentic MCP stdio connection and actual FalkorDB graph; it checks the saved draft can be re-read. This does NOT prove that the live OpenAI model selects the right tools, because there is no configured model key in CI.
+**Verified proof level:** [Application-code baseline CI](https://github.com/aadi-harale/graphhacks/actions/runs/39025651473): 23 passing policy tests and 9 graph-only skips in the policy job; 26 passing real FalkorDB/MCP tests; both browser jobs passed. MCP tests inject fake-model selections, so **no genuine model-choice run or real-model demo recording is verified**. See [submission audit](FINAL_SUBMISSION_AUDIT.md).
 
 ## How to run real agent mode
 
@@ -65,7 +65,7 @@ docker compose up -d --build
 docker compose exec -e RUN_FALKOR_TESTS=1 app pytest tests/test_track1_agent.py -v
 ```
 
-For actual model selection, set `OPENAI_API_KEY` in your local shell **before** launching Docker. Click **Investigate with agent**, confirm the returned engine is `model_selected_mcp_graph_tools`, inspect its MCP tool sequence and graph paths, then reopen the saved case and follow-up. Do not represent the automated fake-model tool selection as a real model run.
+For genuine model tool selection, configure `OPENAI_API_KEY` locally **before** starting Docker. Require `engine=model_selected_mcp_graph_tools` **and** `model_execution=configured_api_client`, then inspect actual tool choices, arguments, MCP results and persisted follow-up. These labels alone are not proof: the complete source-grounded transcript and safety checks must also pass. Never pass off injected-model tests as live-model evidence.
 
 ## Acceptance gates: model, MCP and graph evidence
 
@@ -92,16 +92,9 @@ The browser video recorder also fails closed if the model is unavailable, no per
 
 The public Vercel preview is a fictional UI illustration and cannot run the hosted MCP model. Do not publish local unauthenticated mutation endpoints, real retailer information or model API keys.
 
-## The judge-facing demo (2 minutes 30 seconds)
+## Judge demo — canonical 2 minutes 50 seconds
 
-1. **0:00–0:23 — Simple real-life problem.** Shopkeeper invoiced for 50 soaps, physically received 48; shortage recorded. Supplier also owed a separate documented promotion. Fictional example.
-2. **0:23–0:50 — A later delivery.** New two-unit receipt appears in a two-delivery history. SahiAaya cannot decide from quantity alone which prior promise it fulfils.
-3. **0:50–1:26 — Agent picks graph tools.** Show tool trace: investigate → source documents → cross-delivery obligation links. Display one multi-hop graph path and the recorded source reference.
-4. **1:26–1:49 — Agent acts.** It creates a specific supplier clarification *draft* as a new graph-linked node. Reopen the case and show the durable follow-up. No message was sent.
-5. **1:49–2:10 — Evidence arrives, human verifies.** Enter a **simulated** supplier answer, then retailer approval. Two promotional units settle, the original shortage remains open.
-6. **2:10–2:30 — Adversarial test.** Repeat with contradictory references or ineligible scheme; the policy blocks closure. Show the live FalkorDB integration CI run.
-
-Record from the **local Docker application, not merely Vercel**. Public Vercel currently shows a browser-only fictional walkthrough and is not evidence of an agent running.
+Use **[DEMO_JUDGE_GUIDE.md](../DEMO_JUDGE_GUIDE.md)** as the only timecoded 2:50 script. It begins with the shopkeeper's problem, then shows actual tool requests and graph evidence, a saved internal follow-up, simulated supplier attribution, and separate retailer approval. Record it from local Docker, not Vercel. **No verified real-model video exists yet.**
 
 ## Go/no-go gates (must be real before submission)
 
@@ -109,12 +102,12 @@ Record from the **local Docker application, not merely Vercel**. Public Vercel c
 - [x] Model function-call **contract** tested with fake model messages and verified read-only graph tools.
 - [x] Actual MCP ClientSession transport tested with injected model decisions and live FalkorDB.
 - [x] Graph-backed same-quantity evidence counterfactual, conflict, ineligibility, already-allocated replay and undocumented-promotion rejection tested.
-- [ ] Actual tool selection demonstrated with a **real** model and the selected model's API key (no such key is stored or assumed).
-- [ ] Complete agent session on unfamiliar case, including saved draft, recorded on video with FalkorDB query paths.
+- [ ] Tool selection demonstrated using a **real model and privately configured API key** (neither available nor run in this audit environment).
+- [ ] Six-scenario real-model gate, unfamiliar case, evidence-dependent tool choices, and locally recorded persistent draft + retailer approval verified.
 - [ ] Compare against normal typed SQL supplier-ledger investigation on equally informed input. Existing SQL baseline matches simple status decisions, so **no graph-exclusivity or accuracy superiority claim** is justified.
 - [ ] Clarity: unfamiliar human understands need and result in first 20 seconds.
 - [x] README and architecture distinguish deterministic policy, model-directed MCP tool selection, public simulation and fake-model verification.
-- [ ] Submission and video complete before October 18, 23:59 IST.
+- [ ] Submission and video complete before October 18, 23:59 IST (not verified by this audit).
 
 The current agent refit is a **stronger Track 01 fit** but no winner guarantee. It remains a fictional local MVP; no direct supplier authenticity check, real money recovery or real-store pilot was performed.
 
