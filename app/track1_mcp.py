@@ -2,9 +2,10 @@
 
 Install: pip install -r requirements-mcp.txt
 Run:     python -m app.track1_mcp   (stdio)
-A model hosted in an MCP-capable client can choose these graph tools.
-The local web app's agent uses the same underlying typed tools via function
-calling; it does not yet use MCP as its transport. The only write tool creates a fictional, internal follow-up draft.
+The local agent advertises the MCP tool catalog to its model, then uses
+a real MCP stdio ClientSession for every graph tool selected by the model.
+The only write tool creates a fictional internal follow-up draft; no real
+supplier message or allocation can be initiated by the MCP agent.
 """
 import os
 from mcp.server import MCPServer
