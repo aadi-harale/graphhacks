@@ -662,7 +662,7 @@ pre{max-width:100%;overflow:auto}
 </details>
 <details class="optional-section full-optional" id="newCaseDetails"><summary>Try a different delivery <span>Enter your own example · local FalkorDB</span></summary><section class="card case-intake" id="newCase" aria-label="Create a new supplier delivery case">
  <div class="case-intake-head">
-   <div><div class="eyebrow">NEW · NOT A PRESET SCENARIO</div><h2>Try your own delivery history.</h2><p class="lead">Enter fictional goods and previous supplier promises, or upload a synthetic JSON history. SahiAaya creates new FalkorDB relationships and investigates what remains owed.</p></div>
+   <div><div class="eyebrow">NEW · NOT A PRESET SCENARIO</div><h2>Try your own delivery history.</h2><p class="lead">Enter your own fictional promises and deliveries. SahiAaya builds the graph and works out what is still owed.</p></div>
    <span class="tag" id="caseMode">LOCAL GRAPH REQUIRED</span>
  </div>
  <form id="caseForm" class="intake-form">
@@ -718,7 +718,7 @@ pre{max-width:100%;overflow:auto}
  <div class="graph-steps" id="graphSteps" aria-live="polite"></div>
  <div class="graph-summary"><strong id="graphSummaryTitle">Missing supplier attribution</strong><span id="graphSummaryDetail">The retailer still has two outstanding obligations.</span></div>
 </section>
-<div class="under" id="proof"><section class="card"><div class="card-head"><div class="doc-label">Evidence trail</div><span class="tag">CONNECTIONS</span></div><h3>Why did SahiAaya decide this?</h3><ul class="evidence-list" id="evidenceList"></ul><div class="evidence-visual-head"><strong>Connected evidence paths</strong><small id="visualPathMode">Fictional preview · evidence from active case</small></div><div id="evidenceVisual" class="evidence-visual" aria-label="Evidence paths from the current case"></div><div id="evidenceRecordDetail" class="evidence-record-detail" role="status">Select a record to inspect its returned reference.</div><details><summary>Text evidence paths</summary><div id="paths"></div></details><details><summary>Inspect machine decision and graph tool trace</summary><pre id="raw"></pre></details></section><section class="card"><div class="card-head"><div class="doc-label">Reviewed outcome</div><span class="tag">AUDIT</span></div><h3>What actually changed?</h3><ul class="ledger" id="audit"></ul><div class="result-box"><strong>No invented recoveries</strong><p>We report proposed allocations, supplier statements and reviewed settlements separately. No money is shown as saved until a real adjustment is proven.</p></div></section></div></details>
+<div class="under" id="proof"><section class="card"><div class="card-head"><div class="doc-label">Evidence trail</div><span class="tag">CONNECTIONS</span></div><h3>Why did SahiAaya decide this?</h3><ul class="evidence-list" id="evidenceList"></ul><div class="evidence-visual-head"><strong>Connected evidence paths</strong><small id="visualPathMode">Fictional preview · evidence from active case</small></div><div id="evidenceVisual" class="evidence-visual" aria-label="Evidence paths from the current case"></div><div id="evidenceRecordDetail" class="evidence-record-detail" role="status">Select a record to inspect its returned reference.</div><details><summary>Text evidence paths</summary><div id="paths"></div></details><details><summary>Inspect machine decision and graph tool trace</summary><pre id="raw"></pre></details></section><section class="card"><div class="card-head"><div class="doc-label">Reviewed outcome</div><span class="tag">AUDIT</span></div><h3>What actually changed?</h3><ul class="ledger" id="audit"></ul><div class="result-box"><strong>No invented recoveries</strong><p>No money is shown as saved until a real adjustment is proven.</p></div></section></div></details>
 </details>
 <footer class="foot" id="about"><strong>Current experience:</strong> <span id="runtimeDisclosure">Public synthetic walkthrough. Real FalkorDB reasoning is available in the separate local Docker application.</span> <a href="https://github.com/aadi-harale/graphhacks" target="_blank" rel="noopener noreferrer">Source and local FalkorDB setup →</a><br><br>Graph Hacks × FalkorDB 2026 · Track 01 — Agents That Act on Connected Data · Built with AI development assistance. No real retailer information is used.</footer>
 </main></div></div>
@@ -1317,11 +1317,12 @@ async function publicLiveAvailable(){
    graph: say so, instead of leaving the "not a live database" wording. */
 function markPublicLive(){
  assign("caseMode","LIVE · FALKORDB CLOUD");
- assign("runtimeDisclosure","The whole-supplier-ledger demo below runs live on FalkorDB Cloud: each run creates a fresh fictional case and reconciles it with algo.maxFlow. Entering your own case history still needs the local Docker app.");
+ assign("runtimeDisclosure","Live on FalkorDB Cloud. Each run reconciles a fresh fictional case.");
  $("mode").classList.add("live");assign("modeText","LIVE FALKORDB CLOUD · LEDGER DEMO");
- assign("judgeGraphNote","On this public site the whole-ledger demo runs live on FalkorDB Cloud — a real algo.maxFlow query, not a replay.");
+ assign("judgeGraphNote","Live on this page — a real algo.maxFlow query, not a replay.");
  assign("heroLiveTag","LIVE · FALKORDB CLOUD");
- assign("heroLiveNote","The whole-ledger demo on this page runs a real algo.maxFlow query against FalkorDB Cloud. The shop, supplier and documents are fictional; the graph query is not.");
+ assign("heroLiveNote","Real algo.maxFlow, running now. Fictional shop and documents.");
+ try{setCaseMessage("Live on FalkorDB Cloud. Entering your own history needs the local Docker app.",false);}catch(e){}
  const hl=$("heroSeeLive");if(hl)hl.hidden=false;
  /* The live ledger is the strongest thing on this page; do not hide it behind
     a collapsed "Advanced workspace" when the cloud graph is actually answering. */
