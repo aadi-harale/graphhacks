@@ -1,0 +1,49 @@
+{
+  "synthetic_only": true,
+  "supplier_id": "fictional_sharma_distributors",
+  "sku": "SOAP100",
+  "unit": "piece",
+  "obligations": [
+    {
+      "id": "SHORT_JUN",
+      "kind": "shortage",
+      "qty": 2,
+      "created_on": "2026-10-01",
+      "document_ref": "fictional_invoice_1041_billed50_received48"
+    },
+    {
+      "id": "DIWALI_SCHEME",
+      "kind": "promotion",
+      "qty": 2,
+      "created_on": "2026-10-02",
+      "earned_on": "2026-10-02",
+      "document_ref": "fictional_diwali_scheme_circular",
+      "scheme_terms": {
+        "valid_from": "2026-10-01",
+        "valid_to": "2026-10-31",
+        "min_purchase": 40,
+        "purchase_qty": 50,
+        "deliver_by": "2026-10-07"
+      }
+    }
+  ],
+  "receipts": [
+    {
+      "id": "DROP_1",
+      "received_on": "2026-10-05",
+      "qty": 2,
+      "unit": "piece",
+      "retailer_confirmed": true,
+      "document_ref": "fictional_delivery_note_05"
+    },
+    {
+      "id": "DROP_2",
+      "received_on": "2026-10-06",
+      "qty": 2,
+      "unit": "piece",
+      "retailer_confirmed": true,
+      "document_ref": "fictional_delivery_note_06"
+    }
+  ],
+  "case_id": "ledger_ambiguous_demo"
+}

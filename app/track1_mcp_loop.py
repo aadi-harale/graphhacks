@@ -82,6 +82,7 @@ async def run_agent_mcp(case_id: str, receipt_id: str, query: str, store=None,
                             "model_summary":msg.content or "",
                             "authoritative_decision":sess.decision,
                             "draft":sess.draft,
+                            "ledger":sess.ledger,
                             "tool_trace":sess.trace,
                             "evidence_paths":sess.evidence_paths,
                             "engine":"model_selected_mcp_graph_tools",
@@ -134,6 +135,8 @@ async def run_agent_mcp(case_id: str, receipt_id: str, query: str, store=None,
                                                   "document":x["document"]} for x in content.get("paths",[])]
                         elif tool=="create_followup_draft":
                             sess.draft=content["draft"]
+                        elif tool=="reconcile_ledger":
+                            sess.ledger=content
                         # The case contract permits only explicitly fictional records.
                         # Keep actual tool results for judges instead of fabricated
                         # summaries, but bound trace growth and never log credentials.

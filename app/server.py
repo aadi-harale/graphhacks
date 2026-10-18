@@ -208,6 +208,41 @@ def resolve_approve(case_id: str, receipt_id: str, inp: ResolveApproveIn):
         raise HTTPException(status_code=503,detail=f"Settlement rejected: {exc}")
 
 
+# Whole-ledger reconciliation: FalkorDB algo.maxFlow over every open delivery and claim.
+from .ledger import LedgerReconciler
+
+@app.get("/api/resolve/cases/{case_id}/ledger")
+def resolve_ledger(case_id: str):
+    """Recomputes derived flow capacities in the graph, then runs algo.maxFlow.
+    Proposes only units forced in every maximum allocation; never settles."""
+    try:
+        return LedgerReconciler(resolve_store()).reconcile(case_id)
+    except KeyError:
+        raise HTTPException(status_code=404,detail="Synthetic case not found")
+    except Exception as exc:
+        raise HTTPException(status_code=503,detail=f"Ledger reconciliation failed: {exc}")
+
+class LedgerApproveIn(BaseModel):
+    receipt_id: str = Field(pattern=r"^[a-zA-Z0-9_-]{2,32}$")
+    claim_id: str = Field(pattern=r"^[a-zA-Z0-9_-]{2,32}$")
+    quantity: int = Field(gt=0)
+    receipt_version: int = Field(ge=0)
+    claim_version: int = Field(ge=0)
+
+@app.post("/api/resolve/cases/{case_id}/ledger/approve")
+def resolve_ledger_approve(case_id: str, inp: LedgerApproveIn):
+    require_local_mutations()
+    try:
+        return LedgerReconciler(resolve_store()).approve_forced(case_id,inp.receipt_id,inp.claim_id,
+            inp.quantity,inp.receipt_version,inp.claim_version)
+    except ValueError as exc:
+        raise HTTPException(status_code=409,detail=str(exc))
+    except KeyError:
+        raise HTTPException(status_code=404,detail="Synthetic case not found")
+    except Exception as exc:
+        raise HTTPException(status_code=503,detail=f"Settlement rejected: {exc}")
+
+
 # Track 01 agent. The model selects read-only graph tools and may create only an
 # internal fictional follow-up draft. No supplier send or settlement authorization.
 from .track1_mcp_loop import run_agent_mcp
