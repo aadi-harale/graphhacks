@@ -1,45 +1,44 @@
+<div align="center">
+
 # SahiAaya — Bill vs Box. Promise vs Proof.
 
-**The supplier memory a kirana owner never had.** Suppliers short-ship, promise replacements, run schemes, then send deliveries without saying what they are for. SahiAaya keeps every bill, delivery, promise and document in a FalkorDB graph. Its agent reconciles the **whole** supplier ledger with `algo.maxFlow`, proposes only the allocations the evidence forces, and turns everything else into one precise question for the supplier.
+**An AI agent that tells a small shop exactly which supplier promise each delivery settled — and asks instead of guessing when the evidence can't decide.**
 
-**Graph Hacks × FalkorDB (Oct 15–18, 2026)** · Tracks: **01 Agents That Act on Connected Data** (primary) · **02 Agent Memory and Coordination**
+Built on **FalkorDB** for Graph Hacks (Oct 15–18, 2026) · Track **01 · Agents That Act on Connected Data** · Track **02 · Agent Memory and Coordination**
 
-> AI investigates. The graph remembers and reconciles. Rules verify. The shopkeeper approves.
+[**Live preview**](https://sahiaaya-graphhacks.vercel.app/) · [**Blog post**](https://medium.com/@aadi.n.harale/bill-vs-box-we-taught-an-ai-agent-which-promise-a-delivery-kept-and-when-to-say-i-dont-know-3f09d796db5a) · [**Run it locally**](#run-it-yourself-docker) · [**How it works**](#how-it-works--for-engineers)
 
-## The 30-second story
+</div>
 
-Sharma Distributors bills a Pune kirana for 50 soaps; 48 arrive. Sharma promises 2 replacements. The shop has also earned 2 free soaps under a Diwali scheme that must be delivered by 7 October.
+---
 
-| Claim | Owed | Source |
-| --- | --- | --- |
-| Short-delivery replacement | 2 | Invoice 1041: billed 50, received 48 |
-| Diwali scheme | 2 | Scheme circular; deliver by 7 Oct |
+## The problem in 30 seconds
 
-Two unlabelled drops of 2 soaps arrive — on 5 October and 9 October. Which promise did each settle?
+A kirana shop in Pune is billed for **50 soaps but receives 48**. The distributor promises **2 replacements**. The shop has also earned **2 free soaps** under a Diwali scheme, deliverable by 7 October. So the distributor owes **4 soaps for two different reasons**.
 
-- **A stock register / per-row rule** gives the first drop to the oldest claim (the shortage). The second drop is then stranded, and the scheme looks unpaid. **2 of 4 units settled — both against the wrong claim.**
-- **SahiAaya** asks the graph. The 9 October drop arrived after the scheme window, so it can only be the shortage. That *forces* the 5 October drop onto the scheme. **4 of 4 units proposed, each with its evidence path** — no supplier statement needed and nothing guessed.
+Then two unlabelled deliveries arrive: **2 soaps on 5 October, 2 soaps on 9 October**. Which promise did each one keep?
 
-If both drops had arrived inside the window, either assignment would be valid. SahiAaya then proposes **nothing** and drafts: *"DROP_1 could be for DIWALI_SCHEME or SHORT_JUN; DROP_2 could be for … Please state which claim each delivery was for."*
+A stock register settles one line at a time. It gives the first delivery to the oldest claim (the shortage), strands the second, and leaves the scheme looking unpaid. Write "settled" on the wrong line and a real debt quietly disappears. Kirana stores held about 91% of India's grocery market in 2025 ([Redseer](https://redseer.com/reports/why-indias-mass-grocery-still-leans-on-kirana-stores/)), and most of these ledgers live in notebooks and WhatsApp.
 
-## Why this needs FalkorDB
+## What SahiAaya does
 
-Take FalkorDB out and SahiAaya cannot reconcile, explain or settle anything.
+![The flow network for the four soaps: the 9 Oct delivery can only pay the shortage, so the 5 Oct delivery must be the scheme](docs/images/flow-diagram.png)
 
-| Capability | How the graph does it |
-| --- | --- |
-| Reconcile the whole ledger | `algo.maxFlow` over `LedgerSource → Receipt → Obligation → LedgerSink` (`LEDGER_FLOW` edges) |
-| Prove an allocation is forced | Block one receipt→claim edge, re-run `algo.maxFlow`; the drop is the units that edge carries in **every** maximum allocation |
-| Explain every number | Path `Receipt → POTENTIALLY_FULFILLS → Obligation → SUPPORTED_BY → Document` |
-| Refuse contradictions | A receipt with conflicting active `ResolveStatement`s gets zero flow capacity → `DISPUTE` |
-| Settle safely | One guarded Cypher write: versions, eligibility, no contradicting statement, retailer approval — or nothing |
-| Remember | Cases, statements, drafts and approvals persist; reopen a case days later and the agent resumes from the graph |
+1. **Remember everything as a graph.** Every bill, delivery, promise, scheme and supplier message becomes connected nodes in FalkorDB.
+2. **Reconcile the whole ledger at once.** One `algo.maxFlow` call finds how many delivered units can settle open claims without counting anything twice.
+3. **Propose only what is forced.** For each delivery→claim link, SahiAaya blocks it and re-runs the flow. If units disappear, every valid answer needs that link — so it is safe to propose. Here: the 9 October soaps arrived after the scheme deadline, so they can only be the shortage, which forces the 5 October soaps onto the scheme.
+4. **Ask when it can't prove.** If either answer would work, it proposes nothing and drafts one precise question for the supplier.
+5. **The shopkeeper approves.** Nothing is settled without a tap from the owner, and every number links back to the documents that justify it.
 
-**The guarantee.** For edge *e*, forced(*e*) = F − F(*e* blocked), where F is the max flow. Every maximum allocation carries at least forced(*e*) on *e*, and the bound is tight. So when every recorded delivery really was meant to settle an open claim, a forced proposal can never contradict the truth. `tests/test_ledger.py` checks this by brute force on 150 random networks.
+![SahiAaya's whole-ledger panel: 4 owed, 4 settleable, 4 forced, each with its evidence path](docs/images/ledger-panel.png)
 
-## Results
+## Does it work?
 
-`scripts/benchmark.py` generates 60 synthetic ledgers per setting, each with a **planted truth** (what each delivery was really for). Scores are against that truth, not against the algorithm.
+![Scoreboard: on 60 synthetic ledgers, oldest-first settled 80 units wrongly in 33 ledgers; SahiAaya settled 0 wrongly](docs/images/scoreboard.png)
+
+On 60 synthetic ledgers scored against a planted truth, a line-by-line rule settled **80 units against the wrong claim**; SahiAaya settled **zero** wrongly and turned the uncertain rest into supplier questions. Measured in CI on `falkordb:latest` with the real `algo.maxFlow`.
+
+<details><summary>Exact figures, method, and an honest comparison with SQL</summary>
 
 <!-- BENCHMARK-TABLE -->
 | Setting | Method | Units settled correctly | Units settled **wrongly** | Units left as supplier questions | Cases with any wrong settlement |
@@ -55,26 +54,72 @@ Honest reading:
 - SahiAaya does **not** settle more units than a FIFO rule. It settles **only correct ones** and turns the rest into targeted supplier questions.
 - An **equally informed** comparator — the same rows in SQLite plus the same max-flow maths in Python — reproduces the graph's proposals exactly. The claim is that the graph computes this natively, with traversable provenance, beside the agent's memory. It is **not** that SQL cannot.
 
-## Try it (Docker)
+</details>
+
+## Try it
+
+**In the browser (no install):** open the [live preview](https://sahiaaya-graphhacks.vercel.app/) → **Enter your own case** → click **Load demo: two unlabelled drops (forced)**. The page has no database, so it replays a real FalkorDB run and labels it **REPLAY**. Then try **Load demo: symmetric drops (ambiguous)** to watch it refuse to guess.
+
+### Run it yourself (Docker)
 
 ```bash
 git clone https://github.com/aadi-harale/graphhacks.git && cd graphhacks
 docker compose up -d --build
 ```
 
-Open http://localhost:8000 → **Try your own delivery history** → click **Load demo: two unlabelled drops (forced)**. The ledger panel shows 4 owed, 4 settleable, 4 forced, each with its path. Click **Shopkeeper approves 2** and watch the claim close. Then try **Load demo: symmetric drops (ambiguous)**: 0 forced, and the exact supplier question appears.
-
-The Track 01 agent (**Investigate with agent**) needs a model key: see [docs/REAL_MODEL_SETUP.md](docs/REAL_MODEL_SETUP.md). The [Vercel preview](https://sahiaaya-graphhacks.vercel.app/) is a browser-only synthetic walkthrough. It does not host FalkorDB.
-
-Tests:
+Open http://localhost:8000 and click the same two demo buttons; this time FalkorDB computes everything live, and **Shopkeeper approves** writes a real settlement. The Track 01 agent (**Investigate with agent**) also needs a model key: see [docs/REAL_MODEL_SETUP.md](docs/REAL_MODEL_SETUP.md).
 
 ```bash
-docker compose exec app pytest -q
-docker compose exec -e RUN_FALKOR_TESTS=1 app pytest -v tests/test_ledger.py
+docker compose exec app pytest -q                                          # unit tests
+docker compose exec -e RUN_FALKOR_TESTS=1 app pytest -v tests/test_ledger.py # live graph tests
 docker compose exec app python -m scripts.benchmark --cases 60 --noise 0.15 --live
 ```
 
-## Graph model
+---
+
+## How it works — for engineers
+
+```mermaid
+flowchart LR
+  U[Shopkeeper UI] -->|deliveries, approvals| API[FastAPI]
+  M[LLM agent] -->|chooses 1 of 6 tools| C[MCP client]
+  C -->|stdio| T[MCP tool server]
+  API --> G[(FalkorDB)]
+  T --> G
+  G -->|algo.maxFlow + paths| T
+  API -->|guarded settlement write| G
+```
+
+The model only chooses tools; it never writes Cypher, contacts a supplier, or settles. Python checks versions and quantities, the graph computes what is forced, and only the shopkeeper approves.
+
+**Where things live:**
+
+| Path | What it is |
+| --- | --- |
+| `app/ledger.py` | Whole-ledger reconciliation: `algo.maxFlow`, forced-unit test, guarded settlement |
+| `app/flow.py` | Reference max-flow + FIFO baseline used by the fallback, SQL comparator and benchmark |
+| `app/resolve.py` | Case intake and eligibility edges; per-delivery investigation |
+| `app/track1_mcp.py`, `app/track1_mcp_loop.py`, `app/track1_agent.py` | MCP tool server, MCP client loop, tool catalog |
+| `app/static/index.html` | The shopkeeper UI (and the labelled replay on the preview) |
+| `scripts/benchmark.py`, `scripts/record_ledger_replay.py` | Benchmark; replay recorder |
+| `tests/test_ledger.py` | Forced-unit proof by brute force, live-graph tests, MCP transport test |
+
+### Why FalkorDB is essential
+
+Take FalkorDB out and SahiAaya cannot reconcile, explain or settle anything.
+
+| Capability | How the graph does it |
+| --- | --- |
+| Reconcile the whole ledger | `algo.maxFlow` over `LedgerSource → Receipt → Obligation → LedgerSink` (`LEDGER_FLOW` edges) |
+| Prove an allocation is forced | Block one receipt→claim edge, re-run `algo.maxFlow`; the drop is the units that edge carries in **every** maximum allocation |
+| Explain every number | Path `Receipt → POTENTIALLY_FULFILLS → Obligation → SUPPORTED_BY → Document` |
+| Refuse contradictions | A receipt with conflicting active `ResolveStatement`s gets zero flow capacity → `DISPUTE` |
+| Settle safely | One guarded Cypher write: versions, eligibility, no contradicting statement, retailer approval — or nothing |
+| Remember | Cases, statements, drafts and approvals persist; reopen a case days later and the agent resumes from the graph |
+
+**The guarantee.** For edge *e*, forced(*e*) = F − F(*e* blocked), where F is the max flow. Every maximum allocation carries at least forced(*e*) on *e*, and the bound is tight. So when every recorded delivery really was meant to settle an open claim, a forced proposal can never contradict the truth. `tests/test_ledger.py` checks this by brute force on 150 random networks.
+
+### Graph model
 
 ```
 (:ResolveCase)-[:HAS_RECEIPT]->(:ResolveReceipt {qty, available, received_on, confirmed, version})
@@ -90,7 +135,7 @@ docker compose exec app python -m scripts.benchmark --cases 60 --noise 0.15 --li
 
 `flow_cap` is derived from graph facts on every reconcile. It is never a business fact. `algo.maxFlow` accepts a single relationship type, so the network uses one `LEDGER_FLOW` type; each receipt→claim `LEDGER_FLOW` edge mirrors a `POTENTIALLY_FULFILLS` eligibility edge. The original preset walkthrough (`app/graph.py`) uses an older `Receipt/Obligation/Allocation` schema in a separate graph.
 
-## The Cypher the product depends on
+### The Cypher the product depends on
 
 The core algorithm call (`app/ledger.py`, `Q_MAXFLOW`):
 
@@ -124,7 +169,7 @@ Also in `app/ledger.py`:
 
 The per-receipt investigation queries are in `app/resolve.py` and `app/track1_agent.py`.
 
-## The agent (Track 01) and its memory (Track 02)
+### The agent (Track 01) and its memory (Track 02)
 
 The model chooses among six bounded tools. A real MCP stdio `ClientSession` carries each call to a FalkorDB tool host (`app/track1_mcp.py`):
 
@@ -146,6 +191,8 @@ The model cannot write Cypher, contact a supplier, or settle. Settlement is a se
 - **Persistence:** reopen a case by ID after a refresh.
 - **Handoff:** the shop assistant logs deliveries; the owner approves later from the same graph state.
 - **Isolation:** user-entered cases live in their own graph (`sahiaaya_resolve`), apart from the resettable preset demo.
+
+---
 
 ## Verification status
 
