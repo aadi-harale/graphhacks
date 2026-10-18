@@ -58,7 +58,7 @@ jobs:
         env:
           RUN_FALKOR_TESTS: "1"
         run: python -m pytest -q tests/test_track1_agent.py tests/test_track1_counterfactual.py
-      - name: Real model smoke: one unknown supplier case
+      - name: Real model smoke — one unknown supplier case
         shell: bash
         run: python -m scripts.live_model_gate --accept-api-cost --only unattributed
       - name: Six-case real model gate after successful smoke
