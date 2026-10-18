@@ -104,6 +104,8 @@
 .ledger-row .btn{min-height:36px;padding:8px 11px;white-space:nowrap}
 .ledger-q{border-left:3px solid #d6a459;padding:8px 0 8px 12px;margin:12px 0;font-size:12.5px;line-height:1.6;color:#354e3b}
 .ledger-demo{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 0}
+#ledgerCaseSwitch{align-items:center;margin-top:12px}
+#ledgerCaseSwitch .lbl{flex:0 0 100%;font-size:11px;font-weight:650;letter-spacing:.08em;text-transform:uppercase;color:#60736a;margin-bottom:2px}
 @media(max-width:650px){.ledger-stats{grid-template-columns:1fr 1fr}.ledger-row{display:block}.ledger-row .btn{width:100%;margin-top:8px}}
 @media(max-width:1050px){.intake-form{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:650px){.case-intake-head{display:block}.case-intake-head .tag{display:inline-block;margin-top:10px}.intake-form{grid-template-columns:1fr}.intake-form .file-label{grid-column:span 1}.case-content{grid-template-columns:1fr}.case-bar{display:block}.case-bar label{margin-top:12px}.intake-actions{display:block}.intake-actions span{display:block;margin-top:11px}}
@@ -686,6 +688,7 @@ pre{max-width:100%;overflow:auto}
   <p class="plain-first"><b>In plain words:</b> a delivery is only marked as settling a claim when there is <b>no other possible answer</b>. If two answers both fit the evidence, SahiAaya settles nothing and asks the supplier instead.</p>
   <p class="lead-small">FalkorDB runs one max-flow over Delivery → Claim. Then it blocks each link and re-runs it: units that vanish are carried by that link in <em>every</em> valid allocation. Only those forced units are proposed; everything else becomes a supplier question.</p>
   <button id="ledgerRun" type="button" class="btn primary">Reconcile whole ledger →</button>
+  <div id="ledgerCaseSwitch" class="ledger-demo" hidden><span class="lbl">Same soaps, different evidence:</span></div>
   <div class="ledger-stats" aria-live="polite"><div><b id="ledgerOwed">–</b><span>units owed by supplier</span></div><div><b id="ledgerMax">–</b><span>settleable by recorded deliveries</span></div><div class="forced"><b id="ledgerForced">–</b><span>forced — only one possible answer, safe to propose</span></div><div class="amb"><b id="ledgerAmb">–</b><span>ambiguous — ask supplier</span></div></div>
   <div id="ledgerQuestion" class="ledger-q" hidden></div>
   <div id="ledgerProposals"></div>
@@ -1344,6 +1347,13 @@ function markPublicLive(){
  /* With the ledger lifted out, nothing left in the Advanced workspace works on
     the public site: the intake form needs local Docker, and the rest restates
     the story. Show the problem, the live graph answer, and how it was reached. */
+ /* The two demo buttons live inside the workspace we are about to hide, and the
+    ambiguous case is the whole point: same soaps, different evidence, different
+    decision. Move them next to the ledger before hiding anything. */
+ try{
+  const sw=$("ledgerCaseSwitch");
+  if(sw){sw.appendChild($("demoForced"));sw.appendChild($("demoAmbiguous"));sw.hidden=false;}
+ }catch(e){}
  const ws=$("workspaceDetails");if(ws){ws.hidden=true;ws.style.display="none";}
  publicLiveDemo("forced",true).catch(()=>{});
 }
