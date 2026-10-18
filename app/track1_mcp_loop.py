@@ -9,7 +9,7 @@ import json
 import os
 import sys
 
-from .track1_agent import TOOL_SCHEMAS, SYSTEM_PROMPT, AgentSession
+from .track1_agent import TOOL_SCHEMAS, SYSTEM_PROMPT, AgentSession, assistant_turn
 
 class AgentRoundsExhausted(RuntimeError):
     """Unsuccessful model run with exact MCP tool history for postmortem.
@@ -21,6 +21,29 @@ class AgentRoundsExhausted(RuntimeError):
         self.evidence_paths=list(session.evidence_paths)
         self.authoritative_decision=session.decision
         self.internal_draft=session.draft
+
+
+async def _create_with_backoff(client, **kwargs):
+    """Call the model; on a provider rate limit, wait and retry a few times.
+
+    Free tiers allow only a few requests per minute, and one investigation makes
+    several calls in a row. Only rate-limit errors are retried; anything else
+    propagates unchanged. Retries are bounded by SAHIAAYA_AGENT_RATE_RETRIES.
+    """
+    retries=int(os.getenv("SAHIAAYA_AGENT_RATE_RETRIES","4"))
+    for attempt in range(retries+1):
+        try:
+            return await asyncio.to_thread(client.chat.completions.create,**kwargs)
+        except Exception as exc:
+            if type(exc).__name__!="RateLimitError" or attempt==retries:
+                raise
+            wait=20*(attempt+1)
+            headers=getattr(getattr(exc,"response",None),"headers",None) or {}
+            try:
+                wait=max(wait,min(90,float(headers.get("retry-after",0))))
+            except (TypeError,ValueError):
+                pass
+            await asyncio.sleep(wait)
 
 
 async def run_agent_mcp(case_id: str, receipt_id: str, query: str, store=None,
@@ -70,9 +93,12 @@ async def run_agent_mcp(case_id: str, receipt_id: str, query: str, store=None,
                 model_tools.append({"type":"function","function":spec})
 
             for round_index in range(max_rounds):
-                response=await asyncio.to_thread(
-                    client.chat.completions.create,model=name,messages=messages,
-                    tools=model_tools,tool_choice="auto",temperature=0)
+                response=await _create_with_backoff(client,
+                    model=name,messages=messages,
+                    tools=model_tools,tool_choice="auto",temperature=0,
+                    # Bounded output: providers otherwise reserve the model's full
+                    # output allowance per call, which low-credit keys cannot cover.
+                    max_tokens=int(os.getenv("SAHIAAYA_AGENT_MAX_TOKENS","1200")))
                 msg=response.choices[0].message
                 calls=msg.tool_calls or []
                 if not calls:
@@ -93,10 +119,7 @@ async def run_agent_mcp(case_id: str, receipt_id: str, query: str, store=None,
                             "successful_tool_calls":successful_calls,
                             "disclaimer":"Synthetic graph; drafts are not sent and settlement needs retailer approval."}
 
-                messages.append({"role":"assistant","content":msg.content,
-                                 "tool_calls":[{"id":c.id,"type":"function",
-                                                "function":{"name":c.function.name,"arguments":c.function.arguments}}
-                                               for c in calls]})
+                messages.append(assistant_turn(msg,calls))
                 for c in calls:
                     tool=c.function.name
                     params={}
