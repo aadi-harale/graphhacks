@@ -72,7 +72,10 @@ async def run_agent_mcp(case_id: str, receipt_id: str, query: str, store=None,
             for round_index in range(max_rounds):
                 response=await asyncio.to_thread(
                     client.chat.completions.create,model=name,messages=messages,
-                    tools=model_tools,tool_choice="auto",temperature=0)
+                    tools=model_tools,tool_choice="auto",temperature=0,
+                    # Bounded output: providers otherwise reserve the model's full
+                    # output allowance per call, which low-credit keys cannot cover.
+                    max_tokens=int(os.getenv("SAHIAAYA_AGENT_MAX_TOKENS","1200")))
                 msg=response.choices[0].message
                 calls=msg.tool_calls or []
                 if not calls:

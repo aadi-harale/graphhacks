@@ -158,7 +158,8 @@ def run_agent(case_id: str, receipt_id: str, query: str, store, client=None,
               {"role":"user","content":f"Case {case_id}, receipt {receipt_id}. {query[:280]}"}]
     for _ in range(max_rounds):
         answer=client.chat.completions.create(model=name,messages=messages,
-                            tools=TOOL_SCHEMAS,tool_choice="auto",temperature=0)
+                            tools=TOOL_SCHEMAS,tool_choice="auto",temperature=0,
+                            max_tokens=int(os.getenv("SAHIAAYA_AGENT_MAX_TOKENS","1200")))
         msg=answer.choices[0].message
         calls=msg.tool_calls or []
         if not calls:

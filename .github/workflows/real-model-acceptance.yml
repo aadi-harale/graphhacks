@@ -78,9 +78,10 @@ jobs:
           msgs=[{"role":"system","content":SYSTEM_PROMPT},{"role":"user","content":"Investigate fictional case X, receipt LATEST_BOX. Which promise?"}]
           for label,kw in [("as_agent",dict(tools=TOOL_SCHEMAS,tool_choice="auto",temperature=0)),
                            ("no_temperature",dict(tools=TOOL_SCHEMAS,tool_choice="auto")),
-                           ("first_tool_only",dict(tools=TOOL_SCHEMAS[:1],tool_choice="auto",temperature=0))]:
+                           ("no_max_tokens",dict(tools=TOOL_SCHEMAS,tool_choice="auto",temperature=0,max_tokens=None))]:
               try:
-                  r=c.chat.completions.create(model=os.environ["SAHIAAYA_AGENT_MODEL"],messages=msgs,max_tokens=200,**kw)
+                  kw={"max_tokens":200,**kw}; kw={k:v for k,v in kw.items() if v is not None}
+                  r=c.chat.completions.create(model=os.environ["SAHIAAYA_AGENT_MODEL"],messages=msgs,**kw)
                   m=r.choices[0].message
                   print(f"::notice title=Replay {label}::OK tool_calls={[t.function.name for t in (m.tool_calls or [])]}")
               except APIStatusError as e:
