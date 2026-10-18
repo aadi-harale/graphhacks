@@ -15,7 +15,7 @@ jobs:
         run: |
           python -m pip install -r requirements-mcp.txt
           python -c "from app.track1_mcp import mcp; assert mcp is not None"
-      - run: python -m pytest -q tests/test_decisions.py tests/test_baseline.py tests/test_resolve_intake.py tests/test_track1_agent.py tests/test_track1_counterfactual.py tests/test_ledger.py tests/test_assistant_turn.py
+      - run: python -m pytest -q tests/test_decisions.py tests/test_baseline.py tests/test_resolve_intake.py tests/test_track1_agent.py tests/test_track1_counterfactual.py tests/test_ledger.py tests/test_assistant_turn.py tests/test_public_api.py
       - name: Compile real-model acceptance and recording utilities
         run: python -m compileall -q app scripts
       - run: python -m scripts.proof_report
@@ -64,7 +64,7 @@ jobs:
         run: |
           python -m pip install -r requirements-mcp.txt
           python -c "from falkordb import FalkorDB; g=FalkorDB(host='localhost',port=6379).select_graph('probe'); names=[r[0] for r in g.query('CALL dbms.procedures() YIELD name RETURN name').result_set]; print('::notice title=FalkorDB algorithms::'+', '.join(n for n in names if n.startswith('algo.')))"
-          python -m pytest tests/test_falkor_integration.py tests/test_graph_safety.py tests/test_resolve_intake.py tests/test_track1_agent.py tests/test_track1_counterfactual.py tests/test_ledger.py -v --junitxml=/tmp/live-tests.xml
+          python -m pytest tests/test_falkor_integration.py tests/test_graph_safety.py tests/test_resolve_intake.py tests/test_track1_agent.py tests/test_track1_counterfactual.py tests/test_ledger.py tests/test_public_api.py -v --junitxml=/tmp/live-tests.xml
       - name: Report failing live tests as annotations
         if: failure()
         run: |
