@@ -9,7 +9,7 @@ import json
 import os
 import sys
 
-from .track1_agent import TOOL_SCHEMAS, SYSTEM_PROMPT, AgentSession
+from .track1_agent import TOOL_SCHEMAS, SYSTEM_PROMPT, AgentSession, assistant_turn
 
 class AgentRoundsExhausted(RuntimeError):
     """Unsuccessful model run with exact MCP tool history for postmortem.
@@ -96,10 +96,7 @@ async def run_agent_mcp(case_id: str, receipt_id: str, query: str, store=None,
                             "successful_tool_calls":successful_calls,
                             "disclaimer":"Synthetic graph; drafts are not sent and settlement needs retailer approval."}
 
-                messages.append({"role":"assistant","content":msg.content,
-                                 "tool_calls":[{"id":c.id,"type":"function",
-                                                "function":{"name":c.function.name,"arguments":c.function.arguments}}
-                                               for c in calls]})
+                messages.append(assistant_turn(msg,calls))
                 for c in calls:
                     tool=c.function.name
                     params={}

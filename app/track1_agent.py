@@ -138,6 +138,30 @@ RETURN f.id,f.question,f.status""",p)
                 "note":"Draft only. Not sent, not approved, no allocation."}
 
 
+def assistant_turn(msg, calls) -> dict:
+    """Echo the model's tool-call turn back verbatim where possible.
+
+    Some providers attach opaque per-call data that must be returned on the next
+    request (Gemini's ``extra_content.google.thought_signature``); rebuilding the
+    message by hand drops it and the provider answers 400. Test doubles without
+    ``model_dump`` fall back to the minimal OpenAI shape.
+    """
+    base = {"role": "assistant", "content": msg.content,
+            "tool_calls": [{"id": c.id, "type": "function",
+                            "function": {"name": c.function.name, "arguments": c.function.arguments}}
+                           for c in calls]}
+    dump = getattr(msg, "model_dump", None)
+    if not callable(dump):
+        return base
+    raw = dump(exclude_none=True)
+    for i, call in enumerate(raw.get("tool_calls") or []):
+        if i < len(base["tool_calls"]) and call.get("extra_content"):
+            base["tool_calls"][i]["extra_content"] = call["extra_content"]
+    if raw.get("extra_content"):
+        base["extra_content"] = raw["extra_content"]
+    return base
+
+
 SYSTEM_PROMPT = """You are SahiAaya's evidence investigator for a fictional retailer. Your job is to use graph tools to investigate a given receipt across connected obligations and earlier deliveries.
 Use investigate_receipt and trace_claim_evidence before creating any action. Call inspect_cross_delivery when claims compete or previous deliveries may matter. Call reconcile_ledger to see the whole supplier ledger: it reports which deliveries the graph forces onto which claims and which remain ambiguous. Only forced units may be described as settleable, and only after the retailer approves. Never invent supplier facts, source references or Cypher. NEVER imply a supplier was contacted or a settlement was completed. Create at most one safe internal followup draft when evidence permits. The deterministic graph policy, not your prose, decides whether settlement can be proposed. If facts are missing, state what is unknown. Keep final answer short and merchant-friendly."""
 
@@ -171,9 +195,7 @@ def run_agent(case_id: str, receipt_id: str, query: str, store, client=None,
                     "draft":sess.draft,"tool_trace":sess.trace,
                     "evidence_paths":sess.evidence_paths,"engine":"model_selected_graph_tools",
                     "disclaimer":"Synthetic local graph; drafts are not sent and no settlement is automatic."}
-        messages.append({"role":"assistant","content":msg.content,
-                         "tool_calls":[{"id":c.id,"type":"function",
-                           "function":{"name":c.function.name,"arguments":c.function.arguments}} for c in calls]})
+        messages.append(assistant_turn(msg,calls))
         for c in calls:
             try:
                 params=json.loads(c.function.arguments or "{}")
