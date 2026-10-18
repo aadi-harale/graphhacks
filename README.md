@@ -214,6 +214,10 @@ The model cannot write Cypher, contact a supplier, or settle. Settlement is a se
 
 ## AI use disclosure
 
-AI coding assistants (Claude, among others) helped draft design, code, tests and docs. The team reviewed the graph model, queries and safety rules and validated them with executable tests. The max-flow modelling, the forced-unit rule and its brute-force test are explained in `app/flow.py`, `app/ledger.py` and `tests/test_ledger.py`.
+The problem, the domain model and the evidence-first architecture are the team's work. Before any AI-assisted commit, the system already comprised the full receiving-desk UI, the FastAPI server, the FalkorDB graph layer, the Receipt / Obligation / Statement / Document model, the Track 01 agent and its MCP tool loop, the CI gates and the real-model acceptance workflow. The decision that shaped everything else — that the system must prove what it may settle, and refuse otherwise — was ours.
+
+AI coding assistants (Claude, among others) were then used substantially on the whole-ledger reconciliation layer: the max-flow modelling in `app/flow.py` and `app/ledger.py`, the forced-unit rule and its brute-force test in `tests/test_ledger.py`, the public demo API, the benchmark, and docs. Commits carrying AI assistance are marked as co-authored in the git history.
+
+Every graph query, settlement gate and safety rule is reviewed by the team and covered by executable tests.
 
 More: [docs/TRACK01_IPHONE_AGENT.md](docs/TRACK01_IPHONE_AGENT.md) · [docs/NEW_CASE_WORKFLOW.md](docs/NEW_CASE_WORKFLOW.md) · [docs/FINAL_SUBMISSION_AUDIT.md](docs/FINAL_SUBMISSION_AUDIT.md) · [BUILD_GATES.md](BUILD_GATES.md) · [CLAUDE.md](CLAUDE.md)
