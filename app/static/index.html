@@ -497,6 +497,29 @@ pre{max-width:100%;overflow:auto}
 @media(prefers-reduced-motion:no-preference){.network-wires path{animation:network-flow 2.7s linear infinite}.network-node{transition:background-color .2s,border-color .2s,transform .2s}.network-node:hover:not(:disabled){transform:translateY(-2px)}@keyframes network-flow{to{stroke-dashoffset:-26}}}
 @media(max-width:700px){.network-layout{min-height:0}.network-wires{display:none}.network-grid{min-height:0;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto;gap:10px;padding:13px}.network-node.supplier,.network-node.short,.network-node.promo,.network-node.receipt,.network-node.decision{grid-row:auto;grid-column:auto}.network-node.decision{grid-column:1/-1}.network-heading{display:block}.network-state{display:inline-block;margin-top:10px}.network-showcase{padding:16px}}
 @media(prefers-reduced-motion:reduce){.network-wires path{animation:none!important}.network-node{transition:none!important}}
+
+/* Judge-first clarity pass: preserves existing graph, transitions, controls and DOM IDs. */
+.simple-intro{gap:6px 22px}
+.simple-intro h1{max-width:700px}
+.simple-intro>p{font-size:clamp(14px,1.3vw,16px);font-weight:450;max-width:430px}
+.judge-story{border-color:#cbd9d1;background:#fffefa}
+.judge-quantity strong,.judge-gap strong{letter-spacing:-.07em}
+.judge-gap{background:#faf1e3;border-radius:5px;padding:8px}
+.judge-promises h2{font-size:clamp(20px,2.1vw,27px);line-height:1.18}
+.judge-promises>div strong{background:#f2f6f3;border-color:#cdded2;color:#274a46;min-height:56px}
+.judge-actions{margin-top:14px;margin-bottom:12px}
+.judge-actions .simple-button-main{min-width:210px;font-size:14px}
+.judge-disclosure{border-left-width:3px;background:#f6f1e6;color:#746044}
+.simple-progress{border-radius:6px}
+.simple-progress-step{font-weight:650}
+.simple-form-card,.simple-result-card{min-height:350px}
+.network-showcase{padding:18px 21px;margin-top:14px}
+.network-heading h2{font-size:clamp(22px,2.4vw,31px)}
+.network-heading p{max-width:400px}
+.network-layout{margin-top:12px}
+.network-detail{max-width:100%}
+.simple-secondary{gap:12px}
+@media(max-width:760px){.simple-intro h1{font-size:clamp(40px,9vw,55px)}.judge-actions{margin-top:12px}.judge-actions .simple-button-main{min-width:0}.judge-story{margin-top:8px}.network-showcase{padding:15px}}
 </style>
 </head>
 <body>
@@ -511,22 +534,22 @@ pre{max-width:100%;overflow:auto}
   <div class="simple-intro">
     <div class="eyebrow">SAHIAAYA · MADE FOR SMALL SHOPS</div>
     <h1>Know what your supplier<br><em>still owes you.</em></h1>
-    <p>SahiAaya checks deliveries against previous promises and finds what’s missing—without guessing.</p>
+    <p>See what arrived. Track what’s still owed. Never guess.</p>
     <div class="judge-story" aria-label="Fictional demonstration case: 50 units billed, 48 received">
-      <div class="judge-quantity"><span>FICTIONAL INVOICE</span><strong>50 <small>billed</small></strong></div>
+      <div class="judge-quantity"><span>SUPPLIER BILL</span><strong>50 <small>billed</small></strong></div>
       <div class="judge-minus" aria-hidden="true">−</div>
-      <div class="judge-quantity"><span>PHYSICAL COUNT</span><strong>48 <small>received</small></strong></div>
+      <div class="judge-quantity"><span>YOU RECEIVED</span><strong>48 <small>received</small></strong></div>
       <div class="judge-equals" aria-hidden="true">→</div>
-      <div class="judge-gap"><span>UNRESOLVED SHORTAGE</span><strong>2 <small>units owed</small></strong></div>
-      <div class="judge-promises"><span>THE NEXT DELIVERY: 2 SOAPS ARRIVE</span><h2>Which promise did they fulfil?</h2><div><strong>↳ 2 replacement soaps owed</strong><strong>✳ 2 promotional soaps owed</strong></div><small>2 arrived · 2 promises · proof needed.</small></div>
+      <div class="judge-gap"><span>UNACCOUNTED FOR</span><strong>2 <small>units owed</small></strong></div>
+      <div class="judge-promises"><span>THE NEXT DELIVERY: 2 SOAPS ARRIVE</span><h2>Which promise did these 2 soaps fulfil?</h2><div><strong>↳ 2 replacement soaps</strong><strong>✳ 2 promotional soaps</strong></div><small>Two possible answers. Only evidence can decide.</small></div>
     </div>
   </div>
   <div class="judge-actions"><button type="button" id="judgeTryDemo" class="simple-button simple-button-main">Try the demo <span aria-hidden="true">→</span></button><button type="button" id="judgeHow" class="simple-outline-button">See how it works ↓</button></div>
-  <div class="judge-disclosure" role="note"><strong>PUBLIC PREVIEW · FICTIONAL CASE</strong><span>This browser demo is not live FalkorDB or a real AI run. For genuine Cypher, max-flow and MCP tools, use the local Docker app. Recorded graph replays are labelled separately.</span></div>
+  <div class="judge-disclosure" role="note"><strong>FICTIONAL DEMO · NOT LIVE</strong><span>This preview uses fictional data. Live graph and AI investigation require the local Docker app.</span></div>
   <div class="simple-progress" id="judgeProcess" aria-label="Three step receiving workflow">
-    <div id="simpleStep1" class="simple-progress-step is-active"><span>01</span> Check · Compare bill and goods</div>
-    <div id="simpleStep2" class="simple-progress-step"><span>02</span> Trace · Follow promises</div>
-    <div id="simpleStep3" class="simple-progress-step"><span>03</span> Decide · Verify or ask</div>
+    <div id="simpleStep1" class="simple-progress-step is-active"><span>01</span> Check delivery</div>
+    <div id="simpleStep2" class="simple-progress-step"><span>02</span> Trace promises</div>
+    <div id="simpleStep3" class="simple-progress-step"><span>03</span> Decide safely</div>
   </div>
   <div class="simple-workspace">
     <section id="judgeDemoTarget" class="simple-form-card" aria-label="Compare supplier bill with received goods">
@@ -569,7 +592,7 @@ pre{max-width:100%;overflow:auto}
     </section>
   </div>
   <section class="network-showcase" aria-label="Connected evidence for this demonstration">
-    <div class="network-heading"><div><span class="eyebrow">THE EVIDENCE NETWORK</span><h2>Two promises. One delivery.</h2><p id="networkCaption">Fictional case evidence — select a record to inspect its source.</p></div><span class="network-state" id="networkState">NOT INVESTIGATED</span></div>
+    <div class="network-heading"><div><span class="eyebrow">FOLLOW THE EVIDENCE</span><h2>Why can't we settle both?</h2><p id="networkCaption">Tap a record to see why it matters.</p></div><span class="network-state" id="networkState">WAITING FOR CASE</span></div>
     <div class="network-layout">
       <svg class="network-wires" viewBox="0 0 900 260" preserveAspectRatio="none" aria-hidden="true">
         <path d="M130 130 C205 130 225 65 315 65" /><path d="M130 130 C205 130 225 195 315 195" />
@@ -585,7 +608,7 @@ pre{max-width:100%;overflow:auto}
     <button id="simpleRestart" class="simple-text-button" type="button">↻ Start over</button>
   </div>
   <div class="simple-secondary">
-    <div><strong>Want to see how it knows?</strong><span>Explore the supplier history, graph evidence, and agent tools.</span></div>
+    <div><strong>See the proof behind the answer</strong><span>View evidence, graph paths and agent details.</span></div>
     <button id="simpleShowProof" class="simple-outline-button" type="button">Explore the full case <span>↗</span></button>
     <button id="simpleTryOwn" class="simple-outline-button" type="button">Enter your own case <span>→</span></button>
   </div>
