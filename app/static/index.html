@@ -636,7 +636,7 @@ pre{max-width:100%;overflow:auto}
   <div class="billbox-future"><span class="billbox-future-tag">NEXT DELIVERY</span><p>The supplier sends 2 more soaps—but also owes 2 free promotional soaps. <strong>Which promise is fulfilled?</strong></p></div>
  </div>
 </section>
-<section class="journey" aria-label="SahiAaya workflow: receive, connect, investigate, approve">
+<section class="journey" id="journeyStrip" aria-label="SahiAaya workflow: receive, connect, investigate, approve">
   <div class="journey-caption"><strong>WHAT SAHIAAYA DOES</strong><span>From checking a bill to closing the missing-goods claim</span></div>
   <div class="journey-steps">
    <div id="journeyReceive" class="journey-step"><span class="journey-index">01</span><div><strong>Check the bill</strong><small>Compare billed and received</small></div></div>
@@ -1213,10 +1213,11 @@ function simpleReset(){
  for(const id of ["simpleBilled","simpleCounted","simpleProduct"]){$(id).disabled=false;}
  $("simpleCheck").disabled=false;simpleDisplay();
 }
-function simpleOpenAdvanced(section){
+function simpleOpenAdvanced(section,noScroll){
  $("workspaceDetails").open=true;
  if(section==="case")$("newCaseDetails").open=true;
  if(section==="proof"){$("caseDetails").open=true;$("evidenceDetails").open=true;}
+ if(noScroll)return;
  const target=section==="case"?$("newCase"):section==="proof"?$("caseDetails"):$("workspaceDetails");
  target.scrollIntoView({behavior:"smooth",block:"start"});
 }
@@ -1326,10 +1327,14 @@ function markPublicLive(){
  const hl=$("heroSeeLive");if(hl)hl.hidden=false;
  /* The live ledger is the strongest thing on this page; do not hide it behind
     a collapsed "Advanced workspace" when the cloud graph is actually answering. */
- try{simpleOpenAdvanced("case");}catch(e){}
+ /* noScroll: this runs on page load, and a visitor must start at the top. */
+ try{simpleOpenAdvanced("case",true);}catch(e){}
  /* Opening the workspace exposes a second "Billed for 50 / Received only 48"
     hero that repeats the top of the page. One telling of the story is enough. */
  const dh=$("dupHero");if(dh){dh.hidden=true;dh.style.display="none";}
+ /* "WHAT SAHIAAYA DOES" repeats the Check delivery / Trace promises / Decide
+    safely strip already shown under the hero. Once is enough. */
+ const js=$("journeyStrip");if(js){js.hidden=true;js.style.display="none";}
  /* The live ledger works on this page; the "enter your own history" form needs
     local Docker. Put the one that works first, and run it so a visitor sees
     real numbers rather than "NOT RUN". */
