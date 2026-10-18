@@ -52,6 +52,16 @@ jobs:
             exit 1
           fi
           echo "OpenRouter key present (value not logged)."
+      - name: Diagnose provider access (status codes only, key never printed)
+        shell: bash
+        run: |
+          code=$(curl -s -o /tmp/key.json -w '%{http_code}' https://openrouter.ai/api/v1/key -H "Authorization: Bearer $OPENAI_API_KEY")
+          info=$(python -c "import json;d=json.load(open('/tmp/key.json'));k=d.get('data',d);print({x:k.get(x) for x in ('limit','limit_remaining','usage','is_free_tier','error')})" 2>/dev/null)
+          echo "::notice title=Key check::HTTP $code $info"
+          body='{"model":"'"$SAHIAAYA_AGENT_MODEL"'","max_tokens":20,"messages":[{"role":"user","content":"Say ok"}],"tools":[{"type":"function","function":{"name":"ping","description":"ping","parameters":{"type":"object","properties":{}}}}]}'
+          code=$(curl -s -o /tmp/chat.json -w '%{http_code}' https://openrouter.ai/api/v1/chat/completions -H "Authorization: Bearer $OPENAI_API_KEY" -H 'Content-Type: application/json' -d "$body")
+          err=$(python -c "import json;d=json.load(open('/tmp/chat.json'));e=d.get('error');print(e.get('code'),str(e.get('message'))[:200] if e else 'none')" 2>/dev/null)
+          echo "::notice title=Chat check::model=$SAHIAAYA_AGENT_MODEL HTTP $code error=$err"
       - name: Install project requirements
         run: python -m pip install -r requirements.txt
       - name: Verify MCP transport on temporary FalkorDB before invoking model
