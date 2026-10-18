@@ -17,6 +17,8 @@ class Terms(BaseModel):
     valid_to: date
     min_purchase: int = Field(ge=1, le=100000)
     purchase_qty: int = Field(ge=0, le=100000)
+    # Optional: scheme goods must be delivered by this date to count against the scheme.
+    deliver_by: date | None = None
 
 class ClaimIn(BaseModel):
     id: str = Field(pattern=r"^[a-zA-Z0-9_-]{2,32}$")
@@ -55,6 +57,8 @@ class CaseIn(BaseModel):
                 raise ValueError("Promotion needs dated, documented scheme terms")
             if o.scheme_terms and o.scheme_terms.valid_from > o.scheme_terms.valid_to:
                 raise ValueError("Invalid promotion date range")
+            if o.scheme_terms and o.scheme_terms.deliver_by and o.scheme_terms.deliver_by < o.scheme_terms.valid_from:
+                raise ValueError("Scheme delivery window ends before the scheme starts")
         return self
 
 def scheme_eligible(claim: ClaimIn):
@@ -66,7 +70,12 @@ def scheme_eligible(claim: ClaimIn):
                 t.purchase_qty >= t.min_purchase)
 
 def fingerprint(case: CaseIn):
-    canonical = json.dumps(case.model_dump(mode="json"), sort_keys=True, separators=(",", ":"))
+    dumped = case.model_dump(mode="json")
+    # Keep digests of cases imported before deliver_by existed stable.
+    for o in dumped["obligations"]:
+        if o.get("scheme_terms") and o["scheme_terms"].get("deliver_by") is None:
+            o["scheme_terms"].pop("deliver_by", None)
+    canonical = json.dumps(dumped, sort_keys=True, separators=(",", ":"))
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 # Every candidate comes from the graph relationship, not a Python-synthesized set.
@@ -133,11 +142,12 @@ class ResolveStore:
                             eligible=scheme_eligible(o), ref=o.document_ref,
                             earned=str(o.earned_on) if o.earned_on else "",
                             threshold=terms.min_purchase if terms else 0,
-                            purchased=terms.purchase_qty if terms else 0)
+                            purchased=terms.purchase_qty if terms else 0,
+                            deliver_by=str(terms.deliver_by) if terms and terms.deliver_by else "")
                 self.write("""MATCH (c:ResolveCase {tenant:$tenant,id:$case})
 CREATE (o:ResolveObligation {id:$id,kind:$kind,original:$qty,remaining:$qty,version:0,
  created_on:$created,eligible:$eligible,earned_on:$earned,min_purchase:$threshold,
- purchase_qty:$purchased})
+ purchase_qty:$purchased,deliver_by:$deliver_by})
 CREATE (doc:ResolveDocument {ref:$ref,kind:'claim-source'})
 CREATE (c)-[:HAS_OBLIGATION]->(o)
 CREATE (o)-[:SUPPORTED_BY]->(doc) RETURN o.id""", args)
@@ -152,6 +162,7 @@ CREATE (c)-[:HAS_RECEIPT]->(r) RETURN r.id""", args)
                 self.write("""MATCH (c:ResolveCase {tenant:$tenant,id:$case})-[:HAS_RECEIPT]->(r:ResolveReceipt {id:$id})
 MATCH (c)-[:HAS_OBLIGATION]->(o:ResolveObligation)
 WHERE o.eligible=true AND o.created_on <= r.received_on AND r.unit=c.unit
+  AND (coalesce(o.deliver_by,'')='' OR r.received_on <= o.deliver_by)
 CREATE (r)-[:POTENTIALLY_FULFILLS]->(o) RETURN count(o)""", args)
             self.write("MATCH (c:ResolveCase {tenant:$tenant,id:$case}) SET c.ready=true RETURN c.id", p)
         except Exception:

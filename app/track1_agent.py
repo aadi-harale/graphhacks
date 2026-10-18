@@ -17,6 +17,7 @@ TOOL_SCHEMAS = [
   {"type":"function","function":{"name":"investigate_receipt","description":"Retrieve FalkorDB-connected obligations and the authoritative safety decision for the selected receipt.","parameters":{"type":"object","properties":{},"additionalProperties":False}}},
   {"type":"function","function":{"name":"trace_claim_evidence","description":"Follow the receipt -> candidate obligation -> source document links and supplier statements. Do not invent links.","parameters":{"type":"object","properties":{},"additionalProperties":False}}},
   {"type":"function","function":{"name":"inspect_cross_delivery","description":"Traverse all other receipts connected to this claim, including already allocated quantities.","parameters":{"type":"object","properties":{"claim_id":{"type":"string"}},"required":["claim_id"],"additionalProperties":False}}},
+  {"type":"function","function":{"name":"reconcile_ledger","description":"Reconcile the WHOLE supplier ledger with FalkorDB algo.maxFlow: which deliveries are forced onto which claims, which are ambiguous, and what is still owed. Use when several deliveries or claims are open.","parameters":{"type":"object","properties":{},"additionalProperties":False}}},
   {"type":"function","function":{"name":"create_followup_draft","description":"Create a bounded internal next-action draft linked to the receipt; NEVER sends to supplier or settles a claim.","parameters":{"type":"object","properties":{"action":{"type":"string","enum":["request_supplier","request_retailer","review_settlement","request_terms"]}},"required":["action"],"additionalProperties":False}}},
 ]
 
@@ -30,6 +31,7 @@ class AgentSession:
     evidence_paths: list = field(default_factory=list)
     trace: list = field(default_factory=list)
     draft: dict | None = None
+    ledger: dict | None = None
 
 
 class GraphTools:
@@ -94,6 +96,18 @@ ORDER BY r.received_on,r.id""",p)
                 "connected_receipts":[{"id":r[0],"date":r[1],"received":r[2],
                                        "unallocated":r[3],"used_for_claim":r[4]} for r in rows]}
 
+    def reconcile_ledger(self) -> dict:
+        from .ledger import LedgerReconciler
+        r=LedgerReconciler(self.store).reconcile(self.session.case_id)
+        self.session.ledger=r
+        return {"kind":"graph_algorithm","engine":r["engine"],"status":r["status"],
+                "evidence_rows":len(r["proposals"])+len(r["ambiguous"]),
+                "max_settleable_units":r["max_settleable_units"],"forced_units":r["forced_units"],
+                "ambiguous_units":r["ambiguous_units"],"proposals":r["proposals"],
+                "ambiguous":r["ambiguous"],"obligations":r["obligations"],
+                "blocked_receipts":r["blocked_receipts"],"supplier_question":r["supplier_question"],
+                "note":"Forced proposals still need the retailer's approval. Nothing was settled."}
+
     def create_followup_draft(self,action: str) -> dict:
         if not self.session.inspected or not self.session.evidence_traced:
             raise ValueError("Inspect receipt and trace evidence before drafting an action")
@@ -125,7 +139,7 @@ RETURN f.id,f.question,f.status""",p)
 
 
 SYSTEM_PROMPT = """You are SahiAaya's evidence investigator for a fictional retailer. Your job is to use graph tools to investigate a given receipt across connected obligations and earlier deliveries.
-Use investigate_receipt and trace_claim_evidence before creating any action. Call inspect_cross_delivery when claims compete or previous deliveries may matter. Never invent supplier facts, source references or Cypher. NEVER imply a supplier was contacted or a settlement was completed. Create at most one safe internal followup draft when evidence permits. The deterministic graph policy, not your prose, decides whether settlement can be proposed. If facts are missing, state what is unknown. Keep final answer short and merchant-friendly."""
+Use investigate_receipt and trace_claim_evidence before creating any action. Call inspect_cross_delivery when claims compete or previous deliveries may matter. Call reconcile_ledger to see the whole supplier ledger: it reports which deliveries the graph forces onto which claims and which remain ambiguous. Only forced units may be described as settleable, and only after the retailer approves. Never invent supplier facts, source references or Cypher. NEVER imply a supplier was contacted or a settlement was completed. Create at most one safe internal followup draft when evidence permits. The deterministic graph policy, not your prose, decides whether settlement can be proposed. If facts are missing, state what is unknown. Keep final answer short and merchant-friendly."""
 
 def run_agent(case_id: str, receipt_id: str, query: str, store, client=None,
               model: str | None=None, max_rounds: int=7) -> dict:

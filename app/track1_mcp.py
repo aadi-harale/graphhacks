@@ -44,6 +44,13 @@ def inspect_cross_delivery(case_id: str, receipt_id: str, claim_id: str) -> dict
     return t.inspect_cross_delivery(claim_id)
 
 @mcp.tool()
+def reconcile_ledger(case_id: str) -> dict:
+    """Run FalkorDB algo.maxFlow over every open delivery and claim in the case.
+    Returns units settleable, units forced in every maximum allocation (the only
+    ones that may be proposed), ambiguous units, and what is still owed."""
+    return graph_tools(case_id,"unused").reconcile_ledger()
+
+@mcp.tool()
 def create_followup_draft(case_id: str, receipt_id: str, action: str) -> dict:
     """Persist only an internal graph-linked clarification/review draft.
     The policy checks the actual graph state. Nothing gets sent to suppliers.

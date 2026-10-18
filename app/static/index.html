@@ -89,6 +89,20 @@
 .case-audit{margin-top:18px;padding-top:15px;border-top:1px solid #e1e8df;font-size:12px;color:#617367}
 .case-audit strong{color:#274c39}
 .case-audit p{line-height:1.6}
+.ledger-panel{margin-top:20px;border:1px solid #c9dac6;background:#fbfcf7;border-radius:14px;padding:18px}
+.ledger-panel h4{font-family:Georgia,serif;font-size:22px;font-weight:500;letter-spacing:-.03em;margin:8px 0 6px}
+.ledger-panel p.lead-small{font-size:12px;line-height:1.6;color:#58705a;margin:0 0 12px}
+.ledger-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}
+.ledger-stats div{background:#fff;border:1px solid #d6e3d2;border-radius:10px;padding:11px}
+.ledger-stats b{display:block;font-size:22px;letter-spacing:-.04em;color:#234b37}
+.ledger-stats span{display:block;font-size:10.5px;color:#5c7563;margin-top:2px;line-height:1.35}
+.ledger-stats .forced b{color:#1c523e}.ledger-stats .amb b{color:#876128}
+.ledger-row{display:flex;justify-content:space-between;align-items:center;gap:12px;border-top:1px solid #e1e9de;padding:11px 0;font-size:12px;color:#45654c}
+.ledger-row strong{color:#224d38}.ledger-row small{display:block;color:#6b8571;font-size:10.5px;margin-top:3px;overflow-wrap:anywhere}
+.ledger-row .btn{min-height:36px;padding:8px 11px;white-space:nowrap}
+.ledger-q{border-left:3px solid #d6a459;padding:8px 0 8px 12px;margin:12px 0;font-size:12.5px;line-height:1.6;color:#354e3b}
+.ledger-demo{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 0}
+@media(max-width:650px){.ledger-stats{grid-template-columns:1fr 1fr}.ledger-row{display:block}.ledger-row .btn{width:100%;margin-top:8px}}
 @media(max-width:1050px){.intake-form{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:650px){.case-intake-head{display:block}.case-intake-head .tag{display:inline-block;margin-top:10px}.intake-form{grid-template-columns:1fr}.intake-form .file-label{grid-column:span 1}.case-content{grid-template-columns:1fr}.case-bar{display:block}.case-bar label{margin-top:12px}.intake-actions{display:block}.intake-actions span{display:block;margin-top:11px}}
 .case-resume{margin-top:16px;padding:14px 0;border-top:1px solid #e3eadf}
@@ -441,7 +455,7 @@
   <label class="file-label">Or import a fresh fictional JSON history <input id="newHistoryFile" type="file" accept=".json,application/json"><small>The uploaded history takes precedence over the form. Use examples/fictional_second_supplier_case.json to test a different product.</small></label>
   <div class="intake-actions"><button id="caseSubmit" type="submit" class="btn primary">Create case & investigate →</button><span>Local Docker only. No real invoices, names, phone numbers or external communications.</span></div>
  </form>
- <div class="case-resume"><label for="resumeCaseId">Already created a fictional case? Enter its ID after a refresh.</label><div><input id="resumeCaseId" placeholder="e.g. retailer_m..." autocomplete="off"><button id="resumeCaseButton" type="button" class="btn secondary">Reopen graph case</button></div></div>
+ <div class="case-resume"><label for="resumeCaseId">Already created a fictional case? Enter its ID after a refresh.</label><div><input id="resumeCaseId" placeholder="e.g. retailer_m..." autocomplete="off"><button id="resumeCaseButton" type="button" class="btn secondary">Reopen graph case</button></div><div class="ledger-demo"><button id="demoForced" type="button" class="btn secondary">Load demo: two unlabelled drops (forced)</button><button id="demoAmbiguous" type="button" class="btn secondary">Load demo: symmetric drops (ambiguous)</button></div></div>
 <div class="intake-message" role="status" id="caseMessage">This feature writes synthetic cases to local FalkorDB. On the public Vercel preview, run the Docker version to use it.</div>
  <div id="caseWorkbench" hidden>
   <div class="case-bar"><strong id="customCaseTitle">Your new case</strong><label>Delivery <select id="caseReceiptSelect"></select></label></div>
@@ -449,6 +463,16 @@
   <div class="case-content"><div><div class="doc-label">Connected obligations</div><div id="caseClaims" class="case-claims"></div><div class="doc-label">FalkorDB provenance</div><div id="casePath" class="lineage"></div></div>
   <div><label for="caseTarget">Claim to attribute this delivery to</label><select id="caseTarget"></select><label for="caseReference">Fictional supplier reference</label><input id="caseReference" value="fictional_supplier_confirmation"><button id="caseAttribute" type="button" class="btn secondary wide">Record supplier attribution</button><button id="caseApprove" type="button" class="btn primary wide" disabled>Retailer review & record allocation</button><p class="helper">This is a synthetic response; a reference string is not independently verified supplier evidence.</p></div></div>
   <div class="case-audit"><strong>Verified local ledger</strong><div id="caseAudit"></div></div>
+ <div class="ledger-panel" id="ledgerPanel">
+  <div class="agent-head"><span class="eyebrow">WHOLE SUPPLIER LEDGER · FALKORDB algo.maxFlow</span><span class="tag" id="ledgerEngine">NOT RUN</span></div>
+  <h4>What is settled, what is still owed — across every delivery.</h4>
+  <p class="lead-small">FalkorDB runs one max-flow over Delivery → Claim. Then it blocks each link and re-runs it: units that vanish are carried by that link in <em>every</em> valid allocation. Only those forced units are proposed; everything else becomes a supplier question.</p>
+  <button id="ledgerRun" type="button" class="btn primary">Reconcile whole ledger →</button>
+  <div class="ledger-stats" aria-live="polite"><div><b id="ledgerOwed">–</b><span>units owed by supplier</span></div><div><b id="ledgerMax">–</b><span>settleable by recorded deliveries</span></div><div class="forced"><b id="ledgerForced">–</b><span>forced by the graph — safe to propose</span></div><div class="amb"><b id="ledgerAmb">–</b><span>ambiguous — ask supplier</span></div></div>
+  <div id="ledgerQuestion" class="ledger-q" hidden></div>
+  <div id="ledgerProposals"></div>
+  <div id="ledgerClaims"></div>
+ </div>
  <div class="agent-workbench" id="agentWorkbench">
   <div class="agent-head"><span class="eyebrow">TRACK 01 · GRAPH INVESTIGATION AGENT</span><span class="tag">LOCAL GRAPH + MODEL REQUIRED</span></div>
   <h3>Ask SahiAaya to investigate, not just check quantities.</h3>
@@ -675,7 +699,7 @@ async function loadResolveReceipt(){
  if(!resolveSession)return;
  try{
   const s=await api("/api/resolve/cases/"+encodeURIComponent(resolveSession.id)+"/receipts/"+encodeURIComponent($("caseReceiptSelect").value));
-  resolveSession.state=s;renderResolveCase(s);await loadAgentDrafts();
+  resolveSession.state=s;renderResolveCase(s);await loadAgentDrafts();await loadLedger();
  }catch(err){setCaseMessage("Could not investigate receipt: "+err.message,true);}
 }
 function renderResolveCase(s){
@@ -712,7 +736,7 @@ async function attributeResolve(){
   const result=await api("/api/resolve/cases/"+encodeURIComponent(resolveSession.id)+"/receipts/"+encodeURIComponent(s.receipt_id)+"/attribute",{
    claim_id:$("caseTarget").value,reference:$("caseReference").value,expected_version:s.receipt.version
   });
-  resolveSession.state=result;renderResolveCase(result);
+  resolveSession.state=result;renderResolveCase(result);loadLedger();
   setCaseMessage("Synthetic supplier attribution recorded. Now the retailer can review the proposed allocation.",false);
  }catch(err){setCaseMessage("Supplier attribution blocked: "+err.message,true);}
 }
@@ -725,7 +749,7 @@ async function approveResolve(){
    claim_id:target.id,quantity:s.decision.suggested_qty,
    receipt_version:s.receipt.version,claim_version:target.version
   });
-  resolveSession.state=result;renderResolveCase(result);
+  resolveSession.state=result;renderResolveCase(result);loadLedger();
   setCaseMessage("Reviewed synthetic allocation recorded. The other delivery and outstanding claims remain independent.",false);
  }catch(err){setCaseMessage("Settlement rejected: "+err.message,true);}
 }
@@ -941,5 +965,49 @@ $("caseForm").addEventListener("submit",e=>{e.preventDefault();createResolveCase
 try{const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),1600);const res=await fetch("/api/health",{signal:controller.signal,headers:{accept:"application/json"}});clearTimeout(timeout);if(res.ok){const health=await res.json();if(health.backend==="FALKORDB"&&health.ok===true)kind="FALKORDB";else if(health.backend==="memory"&&health.ok===true)kind="LOCAL_MEMORY";else throw Error("Unknown health state");}else if(res.status!==404)throw Error("Graph API health unavailable: HTTP "+res.status);}catch(e){kind="UNAVAILABLE";failure("Graph API unavailable: "+e.message+". The app will not claim live settlement results.");}
 if(!await reset("ambiguous"))throw Error("Could not load ambiguous case");simpleDisplay();}
 initialize();
+
+/* Whole-ledger reconciliation (FalkorDB algo.maxFlow). Shows only server results. */
+const LEDGER_DEMOS={forced:{"synthetic_only": true, "supplier_id": "fictional_sharma_distributors", "sku": "SOAP100", "unit": "piece", "obligations": [{"id": "SHORT_JUN", "kind": "shortage", "qty": 2, "created_on": "2026-10-01", "document_ref": "fictional_invoice_1041_billed50_received48"}, {"id": "DIWALI_SCHEME", "kind": "promotion", "qty": 2, "created_on": "2026-10-02", "earned_on": "2026-10-02", "document_ref": "fictional_diwali_scheme_circular", "scheme_terms": {"valid_from": "2026-10-01", "valid_to": "2026-10-31", "min_purchase": 40, "purchase_qty": 50, "deliver_by": "2026-10-07"}}], "receipts": [{"id": "DROP_1", "received_on": "2026-10-05", "qty": 2, "unit": "piece", "retailer_confirmed": true, "document_ref": "fictional_delivery_note_05"}, {"id": "DROP_2", "received_on": "2026-10-09", "qty": 2, "unit": "piece", "retailer_confirmed": true, "document_ref": "fictional_delivery_note_09"}], "case_id": "ledger_forced_demo"},ambiguous:{"synthetic_only": true, "supplier_id": "fictional_sharma_distributors", "sku": "SOAP100", "unit": "piece", "obligations": [{"id": "SHORT_JUN", "kind": "shortage", "qty": 2, "created_on": "2026-10-01", "document_ref": "fictional_invoice_1041_billed50_received48"}, {"id": "DIWALI_SCHEME", "kind": "promotion", "qty": 2, "created_on": "2026-10-02", "earned_on": "2026-10-02", "document_ref": "fictional_diwali_scheme_circular", "scheme_terms": {"valid_from": "2026-10-01", "valid_to": "2026-10-31", "min_purchase": 40, "purchase_qty": 50, "deliver_by": "2026-10-07"}}], "receipts": [{"id": "DROP_1", "received_on": "2026-10-05", "qty": 2, "unit": "piece", "retailer_confirmed": true, "document_ref": "fictional_delivery_note_05"}, {"id": "DROP_2", "received_on": "2026-10-06", "qty": 2, "unit": "piece", "retailer_confirmed": true, "document_ref": "fictional_delivery_note_06"}], "case_id": "ledger_ambiguous_demo"}};
+async function loadLedgerDemo(which){
+ try{
+  if(kind!=="FALKORDB")throw Error("Requires local FalkorDB mode");
+  const base=LEDGER_DEMOS[which];
+  const payload=JSON.parse(JSON.stringify(base));payload.case_id=base.case_id+"_"+Date.now().toString(36);
+  await api("/api/resolve/cases",payload);
+  $("resumeCaseId").value=payload.case_id;await reopenResolveCase();await loadLedger();
+  $("ledgerPanel").scrollIntoView({behavior:"smooth",block:"start"});
+ }catch(err){setCaseMessage("Demo ledger blocked: "+err.message,true);}
+}
+async function loadLedger(){
+ if(!resolveSession||kind!=="FALKORDB")return;
+ try{
+  const r=await api("/api/resolve/cases/"+encodeURIComponent(resolveSession.id)+"/ledger");
+  assign("ledgerEngine",r.engine==="falkordb.algo.maxFlow"?"LIVE · algo.maxFlow":"FALLBACK · "+r.engine);
+  assign("ledgerOwed",String(r.total_outstanding));assign("ledgerMax",String(r.max_settleable_units));
+  assign("ledgerForced",String(r.forced_units));assign("ledgerAmb",String(r.ambiguous_units));
+  const q=$("ledgerQuestion");q.hidden=!r.supplier_question;q.textContent=r.supplier_question||"";
+  if(r.status==="DISPUTE"){q.hidden=false;q.textContent="Blocked: conflicting supplier statements on "+r.blocked_receipts.filter(b=>b.reason==="CONFLICTING_SUPPLIER_STATEMENTS").map(b=>b.receipt_id).join(", ")+". Those deliveries are excluded until one statement is withdrawn.";}
+  const ph=$("ledgerProposals");ph.replaceChildren();
+  for(const p of r.proposals){
+   const row=document.createElement("div");row.className="ledger-row";
+   const info=document.createElement("div");const t=document.createElement("strong");t.textContent=p.forced_units+" unit(s): "+p.receipt_id+" → "+p.claim_id;
+   const sm=document.createElement("small");sm.textContent="Forced in every valid allocation · "+p.evidence_path.join(" → ");info.append(t,sm);
+   const b=document.createElement("button");b.type="button";b.className="btn primary";b.textContent="Shopkeeper approves "+p.forced_units;
+   b.addEventListener("click",async()=>{b.disabled=true;try{await api("/api/resolve/cases/"+encodeURIComponent(resolveSession.id)+"/ledger/approve",{receipt_id:p.receipt_id,claim_id:p.claim_id,quantity:p.forced_units,receipt_version:p.receipt_version,claim_version:p.claim_version});await loadResolveReceipt();}catch(err){setCaseMessage("Approval blocked: "+err.message,true);b.disabled=false;}});
+   row.append(info,b);ph.append(row);
+  }
+  const ch=$("ledgerClaims");ch.replaceChildren();
+  for(const o of r.obligations){
+   const row=document.createElement("div");row.className="ledger-row";
+   const info=document.createElement("div");const t=document.createElement("strong");t.textContent=o.id+" · "+o.kind;
+   const sm=document.createElement("small");sm.textContent=o.document_ref+(o.eligible?"":" · not eligible");info.append(t,sm);
+   const end=document.createElement("span");end.textContent=o.outstanding_qty+" of "+o.original_qty+" still owed";
+   row.append(info,end);ch.append(row);
+  }
+ }catch(err){assign("ledgerEngine","ERROR");setCaseMessage("Ledger reconciliation failed: "+err.message,true);}
+}
+$("ledgerRun").addEventListener("click",loadLedger);
+$("demoForced").addEventListener("click",()=>loadLedgerDemo("forced"));
+$("demoAmbiguous").addEventListener("click",()=>loadLedgerDemo("ambiguous"));
 </script>
 </body></html>

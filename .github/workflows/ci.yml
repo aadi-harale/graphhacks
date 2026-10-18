@@ -15,7 +15,7 @@ jobs:
         run: |
           python -m pip install -r requirements-mcp.txt
           python -c "from app.track1_mcp import mcp; assert mcp is not None"
-      - run: python -m pytest -q tests/test_decisions.py tests/test_baseline.py tests/test_resolve_intake.py tests/test_track1_agent.py tests/test_track1_counterfactual.py
+      - run: python -m pytest -q tests/test_decisions.py tests/test_baseline.py tests/test_resolve_intake.py tests/test_track1_agent.py tests/test_track1_counterfactual.py tests/test_ledger.py
       - name: Compile real-model acceptance and recording utilities
         run: python -m compileall -q app scripts
       - run: python -m scripts.proof_report
@@ -60,7 +60,36 @@ jobs:
           RUN_FALKOR_TESTS: "1"
           FALKOR_HOST: "localhost"
           FALKOR_PORT: "6379"
-        run: python -m pytest tests/test_falkor_integration.py tests/test_graph_safety.py tests/test_resolve_intake.py tests/test_track1_agent.py tests/test_track1_counterfactual.py -v
+          SAHIAAYA_REQUIRE_GRAPH_MAXFLOW: "1"
+        run: |
+          python -m pip install -r requirements-mcp.txt
+          python -c "from falkordb import FalkorDB; g=FalkorDB(host='localhost',port=6379).select_graph('probe'); names=[r[0] for r in g.query('CALL dbms.procedures() YIELD name RETURN name').result_set]; print('::notice title=FalkorDB algorithms::'+', '.join(n for n in names if n.startswith('algo.')))"
+          python -m pytest tests/test_falkor_integration.py tests/test_graph_safety.py tests/test_resolve_intake.py tests/test_track1_agent.py tests/test_track1_counterfactual.py tests/test_ledger.py -v --junitxml=/tmp/live-tests.xml
+      - name: Report failing live tests as annotations
+        if: failure()
+        run: |
+          python - <<'PY'
+          import xml.etree.ElementTree as ET
+          for case in ET.parse('/tmp/live-tests.xml').iter('testcase'):
+              for bad in list(case.iter('failure'))+list(case.iter('error')):
+                  msg=(bad.get('message') or '')[:300].replace('\n',' ')
+                  text=(bad.text or '').strip().splitlines()[-6:]
+                  print(f"::error title={case.get('name')}::{msg} || "+' | '.join(t.strip()[:160] for t in text))
+          PY
+      - name: Benchmark greedy per-row logic vs graph reconciliation on live FalkorDB
+        env:
+          FALKOR_HOST: localhost
+          FALKOR_PORT: "6379"
+          SAHIAAYA_REQUIRE_GRAPH_MAXFLOW: "1"
+        run: |
+          python -m scripts.benchmark --cases 60 --noise 0.15 --live --out docs/benchmark_results.json > /dev/null
+          python -c "import json; d=json.load(open('docs/benchmark_results.json')); [print('::notice title=Benchmark '+k+'::engine='+d['engine']+' delivered='+str(v['delivered_units'])+' sql_agree='+v['graph_equals_equally_informed_sql_flow']+' '+json.dumps(v['methods'])) for k,v in d['results'].items()]"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sahiaaya-ledger-benchmark
+          path: docs/benchmark_results.json
+          if-no-files-found: ignore
       - name: End-to-end browser workflow using live FalkorDB
         env:
           FALKOR_HOST: localhost
