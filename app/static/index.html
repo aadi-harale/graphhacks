@@ -450,6 +450,33 @@ pre{max-width:100%;overflow:auto}
 @media(max-width:1050px){.simple-intro{grid-template-columns:1fr 1fr}.judge-story{grid-column:2;grid-row:2/4}.simple-intro>p{grid-column:1;grid-row:3}}
 @media(max-width:760px){.simple-intro{display:flex;flex-direction:column;gap:9px}.simple-intro h1{margin:7px 0;font-size:clamp(42px,9vw,57px)}.simple-intro>p{margin:0 0 9px}.judge-story{width:100%;margin:4px 0}.judge-actions{flex-wrap:wrap}.judge-actions .simple-button{flex:1;max-width:none}.judge-actions .simple-outline-button{flex:1;white-space:normal}.simple-progress-step{font-size:10px}}
 @media(max-width:460px){.judge-actions{display:grid;grid-template-columns:1fr}.judge-actions .simple-button,.judge-actions .simple-outline-button{width:100%;max-width:none;justify-content:center}.judge-story{padding:15px}.judge-promises>div{grid-template-columns:1fr}.judge-quantity strong,.judge-gap strong{font-size:29px}.simple-progress-step{font-size:9px;padding:8px 5px}}
+
+/* Restrained evidence reveal and visual-first receipt storytelling. */
+.judge-story{position:relative;overflow:hidden}
+.judge-quantity strong,.judge-gap strong{font-variant-numeric:tabular-nums}
+.judge-promises>div strong{display:flex;align-items:center;justify-content:center;min-height:53px;text-align:center}
+.judge-promises h2{font-size:clamp(20px,2.3vw,28px)}
+.judge-actions .simple-button-main{box-shadow:0 5px 17px rgba(38,79,69,.13)}
+.evidence-visual-head{display:flex;justify-content:space-between;gap:10px;align-items:center;margin:17px 0 10px}
+.evidence-visual-head strong{font-size:12px;color:#223d43}
+.evidence-visual-head small{font-size:10px;color:#6b7d7b}
+.evidence-visual{display:grid;gap:12px}
+.evidence-route{background:#f6f8f4;border:1px solid #d9e4dc;border-radius:7px;padding:13px}
+.evidence-route-label{display:block;font-size:11px;color:#3d675b;margin-bottom:10px}
+.evidence-route-track{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.evidence-route-node{border:1px solid #c9dcd0;border-radius:5px;background:#fffefa;color:#315448;padding:9px 10px;font-size:11px;max-width:100%;overflow-wrap:anywhere;cursor:pointer}
+.evidence-route-node:hover,.evidence-route-node.selected{background:#deebe2;border-color:#659783}
+.evidence-route-arrow{color:#779587}
+.evidence-record-detail{padding:10px 0;font-size:11px;line-height:1.6;color:#5c7771}
+@media(prefers-reduced-motion:no-preference){
+ .judge-story{animation:evidence-enter .45s ease-out both}
+ .judge-promises{animation:evidence-enter .5s .14s ease-out both}
+ .evidence-route{animation:evidence-enter .28s ease-out both}
+ .simple-result-card h2,.simple-missing,.simple-balances{transition:opacity .18s ease,background-color .18s ease}
+ @keyframes evidence-enter{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+}
+@media(max-width:600px){.evidence-visual-head{align-items:flex-start;flex-direction:column}.evidence-route-track{gap:4px}.evidence-route-node{font-size:10px}.judge-promises>div strong{min-height:46px}}
+@media(prefers-reduced-motion:reduce){.judge-story,.judge-promises,.evidence-route{animation:none!important}}
 </style>
 </head>
 <body>
@@ -471,10 +498,10 @@ pre{max-width:100%;overflow:auto}
       <div class="judge-quantity"><span>PHYSICAL COUNT</span><strong>48 <small>received</small></strong></div>
       <div class="judge-equals" aria-hidden="true">→</div>
       <div class="judge-gap"><span>UNRESOLVED SHORTAGE</span><strong>2 <small>units owed</small></strong></div>
-      <div class="judge-promises"><span>THE NEXT DELIVERY: 2 SOAPS ARRIVE</span><h2>Which promise did they fulfil?</h2><div><strong>↳ 2 replacement soaps owed</strong><strong>✳ 2 promotional soaps owed</strong></div><small>Same quantity. Two possible explanations. No allocation without evidence.</small></div>
+      <div class="judge-promises"><span>THE NEXT DELIVERY: 2 SOAPS ARRIVE</span><h2>Which promise did they fulfil?</h2><div><strong>↳ 2 replacement soaps owed</strong><strong>✳ 2 promotional soaps owed</strong></div><small>2 arrived · 2 promises · proof needed.</small></div>
     </div>
   </div>
-  <div class="judge-actions"><button type="button" id="judgeTryDemo" class="simple-button simple-button-main">Try the delivery demo <span aria-hidden="true">→</span></button><button type="button" id="judgeHow" class="simple-outline-button">See how it works ↓</button></div>
+  <div class="judge-actions"><button type="button" id="judgeTryDemo" class="simple-button simple-button-main">Try the demo <span aria-hidden="true">→</span></button><button type="button" id="judgeHow" class="simple-outline-button">See how it works ↓</button></div>
   <div class="judge-disclosure" role="note"><strong>PUBLIC PREVIEW · FICTIONAL CASE</strong><span>This browser demo is not live FalkorDB or a real AI run. For genuine Cypher, max-flow and MCP tools, use the local Docker app. Recorded graph replays are labelled separately.</span></div>
   <div class="simple-progress" id="judgeProcess" aria-label="Three step receiving workflow">
     <div id="simpleStep1" class="simple-progress-step is-active"><span>01</span> Check · Compare bill and goods</div>
@@ -633,7 +660,7 @@ pre{max-width:100%;overflow:auto}
  <div class="graph-steps" id="graphSteps" aria-live="polite"></div>
  <div class="graph-summary"><strong id="graphSummaryTitle">Missing supplier attribution</strong><span id="graphSummaryDetail">The retailer still has two outstanding obligations.</span></div>
 </section>
-<div class="under" id="proof"><section class="card"><div class="card-head"><div class="doc-label">Evidence trail</div><span class="tag">CONNECTIONS</span></div><h3>Why did SahiAaya decide this?</h3><ul class="evidence-list" id="evidenceList"></ul><div id="paths"></div><details><summary>Inspect machine decision and graph tool trace</summary><pre id="raw"></pre></details></section><section class="card"><div class="card-head"><div class="doc-label">Reviewed outcome</div><span class="tag">AUDIT</span></div><h3>What actually changed?</h3><ul class="ledger" id="audit"></ul><div class="result-box"><strong>No invented recoveries</strong><p>We report proposed allocations, supplier statements and reviewed settlements separately. No money is shown as saved until a real adjustment is proven.</p></div></section></div></details>
+<div class="under" id="proof"><section class="card"><div class="card-head"><div class="doc-label">Evidence trail</div><span class="tag">CONNECTIONS</span></div><h3>Why did SahiAaya decide this?</h3><ul class="evidence-list" id="evidenceList"></ul><div class="evidence-visual-head"><strong>Connected evidence paths</strong><small id="visualPathMode">Fictional preview · evidence from active case</small></div><div id="evidenceVisual" class="evidence-visual" aria-label="Evidence paths from the current case"></div><div id="evidenceRecordDetail" class="evidence-record-detail" role="status">Select a record to inspect its returned reference.</div><details><summary>Text evidence paths</summary><div id="paths"></div></details><details><summary>Inspect machine decision and graph tool trace</summary><pre id="raw"></pre></details></section><section class="card"><div class="card-head"><div class="doc-label">Reviewed outcome</div><span class="tag">AUDIT</span></div><h3>What actually changed?</h3><ul class="ledger" id="audit"></ul><div class="result-box"><strong>No invented recoveries</strong><p>We report proposed allocations, supplier statements and reviewed settlements separately. No money is shown as saved until a real adjustment is proven.</p></div></section></div></details>
 </details>
 <footer class="foot" id="about"><strong>Current experience:</strong> <span id="runtimeDisclosure">Public synthetic walkthrough. Real FalkorDB reasoning is available in the separate local Docker application.</span> <a href="https://github.com/aadi-harale/graphhacks" target="_blank" rel="noopener noreferrer">Source and local FalkorDB setup →</a><br><br>Graph Hacks × FalkorDB 2026 · Track 01 — Agents That Act on Connected Data · Built with AI development assistance. No real retailer information is used.</footer>
 </main></div></div>
@@ -669,7 +696,27 @@ return verdict("ASK_SUPPLIER","The goods arrived. The purpose did not.","The sam
 }
 function refreshSynthetic(){local.decision=decision(local);render(local);}
 function details(texts){const host=$("evidenceList");host.replaceChildren();for(const value of texts){const li=document.createElement("li");li.textContent=value;host.append(li);}}
-function showPaths(value){const p=$("paths");p.replaceChildren();for(const [k,v] of Object.entries(value||{})){const el=document.createElement("div");el.className="lineage";el.textContent=k+": "+v.join(" → ");p.append(el)}}
+function showPaths(value){
+ const p=$("paths"),visual=$("evidenceVisual");p.replaceChildren();visual.replaceChildren();
+ $("visualPathMode").textContent=kind==="FALKORDB"?"FalkorDB response · reported path sequence":"Fictional preview · reported path sequence";
+ const entries=Object.entries(value||{});
+ if(!entries.length){visual.textContent="No evidence paths returned for this decision.";return;}
+ for(const [claim,path] of entries){
+  const group=document.createElement("div");group.className="evidence-route";
+  const heading=document.createElement("strong");heading.className="evidence-route-label";heading.textContent=claim;group.append(heading);
+  const track=document.createElement("div");track.className="evidence-route-track";
+  for(const [i,record] of (Array.isArray(path)?path:[]).entries()){
+   if(i){const arrow=document.createElement("span");arrow.className="evidence-route-arrow";arrow.textContent="→";arrow.setAttribute("aria-hidden","true");track.append(arrow);}
+   const node=document.createElement("button");node.type="button";node.className="evidence-route-node";node.textContent=String(record);
+   node.setAttribute("aria-label","Inspect record "+String(record));
+   node.addEventListener("click",()=>{for(const other of visual.querySelectorAll(".evidence-route-node"))other.classList.remove("selected");node.classList.add("selected");$("evidenceRecordDetail").textContent="Reported evidence reference: "+String(record)+". Path: "+claim+". No additional record properties were supplied by this response.";});
+   track.append(node);
+  }
+  group.append(track);visual.append(group);
+  const el=document.createElement("div");el.className="lineage";el.textContent=claim+": "+(Array.isArray(path)?path.join(" → "):String(path));p.append(el);
+ }
+ $("evidenceRecordDetail").textContent="Select a record to inspect its returned reference.";
+}
 function renderStory(s){
  const d=s.decision,receipt=s.receipt,obs=s.obligations||[],statements=(s.statements||[]).filter(x=>x.active);
  const reviewed=(s.verified_allocations||[]).reduce((n,x)=>n+Number(x.quantity||0),0);
