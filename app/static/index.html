@@ -1361,6 +1361,9 @@ async function publicLiveDemo(which,noScroll){
  if(!await publicLiveAvailable())return false;
  try{
   setCaseMessage("Running live on FalkorDB Cloud…",false);
+  /* caseMessage lives in the hidden workspace, so say it on the ledger too -
+     otherwise the panel reads "NOT RUN" while the query is in flight. */
+  assign("ledgerEngine","RUNNING ON FALKORDB CLOUD…");
   const r=await api("/api/public/ledger-demo",{which:which});
   const n=$("ledgerReplayNote");n.hidden=false;
   n.textContent="LIVE — computed just now by algo.maxFlow on FalkorDB Cloud (case "+r.case_id+"). Fictional demo data; public demo cases are deleted after 30 minutes.";
@@ -1368,7 +1371,7 @@ async function publicLiveDemo(which,noScroll){
   setCaseMessage("Live result from FalkorDB Cloud.",false);
   if(!noScroll)$("ledgerPanel").scrollIntoView({behavior:"smooth",block:"start"});
   return true;
- }catch(err){setCaseMessage("Live graph unavailable ("+err.message+"); showing the recorded run instead.",true);return false;}
+ }catch(err){setCaseMessage("Live graph unavailable ("+err.message+"); showing the recorded run instead.",true);assign("ledgerEngine","NOT RUN");return false;}
 }
 async function replayLedgerDemo(which){
  try{
