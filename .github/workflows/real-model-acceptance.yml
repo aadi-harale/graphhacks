@@ -3,7 +3,7 @@ on:
   # This workflow also accepts a guarded one-time push activation.
   push:
     branches: [main]
-    paths: [".github/workflows/real-model-acceptance.yml"]
+    paths: [".github/workflows/real-model-acceptance.yml", "scripts/live_model_gate.py", "app/track1_mcp_loop.py"]
   workflow_dispatch:
     inputs:
       scenario:
