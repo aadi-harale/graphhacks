@@ -1,0 +1,6 @@
+tests/
+docs/
+scripts/
+artifacts/
+*.md
+!README.md

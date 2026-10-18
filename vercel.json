@@ -1,0 +1,14 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "outputDirectory": "app/static",
+  "functions": {
+    "api/index.py": {
+      "maxDuration": 30,
+      "includeFiles": "{app/**/*.py,examples/ledger_*.json}"
+    }
+  },
+  "rewrites": [
+    { "source": "/api/public/(.*)", "destination": "/api/index" }
+  ]
+}
