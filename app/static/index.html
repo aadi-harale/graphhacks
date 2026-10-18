@@ -396,6 +396,32 @@ pre{max-width:100%;overflow:auto}
 @media(max-width:390px){.simple-progress-step{font-size:9px;gap:4px;padding:9px 5px}.simple-progress-step span{width:17px;height:18px}.simple-input-pair{gap:8px}.simple-field input{padding:10px;min-width:0}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important}}
 
+
+/* Judge-first focal narrative, disclosure and graph handoff — presentation only. */
+.simple-intro{grid-template-columns:1fr 1fr;gap:24px 40px;align-items:center}
+.simple-intro .eyebrow{grid-column:1/-1}
+.simple-intro h1{grid-column:1;grid-row:2}
+.simple-intro>p{grid-column:1;grid-row:3;margin:0;max-width:670px;border-left:2px solid #b9cfc5}
+.judge-story{grid-column:2;grid-row:2/4;display:grid;grid-template-columns:1fr 16px 1fr 16px 1fr;gap:8px;align-items:center;background:#fffefa;border:1px solid #d8ded7;border-radius:8px;padding:20px;box-shadow:0 12px 38px rgba(20,40,50,.045)}
+.judge-quantity,.judge-gap{min-width:0}.judge-quantity>span,.judge-gap>span,.judge-promises>span{display:block;font-size:9px;letter-spacing:.12em;font-weight:800;color:#677c7b}
+.judge-quantity strong,.judge-gap strong{display:block;font-family:Georgia,serif;font-size:clamp(27px,3.4vw,42px);font-weight:400;color:#172b3a;margin-top:5px}
+.judge-quantity small,.judge-gap small{display:block;font-family:Inter,system-ui,sans-serif;letter-spacing:0;font-size:10px;font-weight:600;color:#647a7a}
+.judge-minus,.judge-equals{text-align:center;color:#749185;font-size:18px}
+.judge-gap>span,.judge-gap strong{color:#9a642b}
+.judge-promises{grid-column:1/-1;border-top:1px solid #e1e6e0;padding-top:15px;margin-top:10px}
+.judge-promises>div{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:9px 0}
+.judge-promises>div strong{border:1px solid #d5dfda;background:#eff3ef;padding:10px;border-radius:4px;font-size:11px;font-weight:650;color:#294b47}
+.judge-promises>small{font-size:11px;line-height:1.5;color:#667779}
+.judge-disclosure{display:flex;align-items:center;gap:15px;border-left:3px solid #ba843b;background:#f6f0e4;padding:11px 14px;margin:0 0 16px;color:#715735}
+.judge-disclosure strong{flex:0 0 auto;font-size:10px;letter-spacing:.09em}
+.judge-disclosure span{font-size:11px;line-height:1.5}
+.judge-technical-link{display:flex;align-items:center;gap:20px;justify-content:space-between;border:1px solid #c9d7d0;border-radius:6px;background:#e9f0ea;padding:17px 20px;margin:16px 0 5px}
+.judge-technical-link>span{color:#526b6a;line-height:1.6;font-size:12px;max-width:830px}
+.judge-technical-link>span strong{color:#1c3e43}
+.judge-technical-link button{flex:0 0 auto}
+.ledger-stats .amb b{color:#a06b32}
+@media(max-width:1050px){.simple-intro{display:block}.simple-intro h1{margin-bottom:15px}.simple-intro>p{margin-bottom:20px}.judge-story{max-width:none}}
+@media(max-width:680px){.judge-story{padding:15px;gap:4px}.judge-quantity strong,.judge-gap strong{font-size:29px}.judge-quantity>span,.judge-gap>span{font-size:8px}.judge-promises>div{grid-template-columns:1fr 1fr}.judge-disclosure{display:block}.judge-disclosure span{display:block;margin-top:6px}.judge-technical-link{display:block}.judge-technical-link button{width:100%;margin-top:12px}}
 </style>
 </head>
 <body>
@@ -410,8 +436,17 @@ pre{max-width:100%;overflow:auto}
   <div class="simple-intro">
     <div class="eyebrow">SAHIAAYA · MADE FOR SMALL SHOPS</div>
     <h1>Never lose track of what<br><em>your supplier owes.</em></h1>
-    <p>Check a delivery, spot missing goods, and follow up until they're actually received.</p>
+    <p>One delivery can match two promises. SahiAaya keeps both open until the evidence says which one is fulfilled.</p>
+    <div class="judge-story" aria-label="Fictional demonstration case: 50 units billed, 48 received">
+      <div class="judge-quantity"><span>FICTIONAL INVOICE</span><strong>50 <small>billed</small></strong></div>
+      <div class="judge-minus" aria-hidden="true">−</div>
+      <div class="judge-quantity"><span>PHYSICAL COUNT</span><strong>48 <small>received</small></strong></div>
+      <div class="judge-equals" aria-hidden="true">→</div>
+      <div class="judge-gap"><span>UNRESOLVED SHORTAGE</span><strong>2 <small>units owed</small></strong></div>
+      <div class="judge-promises"><span>TWO SEPARATE PROMISES</span><div><strong>01 / Shortage replacement</strong><strong>02 / Promotional goods</strong></div><small>Two later units cannot automatically settle both. Investigate before approval.</small></div>
+    </div>
   </div>
+  <div class="judge-disclosure" role="note"><strong>PUBLIC PREVIEW · FICTIONAL CASE</strong><span>This browser demo is not live FalkorDB or a real AI run. For genuine Cypher, max-flow and MCP tools, use the local Docker app. Recorded graph replays are labelled separately.</span></div>
   <div class="simple-progress" aria-label="Three step receiving workflow">
     <div id="simpleStep1" class="simple-progress-step is-active"><span>01</span> Check delivery</div>
     <div id="simpleStep2" class="simple-progress-step"><span>02</span> Follow up</div>
@@ -467,6 +502,7 @@ pre{max-width:100%;overflow:auto}
     <button id="simpleTryOwn" class="simple-outline-button" type="button">Enter your own case <span>→</span></button>
   </div>
 </section>
+<div class="judge-technical-link"><span><strong>Why the graph matters.</strong> In the local application, FalkorDB max-flow determines what is forced in every valid receipt-to-obligation allocation versus what still needs supplier evidence. Recorded replay on this public site is not a live query.</span><button type="button" id="judgeOpenGraph" class="simple-outline-button">Inspect graph reasoning →</button></div>
 <details id="workspaceDetails" class="full-workspace-details">
  <summary>Advanced workspace <span>History · Claims · FalkorDB evidence · Agent</span></summary>
 <section class="hero hero-simple" aria-label="What SahiAaya does for a shopkeeper">
@@ -1032,6 +1068,7 @@ $("simpleChoosePromo").addEventListener("click",()=>simpleReply("PROMO-17"));
 $("simpleChooseConflict").addEventListener("click",()=>simpleReply("conflict"));
 $("simpleRestart").addEventListener("click",simpleReset);
 $("simpleShowProof").addEventListener("click",()=>simpleOpenAdvanced("proof"));
+$("judgeOpenGraph").addEventListener("click",()=>{simpleOpenAdvanced("case");$("ledgerPanel").scrollIntoView({behavior:"smooth",block:"start"});});
 $("simpleTryOwn").addEventListener("click",()=>simpleOpenAdvanced("case"));
 simpleDisplay();
 $("caseForm").addEventListener("submit",e=>{e.preventDefault();createResolveCase();});$("agentRun").addEventListener("click",runInvestigationAgent);$("resumeCaseButton").addEventListener("click",reopenResolveCase);$("caseReceiptSelect").addEventListener("change",loadResolveReceipt);$("caseAttribute").addEventListener("click",attributeResolve);$("caseApprove").addEventListener("click",approveResolve);setCaseAvailable();$("tourNext").addEventListener("click",advanceTour);updateTour();$("short").addEventListener("click",()=>respond("SHORT-41"));$("promo").addEventListener("click",()=>respond("PROMO-17"));$("approve").addEventListener("click",approve);$("reset").addEventListener("click",()=>reset(selected));$("navProof").addEventListener("click",()=>$("proof").scrollIntoView({behavior:"smooth"}));$("navAbout").addEventListener("click",()=>$("about").scrollIntoView({behavior:"smooth"}));
