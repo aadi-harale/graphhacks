@@ -76,6 +76,14 @@ jobs:
                   text=(bad.text or '').strip().splitlines()[-6:]
                   print(f"::error title={case.get('name')}::{msg} || "+' | '.join(t.strip()[:160] for t in text))
           PY
+      - name: Print a fresh public-preview replay recording
+        if: always()
+        env:
+          FALKOR_HOST: localhost
+          FALKOR_PORT: "6379"
+        run: |
+          python -m scripts.record_ledger_replay --out /tmp/replay.json > /dev/null
+          python -c "import base64; b=base64.b64encode(open('/tmp/replay.json','rb').read()).decode(); parts=[b[i:i+3500] for i in range(0,len(b),3500)]; [print('::notice title=Ledger replay %d of %d::%s' % (i+1,len(parts),x)) for i,x in enumerate(parts)]"
       - name: Benchmark greedy per-row logic vs graph reconciliation on live FalkorDB
         env:
           FALKOR_HOST: localhost

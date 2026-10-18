@@ -213,3 +213,14 @@ def test_reconcile_tool_runs_over_real_mcp_transport():
     assert out["model_execution"] == "injected_client"
     assert [t["tool"] for t in out["tool_trace"]] == ["investigate_receipt", "trace_claim_evidence", "reconcile_ledger"]
     assert out["ledger"]["forced_units"] == 4 and out["ledger"]["status"] == "REVIEW_FORCED_SETTLEMENT"
+
+
+@live
+def test_public_replay_matches_a_fresh_live_recording():
+    """The Vercel replay must be exactly what the live graph returns today."""
+    from scripts.record_ledger_replay import record
+    committed = json.loads((ROOT / "app" / "static" / "ledger_replay.json").read_text(encoding="utf-8"))
+    fresh = record("sahiaaya_ci_replay_check")
+    if os.getenv("SAHIAAYA_REQUIRE_GRAPH_MAXFLOW") == "1":
+        assert committed["engine"] == "falkordb.algo.maxFlow"
+    assert committed["steps"] == json.loads(json.dumps(fresh["steps"]))
