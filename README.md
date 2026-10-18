@@ -202,7 +202,7 @@ The model cannot write Cypher, contact a supplier, or settle. Settlement is a se
 | `algo.maxFlow` runs on `falkordb:latest` | **CI-checked**: the job fails if the engine falls back to Python |
 | MCP transport incl. `reconcile_ledger` | **Tested** with injected tool choices over a real stdio session |
 | Benchmark vs FIFO and equally informed SQL | **Run** on live graph; see Results |
-| Real LLM choosing tools well on unfamiliar cases | **Not yet verified.** Acceptance script: `scripts/live_model_gate.py` |
+| Real LLM choosing tools on unfamiliar cases | **Partly verified.** `anthropic/claude-haiku-5.5` (OpenRouter), real MCP, live FalkorDB in GitHub Actions: 3 of 3 completed runs passed all six checks (unattributed → `ASK_SUPPLIER` ×2, supported → `REVIEW_SETTLEMENT`), and the model called `reconcile_ledger` on its own. The other 4 scenarios stopped at the provider before any tool call (likely credit). Script: `scripts/live_model_gate.py` |
 | Real suppliers, invoices, payments | **None.** All data is synthetic |
 
 ## Limitations
