@@ -477,6 +477,26 @@ pre{max-width:100%;overflow:auto}
 }
 @media(max-width:600px){.evidence-visual-head{align-items:flex-start;flex-direction:column}.evidence-route-track{gap:4px}.evidence-route-node{font-size:10px}.judge-promises>div strong{min-height:46px}}
 @media(prefers-reduced-motion:reduce){.judge-story,.judge-promises,.evidence-route{animation:none!important}}
+
+/* Evidence network: visual state comes from the current case, never AI progress. */
+.network-showcase{margin:18px 0 8px;border:1px solid #cddbd2;border-radius:9px;padding:23px;background:#edf3ee}
+.network-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.network-heading h2{font:400 clamp(23px,2.5vw,34px)/1.1 Georgia,serif;letter-spacing:-.045em;margin:7px 0}
+.network-heading p{font-size:11px;color:#657a78;margin:0}
+.network-state{font-size:10px;font-weight:750;letter-spacing:.08em;background:#fff8e8;color:#8e682f;padding:8px 11px;border-radius:4px;white-space:nowrap}
+.network-layout{position:relative;min-height:245px;overflow:hidden;margin:16px 0 5px;background:#f7faf6;border:1px solid #d8e4d9;border-radius:8px}
+.network-wires{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.network-wires path{fill:none;stroke:#97b6a6;stroke-width:2;stroke-dasharray:5 8;opacity:.65}
+.network-grid{position:relative;display:grid;grid-template-columns:1.12fr 1.08fr 1.08fr 1fr;grid-template-rows:1fr 1fr;gap:15px 25px;align-items:center;min-height:245px;padding:22px}
+.network-node{z-index:1;background:#fffefa;border:1px solid #c1d6c8;padding:14px;text-align:left;border-radius:6px;color:#294940;min-width:0;box-shadow:0 5px 14px rgba(20,40,30,.04)}
+.network-node small{display:block;color:#718981;font-size:10px;margin-bottom:5px}
+.network-node strong{font-size:12px;overflow-wrap:anywhere}
+.network-node.supplier{grid-column:1;grid-row:1/3}.network-node.short{grid-column:2;grid-row:1}.network-node.promo{grid-column:2;grid-row:2}.network-node.receipt{grid-column:3;grid-row:1/3}.network-node.decision{grid-column:4;grid-row:1/3;background:#f4ecd9;border-color:#dfcfa8}
+.network-node.selected,.network-node:focus-visible{outline:2px solid #41776b;outline-offset:2px;background:#dfede5}
+.network-detail{font-size:11px;color:#5a7370;padding:11px 0 1px;min-height:27px;line-height:1.6}
+@media(prefers-reduced-motion:no-preference){.network-wires path{animation:network-flow 2.7s linear infinite}.network-node{transition:background-color .2s,border-color .2s,transform .2s}.network-node:hover:not(:disabled){transform:translateY(-2px)}@keyframes network-flow{to{stroke-dashoffset:-26}}}
+@media(max-width:700px){.network-layout{min-height:0}.network-wires{display:none}.network-grid{min-height:0;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto;gap:10px;padding:13px}.network-node.supplier,.network-node.short,.network-node.promo,.network-node.receipt,.network-node.decision{grid-row:auto;grid-column:auto}.network-node.decision{grid-column:1/-1}.network-heading{display:block}.network-state{display:inline-block;margin-top:10px}.network-showcase{padding:16px}}
+@media(prefers-reduced-motion:reduce){.network-wires path{animation:none!important}.network-node{transition:none!important}}
 </style>
 </head>
 <body>
@@ -548,6 +568,18 @@ pre{max-width:100%;overflow:auto}
       <p id="simpleError" class="simple-error" role="alert" hidden></p>
     </section>
   </div>
+  <section class="network-showcase" aria-label="Connected evidence for this demonstration">
+    <div class="network-heading"><div><span class="eyebrow">THE EVIDENCE NETWORK</span><h2>Two promises. One delivery.</h2><p id="networkCaption">Fictional case evidence — select a record to inspect its source.</p></div><span class="network-state" id="networkState">NOT INVESTIGATED</span></div>
+    <div class="network-layout">
+      <svg class="network-wires" viewBox="0 0 900 260" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M130 130 C205 130 225 65 315 65" /><path d="M130 130 C205 130 225 195 315 195" />
+        <path d="M435 65 C520 65 525 130 610 130" /><path d="M435 195 C520 195 525 130 610 130" />
+        <path d="M710 130 L805 130" />
+      </svg>
+      <div class="network-grid" id="networkGrid"></div>
+    </div>
+    <div class="network-detail" id="networkDetail" role="status">Select a record to inspect its evidence and current status.</div>
+  </section>
   <div class="simple-bottom">
     <span><span class="simple-privacy-dot"></span><span id="simpleModeCaption">Interactive fictional example · not real supplier communication</span></span>
     <button id="simpleRestart" class="simple-text-button" type="button">↻ Start over</button>
@@ -753,7 +785,34 @@ function renderStory(s){
  for(const [id,kind] of states){const el=$(id);el.classList.remove("done","active");if(kind)el.classList.add(kind);}
 }
 function normalizeState(s){if(s&&s.backend==="FALKORDB"){return {...s,mode:"FALKORDB",verified_allocations:Array.isArray(s.allocations)?s.allocations:[],decision:{...s.decision,tool_trace:s.decision?.graph_tool_trace||[]}};}return s;}
-function render(s){s=normalizeState(s);snapshot=s;const d=s.decision;renderStory(s);assign("received",s.receipt.original_qty);assign("available",s.receipt.available_qty);assign("open",s.obligations.filter(x=>x.outstanding_qty>0).length);const sh=s.obligations.find(x=>x.id==="SHORT-41"),pr=s.obligations.find(x=>x.id==="PROMO-17");
+function renderEvidenceNetwork(state){
+ const grid=$("networkGrid");grid.replaceChildren();
+ const simulated=kind!=="FALKORDB";$("networkCaption").textContent=simulated?"Fictional browser case · visual links from current scenario":"FalkorDB-backed case · references from current API response";
+ if(!state){$("networkState").textContent="AWAITING CASE";return;}
+ const rec=state.receipt||{},obs=state.obligations||[],dec=state.decision||{};
+ $("networkState").textContent=(dec.status||"WAITING").replaceAll("_"," ");
+ const nodes=[
+  {id:rec.supplier_id||"Supplier",title:"Supplier",detail:"Supplier reference from current receipt",pos:"supplier"},
+  {id:obs[0]?.id||"—",title:"Shortage obligation",detail:obs[0]?.proof_ref||"No source reference supplied",pos:"short"},
+  {id:obs[1]?.id||"—",title:"Promotion obligation",detail:obs[1]?.proof_ref||"No second obligation in this case",pos:"promo"},
+  {id:rec.id||"—",title:"Latest receipt",detail:"Recorded units: "+(rec.original_qty??"unknown")+"; available: "+(rec.available_qty??"unknown"),pos:"receipt"},
+  {id:dec.status||"WAITING",title:"Decision",detail:dec.explanation||"No decision returned",pos:"decision"}
+ ];
+ for(const data of nodes){
+  const button=document.createElement("button");button.type="button";button.className="network-node "+data.pos;
+  const label=document.createElement("small");label.textContent=data.title;
+  const value=document.createElement("strong");value.textContent=String(data.id);
+  button.append(label,value);
+  if(data.id==="—")button.disabled=true;
+  button.addEventListener("click",()=>{
+   grid.querySelectorAll(".network-node").forEach(n=>n.classList.remove("selected"));
+   button.classList.add("selected");
+   $("networkDetail").textContent=data.title+" · "+data.id+" · "+data.detail;
+  });grid.append(button);
+ }
+ $("networkDetail").textContent="Select a record for its reported reference. Connections are a simplified case overview, not a live graph traversal.";
+}
+function render(s){s=normalizeState(s);snapshot=s;renderEvidenceNetwork(s);const d=s.decision;renderStory(s);assign("received",s.receipt.original_qty);assign("available",s.receipt.available_qty);assign("open",s.obligations.filter(x=>x.outstanding_qty>0).length);const sh=s.obligations.find(x=>x.id==="SHORT-41"),pr=s.obligations.find(x=>x.id==="PROMO-17");
 assign("quickShort",sh?(sh.outstanding_qty?sh.outstanding_qty+" soaps still owed":"Settled ✓"):(s.verified_allocations.some(x=>x.obligation_id==="SHORT-41")?"Settled ✓":"—"));
 assign("quickPromo",pr?(pr.outstanding_qty?pr.outstanding_qty+" soaps still owed":"Settled ✓"):(s.verified_allocations.some(x=>x.obligation_id==="PROMO-17")?"Settled ✓":"—"));assign("settledUnits",s.verified_allocations.reduce((total,a)=>total+Number(a.quantity||0),0));assign("owedUnits",s.obligations.reduce((total,o)=>total+Number(o.outstanding_qty||0),0));
 const v=$("plainTitle"),p=$("plainSummary"),box=v.closest(".plain-verdict");
