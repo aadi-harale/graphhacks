@@ -618,7 +618,7 @@ pre{max-width:100%;overflow:auto}
 <div class="judge-technical-link"><span><strong>Why the graph matters.</strong> FalkorDB max-flow determines what is forced in every valid receipt-to-obligation allocation versus what still needs supplier evidence. <span id="judgeGraphNote">Recorded replay on this public site is not a live query.</span></span><button type="button" id="judgeOpenGraph" class="simple-outline-button">Inspect graph reasoning →</button></div>
 <details id="workspaceDetails" class="full-workspace-details">
  <summary>Advanced workspace <span>History · Claims · FalkorDB evidence · Agent</span></summary>
-<section class="hero hero-simple" aria-label="What SahiAaya does for a shopkeeper">
+<section class="hero hero-simple" id="dupHero" aria-label="What SahiAaya does for a shopkeeper">
  <div class="hero-text">
   <div class="eyebrow">SAHIAAYA · BILL VS BOX · PROMISE VS PROOF</div>
   <h1>Billed for 50.<br><span>Received only 48.</span></h1>
@@ -1327,6 +1327,9 @@ function markPublicLive(){
  /* The live ledger is the strongest thing on this page; do not hide it behind
     a collapsed "Advanced workspace" when the cloud graph is actually answering. */
  try{simpleOpenAdvanced("case");}catch(e){}
+ /* Opening the workspace exposes a second "Billed for 50 / Received only 48"
+    hero that repeats the top of the page. One telling of the story is enough. */
+ const dh=$("dupHero");if(dh){dh.hidden=true;dh.style.display="none";}
 }
 async function publicLiveDemo(which){
  if(!await publicLiveAvailable())return false;
