@@ -6,8 +6,11 @@ services:
   app:
     build: .
     environment:
-      FALKOR_HOST: falkordb
-      FALKOR_PORT: "6379"
+      FALKOR_HOST: ${FALKOR_HOST:-falkordb}
+      FALKOR_PORT: ${FALKOR_PORT:-6379}
+      FALKOR_USERNAME: ${FALKOR_USERNAME:-}
+      FALKOR_PASSWORD: ${FALKOR_PASSWORD:-}
+      FALKOR_SSL: ${FALKOR_SSL:-false}
       ALLOW_DEMO_RESET: "1"
       ALLOW_DEMO_MUTATIONS: "1"
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}

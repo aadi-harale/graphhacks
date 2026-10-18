@@ -60,7 +60,10 @@ class FalkorStore:
         except ImportError as exc:
             raise RuntimeError("Install the FalkorDB Python client from requirements.txt") from exc
         self.db=FalkorDB(host=host or os.getenv("FALKOR_HOST","localhost"),
-                         port=port or int(os.getenv("FALKOR_PORT","6379")))
+                         port=port or int(os.getenv("FALKOR_PORT","6379")),
+                         username=os.getenv("FALKOR_USERNAME") or None,
+                         password=os.getenv("FALKOR_PASSWORD") or None,
+                         ssl=os.getenv("FALKOR_SSL","false").lower() in ("1","true","yes"))
         self.graph_name=graph_name
         self.g=self.db.select_graph(graph_name)
         error=None
