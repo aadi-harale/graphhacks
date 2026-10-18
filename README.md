@@ -49,7 +49,7 @@ Take FalkorDB out and SahiAaya cannot reconcile, explain or settle anything.
 | Some cases also hold a fresh order (15%) (284 units, 60 cases) | Per-row FIFO | 171 | 98 | 15 | 40/60 |
 | Some cases also hold a fresh order (15%) (284 units, 60 cases) | **SahiAaya graph** | 116 | 0 | 168 | 0/60 |
 
-Engine: `python_fallback (this FalkorDB build has no algo.maxFlow)` · seed 11 · source: local run. Graph proposals equal the equally informed SQL comparator in 60/60, 60/60 cases.
+Engine: `falkordb.algo.maxFlow` on `falkordb:latest` in GitHub Actions (seed 11; the CI job fails if the engine falls back to Python). Graph proposals equal the equally informed SQL comparator in 60/60 cases in both settings. Reproduce: `python -m scripts.benchmark --cases 60 --noise 0.15 --live`.
 
 Honest reading:
 - SahiAaya does **not** settle more units than a FIFO rule. It settles **only correct ones** and turns the rest into targeted supplier questions.
