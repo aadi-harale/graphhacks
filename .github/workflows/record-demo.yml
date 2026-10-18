@@ -1,0 +1,39 @@
+name: Record live demo footage (manual)
+on:
+  push:
+    branches: [tmp/demo-recording]
+
+permissions:
+  contents: write
+
+jobs:
+  record:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: tmp/demo-recording
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install browser
+        run: |
+          python -m pip install playwright==1.56.0
+          python -m playwright install --with-deps chromium
+      - name: Record the live site
+        run: python scripts/record_live_demo.py
+      - name: Convert to mp4
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+          mkdir -p media
+          src=$(ls rec/*.webm | head -1)
+          ffmpeg -y -i "$src" -c:v libx264 -preset medium -crf 19 -pix_fmt yuv420p -r 30 -an media/live-demo.mp4
+          python -c "import os;print('::notice title=Demo size::%.1f MB' % (os.path.getsize('media/live-demo.mp4')/1e6))"
+      - name: Commit the footage back to this branch
+        run: |
+          git config user.name "aadi-harale"
+          git config user.email "aadi-harale@users.noreply.github.com"
+          git add -f media/live-demo.mp4
+          git commit -m "Live demo footage recorded in CI [skip ci]"
+          git push -f origin HEAD:tmp/demo-recording
