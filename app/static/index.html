@@ -422,6 +422,34 @@ pre{max-width:100%;overflow:auto}
 .ledger-stats .amb b{color:#a06b32}
 @media(max-width:1050px){.simple-intro{display:block}.simple-intro h1{margin-bottom:15px}.simple-intro>p{margin-bottom:20px}.judge-story{max-width:none}}
 @media(max-width:680px){.judge-story{padding:15px;gap:4px}.judge-quantity strong,.judge-gap strong{font-size:29px}.judge-quantity>span,.judge-gap>span{font-size:8px}.judge-promises>div{grid-template-columns:1fr 1fr}.judge-disclosure{display:block}.judge-disclosure span{display:block;margin-top:6px}.judge-technical-link{display:block}.judge-technical-link button{width:100%;margin-top:12px}}
+
+/* Five-second clarity: visual story first, interactive demo immediately next. */
+.simple-intro{grid-template-columns:minmax(0,1fr) minmax(0,.94fr);gap:8px 26px;margin-bottom:13px;align-items:start}
+.simple-intro .eyebrow{grid-column:1/-1;margin-bottom:3px}
+.simple-intro h1{grid-column:1;grid-row:2;font-size:clamp(43px,4.8vw,69px);margin:7px 0 12px;letter-spacing:-.064em}
+.simple-intro>p{grid-column:1;grid-row:3;align-self:start;margin:0;border:0;padding:0;max-width:530px;font-size:15px;line-height:1.55}
+.judge-story{grid-column:2;grid-row:2/4;align-self:stretch;padding:19px 22px;box-shadow:none;background:#fffefa}
+.judge-quantity strong,.judge-gap strong{font-size:clamp(29px,3.3vw,43px)}
+.judge-promises{margin-top:6px;padding-top:12px}
+.judge-promises h2{font-family:Georgia,serif;font-weight:400;font-size:clamp(19px,2vw,25px);margin:6px 0 8px;color:#263d43;letter-spacing:-.035em}
+.judge-promises>div{margin:5px 0;gap:7px}
+.judge-promises>div strong{font-size:11px;padding:10px 9px}
+.judge-actions{display:flex;align-items:center;gap:10px;margin-bottom:13px}
+.judge-actions .simple-button{max-width:265px;width:auto;display:inline-flex;gap:20px;min-height:46px;padding:12px 19px}
+.judge-actions .simple-outline-button{min-height:46px;padding:12px 16px}
+.judge-disclosure{margin-bottom:13px;padding:9px 13px}
+.simple-progress{margin-bottom:13px}
+.simple-progress-step{font-size:11px;min-height:45px;padding:10px 14px}
+.simple-workspace{scroll-margin-top:20px}
+#judgeDemoTarget,#judgeProcess{scroll-margin-top:18px}
+.simple-form-card,.simple-result-card{min-height:375px}
+.simple-form-card h2{margin:17px 0 18px}
+.simple-field{margin-bottom:11px}
+.simple-illustration{margin:18px auto 4px}
+.simple-secondary{padding:14px 18px}
+@media(max-width:1050px){.simple-intro{grid-template-columns:1fr 1fr}.judge-story{grid-column:2;grid-row:2/4}.simple-intro>p{grid-column:1;grid-row:3}}
+@media(max-width:760px){.simple-intro{display:flex;flex-direction:column;gap:9px}.simple-intro h1{margin:7px 0;font-size:clamp(42px,9vw,57px)}.simple-intro>p{margin:0 0 9px}.judge-story{width:100%;margin:4px 0}.judge-actions{flex-wrap:wrap}.judge-actions .simple-button{flex:1;max-width:none}.judge-actions .simple-outline-button{flex:1;white-space:normal}.simple-progress-step{font-size:10px}}
+@media(max-width:460px){.judge-actions{display:grid;grid-template-columns:1fr}.judge-actions .simple-button,.judge-actions .simple-outline-button{width:100%;max-width:none;justify-content:center}.judge-story{padding:15px}.judge-promises>div{grid-template-columns:1fr}.judge-quantity strong,.judge-gap strong{font-size:29px}.simple-progress-step{font-size:9px;padding:8px 5px}}
 </style>
 </head>
 <body>
@@ -435,25 +463,26 @@ pre{max-width:100%;overflow:auto}
 <section class="simple-home" id="simpleHome" aria-label="SahiAaya simple receiving workflow">
   <div class="simple-intro">
     <div class="eyebrow">SAHIAAYA · MADE FOR SMALL SHOPS</div>
-    <h1>Never lose track of what<br><em>your supplier owes.</em></h1>
-    <p>One delivery can match two promises. SahiAaya keeps both open until the evidence says which one is fulfilled.</p>
+    <h1>Know what your supplier<br><em>still owes you.</em></h1>
+    <p>SahiAaya checks deliveries against previous promises and finds what’s missing—without guessing.</p>
     <div class="judge-story" aria-label="Fictional demonstration case: 50 units billed, 48 received">
       <div class="judge-quantity"><span>FICTIONAL INVOICE</span><strong>50 <small>billed</small></strong></div>
       <div class="judge-minus" aria-hidden="true">−</div>
       <div class="judge-quantity"><span>PHYSICAL COUNT</span><strong>48 <small>received</small></strong></div>
       <div class="judge-equals" aria-hidden="true">→</div>
       <div class="judge-gap"><span>UNRESOLVED SHORTAGE</span><strong>2 <small>units owed</small></strong></div>
-      <div class="judge-promises"><span>TWO SEPARATE PROMISES</span><div><strong>01 / Shortage replacement</strong><strong>02 / Promotional goods</strong></div><small>Two later units cannot automatically settle both. Investigate before approval.</small></div>
+      <div class="judge-promises"><span>THE NEXT DELIVERY: 2 SOAPS ARRIVE</span><h2>Which promise did they fulfil?</h2><div><strong>↳ 2 replacement soaps owed</strong><strong>✳ 2 promotional soaps owed</strong></div><small>Same quantity. Two possible explanations. No allocation without evidence.</small></div>
     </div>
   </div>
+  <div class="judge-actions"><button type="button" id="judgeTryDemo" class="simple-button simple-button-main">Try the delivery demo <span aria-hidden="true">→</span></button><button type="button" id="judgeHow" class="simple-outline-button">See how it works ↓</button></div>
   <div class="judge-disclosure" role="note"><strong>PUBLIC PREVIEW · FICTIONAL CASE</strong><span>This browser demo is not live FalkorDB or a real AI run. For genuine Cypher, max-flow and MCP tools, use the local Docker app. Recorded graph replays are labelled separately.</span></div>
-  <div class="simple-progress" aria-label="Three step receiving workflow">
-    <div id="simpleStep1" class="simple-progress-step is-active"><span>01</span> Check delivery</div>
-    <div id="simpleStep2" class="simple-progress-step"><span>02</span> Follow up</div>
-    <div id="simpleStep3" class="simple-progress-step"><span>03</span> Resolve</div>
+  <div class="simple-progress" id="judgeProcess" aria-label="Three step receiving workflow">
+    <div id="simpleStep1" class="simple-progress-step is-active"><span>01</span> Check · Compare bill and goods</div>
+    <div id="simpleStep2" class="simple-progress-step"><span>02</span> Trace · Follow promises</div>
+    <div id="simpleStep3" class="simple-progress-step"><span>03</span> Decide · Verify or ask</div>
   </div>
   <div class="simple-workspace">
-    <section class="simple-form-card" aria-label="Compare supplier bill with received goods">
+    <section id="judgeDemoTarget" class="simple-form-card" aria-label="Compare supplier bill with received goods">
       <div class="simple-card-label"><span class="simple-label-icon">▣</span> TODAY'S DELIVERY <span class="simple-small-tag">TRY THE DEMO</span></div>
       <h2>What did you receive?</h2>
       <label class="simple-field">Item <input id="simpleProduct" type="text" value="Soap bars" maxlength="32" autocomplete="off" aria-label="Name of the item"></label>
@@ -1061,6 +1090,8 @@ function simpleOpenAdvanced(section){
 }
 
 async function initialize(){const list=$("scenarios");for(const [id,label] of SCENARIOS){const b=document.createElement("button");b.className="scenario";b.type="button";b.dataset.scenario=id;b.textContent=label;b.addEventListener("click",()=>reset(id));list.append(b);}
+$("judgeTryDemo").addEventListener("click",()=>{$("judgeDemoTarget").scrollIntoView({behavior:"smooth",block:"center"});$("simpleBilled").focus({preventScroll:true});});
+$("judgeHow").addEventListener("click",()=>{$("judgeProcess").scrollIntoView({behavior:"smooth",block:"center"});});
 $("simpleCheck").addEventListener("click",simpleCheckDelivery);
 $("simpleNext").addEventListener("click",simpleFollowUp);
 $("simpleChooseReplacement").addEventListener("click",()=>simpleReply("SHORT-41"));
