@@ -1330,8 +1330,16 @@ function markPublicLive(){
  /* Opening the workspace exposes a second "Billed for 50 / Received only 48"
     hero that repeats the top of the page. One telling of the story is enough. */
  const dh=$("dupHero");if(dh){dh.hidden=true;dh.style.display="none";}
+ /* The live ledger works on this page; the "enter your own history" form needs
+    local Docker. Put the one that works first, and run it so a visitor sees
+    real numbers rather than "NOT RUN". */
+ try{
+  const nc=$("newCase"),lp=$("ledgerPanel");
+  if(nc&&lp&&lp.parentElement===nc)nc.insertBefore(lp,nc.firstElementChild);
+ }catch(e){}
+ publicLiveDemo("forced",true).catch(()=>{});
 }
-async function publicLiveDemo(which){
+async function publicLiveDemo(which,noScroll){
  if(!await publicLiveAvailable())return false;
  try{
   setCaseMessage("Running live on FalkorDB Cloud…",false);
@@ -1340,7 +1348,7 @@ async function publicLiveDemo(which){
   n.textContent="LIVE — computed just now by algo.maxFlow on FalkorDB Cloud (case "+r.case_id+"). Fictional demo data; public demo cases are deleted after 30 minutes.";
   renderLedger(r,{publicCase:r.case_id});
   setCaseMessage("Live result from FalkorDB Cloud.",false);
-  $("ledgerPanel").scrollIntoView({behavior:"smooth",block:"start"});
+  if(!noScroll)$("ledgerPanel").scrollIntoView({behavior:"smooth",block:"start"});
   return true;
  }catch(err){setCaseMessage("Live graph unavailable ("+err.message+"); showing the recorded run instead.",true);return false;}
 }
