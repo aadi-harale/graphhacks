@@ -83,6 +83,24 @@ jobs:
                   out.write(f"Different model tool sequences observed: {d.get('different_tool_sequences_observed')}.\n")
                   for k,v in d.get("statuses",{}).items():out.write(f"- {k}: {v or 'NO DECISION'}\n")
           PY
+      - name: Print per-case results as annotations
+        if: always()
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path("artifacts/real_model")
+          files=sorted(x for x in root.glob("*.json") if x.name!="summary.json") if root.exists() else []
+          if not files: print("::warning title=Real model::No per-case results were written")
+          for f in files:
+              d=json.loads(f.read_text())
+              trace=d.get("agent_result",{}).get("tool_trace") or d.get("failed_model_tool_trace") or []
+              tools=[t.get("tool")+("(blocked)" if t.get("result_kind")=="blocked" else "") for t in trace]
+              summary=(d.get("agent_result",{}).get("model_summary") or "")[:300].replace("\n"," ")
+              status=d.get("agent_result",{}).get("authoritative_decision",{}).get("status") or d.get("failed_model_policy_decision")
+              level="notice" if d.get("passed") else "warning"
+              print(f"::{level} title=Real model {d.get('scenario')} {'PASS' if d.get('passed') else 'FAIL'}::model={d.get('model')} expected={d.get('expected_policy_status')} got={status} checks={json.dumps(d.get('checks'))} error={d.get('error')} {d.get('error_leaf_types')} tools={tools} summary={summary}")
+          PY
       - name: Keep auditable synthetic results for seven days
         if: always()
         uses: actions/upload-artifact@v4
