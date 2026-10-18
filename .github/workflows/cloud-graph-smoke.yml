@@ -1,0 +1,27 @@
+name: Private FalkorDB Cloud read-write smoke
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tls-cloud-probe:
+    name: TLS auth, write, read, delete (synthetic)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      FALKOR_HOST: ${{ secrets.FALKOR_HOST }}
+      FALKOR_PORT: ${{ secrets.FALKOR_PORT }}
+      FALKOR_USERNAME: ${{ secrets.FALKOR_USERNAME }}
+      FALKOR_PASSWORD: ${{ secrets.FALKOR_PASSWORD }}
+      FALKOR_SSL: "true"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Redis client
+        run: python -m pip install "redis>=5,<7"
+      - name: Verify encrypted FalkorDB Cloud read/write/delete
+        run: python scripts/cloud_graph_smoke.py
