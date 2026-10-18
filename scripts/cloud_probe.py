@@ -77,5 +77,23 @@ def plain_reachability():
         note("TCP", f"FAIL {type(exc).__name__}", "warning")
 
 
+def plain_authenticated():
+    """Owner-approved: this throwaway demo instance only speaks plaintext."""
+    if os.getenv("FALKOR_ALLOW_PLAINTEXT") != "1":
+        return
+    try:
+        c = redis.Redis(host=os.environ["FALKOR_HOST"], port=int(os.environ["FALKOR_PORT"]),
+                        username=os.getenv("FALKOR_USERNAME") or None, password=os.environ["FALKOR_PASSWORD"],
+                        socket_connect_timeout=8, socket_timeout=20)
+        c.ping()
+        note("Plain auth", "authenticated OK (no TLS, owner-approved)")
+        names = [r[0].decode() if isinstance(r[0], bytes) else r[0] for r in
+                 c.execute_command("GRAPH.QUERY", "probe", "CALL dbms.procedures() YIELD name RETURN name", "--compact")[1]]
+        note("Plain algorithms", f"{sorted(str(n) for n in names if 'algo' in str(n))}")
+    except Exception as exc:
+        note("Plain auth", f"FAIL {type(exc).__name__}", "warning")
+
+
 if __name__ == "__main__" and os.getenv("FALKOR_HOST"):
     plain_reachability()
+    plain_authenticated()

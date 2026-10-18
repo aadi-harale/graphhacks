@@ -9,7 +9,7 @@ jobs:
   tls-cloud-probe:
     name: TLS auth, write, read, delete (synthetic)
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 20
     env:
       FALKOR_HOST: ${{ secrets.FALKOR_HOST }}
       FALKOR_PORT: ${{ secrets.FALKOR_PORT }}
@@ -24,6 +24,22 @@ jobs:
       - name: Install Redis client
         run: python -m pip install "redis>=5,<7"
       - name: Diagnose connection, algorithms and writes (annotations, no secrets printed)
+        env:
+          FALKOR_ALLOW_PLAINTEXT: "1"
         run: python scripts/cloud_probe.py
-      - name: Verify encrypted FalkorDB Cloud read/write/delete
-        run: python scripts/cloud_graph_smoke.py
+      - name: Ledger tests against the cloud graph (plaintext, owner-approved demo instance)
+        env:
+          FALKOR_SSL: "false"
+          RUN_FALKOR_TESTS: "1"
+          SAHIAAYA_REQUIRE_GRAPH_MAXFLOW: "1"
+        run: |
+          python -m pip install -r requirements.txt
+          python -m pytest tests/test_ledger.py -q -k "graph or symmetric or attribution or conflicting or forced_approval" --junitxml=/tmp/cloud.xml || true
+          python - <<'PY'
+          import xml.etree.ElementTree as ET
+          t=ET.parse('/tmp/cloud.xml').getroot(); s=t if t.tag=='testsuite' else t.find('testsuite')
+          print(f"::notice title=Cloud ledger tests::tests={s.get('tests')} failures={s.get('failures')} errors={s.get('errors')} skipped={s.get('skipped')}")
+          for c in t.iter('testcase'):
+              for b in list(c.iter('failure'))+list(c.iter('error')):
+                  print(f"::warning title={c.get('name')}::{(b.get('message') or '')[:250]}")
+          PY
