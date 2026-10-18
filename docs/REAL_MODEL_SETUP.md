@@ -1,6 +1,31 @@
-# Real model setup (OpenRouter, local only)
+# Real model setup (local only)
 
-Moved from the README.
+The Track 01 agent uses an OpenAI-compatible client, so any provider with an OpenAI-compatible endpoint and tool calling works. The database stays your local Docker FalkorDB.
+
+## Option A — Gemini (free tier, recommended for the demo)
+
+Verified in CI: `gemini-3.8-flash` passed the real-model gate (see README → Verification status).
+
+1. Create a key at https://aistudio.google.com (Get API key → Create API key).
+2. In PowerShell, in the project folder:
+
+~~~powershell
+$secure = Read-Host "Gemini API key" -AsSecureString
+$ptr = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($secure)
+try { $env:OPENAI_API_KEY = [Runtime.InteropServices.Marshal]::PtrToStringBSTR($ptr) }
+finally { [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($ptr) }
+$env:OPENAI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/openai"
+$env:SAHIAAYA_AGENT_MODEL = "gemini-3.8-flash"
+docker compose up -d --build --force-recreate app
+~~~
+
+3. Open http://localhost:8000 → **Enter your own case** → **Load demo: two unlabelled drops** → **Investigate with agent**.
+
+The free tier allows only a few requests per minute; the agent waits and retries automatically on rate limits (`SAHIAAYA_AGENT_RATE_RETRIES`, default 4), so a run can take a minute.
+
+## Option B — OpenRouter
+
+Requires purchased credit on the OpenRouter account that owns the key; free-tier keys are capped at 50 free-model requests per day and cannot use paid models.
 
 
 The Track 01 agent uses an OpenAI-compatible Python client. **OpenRouter is supported as an optional API endpoint** without changing FalkorDB or the user interface. The database remains the *local* Docker FalkorDB instance. The current public Vercel site is still a simulation.
