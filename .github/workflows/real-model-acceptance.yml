@@ -1,0 +1,88 @@
+name: Private real-model acceptance (manual)
+on:
+  workflow_dispatch:
+    inputs:
+      scenario:
+        description: "One-case smoke test or full six-scenario acceptance"
+        required: true
+        type: choice
+        default: unattributed
+        options: [unattributed, all]
+      model:
+        description: "OpenRouter model with tool calling; default uses free model router"
+        required: true
+        type: string
+        default: openrouter/free
+
+permissions:
+  contents: read
+
+jobs:
+  private-model-test:
+    name: Model choices → MCP tools → live FalkorDB
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      graph:
+        image: falkordb/falkordb:latest
+        ports:
+          - 6379:6379
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+      OPENAI_BASE_URL: https://openrouter.ai/api/v1
+      SAHIAAYA_AGENT_MODEL: ${{ inputs.model }}
+      FALKOR_HOST: localhost
+      FALKOR_PORT: "6379"
+      ALLOW_DEMO_MUTATIONS: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Require private GitHub Actions key
+        run: |
+          if [ -z "$OPENAI_API_KEY" ]; then
+            echo "::error::Add a rotated OpenRouter key as repository Actions secret OPENROUTER_API_KEY. Never commit it."
+            exit 1
+          fi
+          echo "OpenRouter key present (value not logged)."
+      - name: Install project requirements
+        run: python -m pip install -r requirements.txt
+      - name: Verify MCP transport on temporary FalkorDB before invoking model
+        env:
+          RUN_FALKOR_TESTS: "1"
+        run: python -m pytest -q tests/test_track1_agent.py tests/test_track1_counterfactual.py
+      - name: Execute real model acceptance against temporary FalkorDB
+        shell: bash
+        run: |
+          if [ "${{ inputs.scenario }}" = "all" ]; then
+            python -m scripts.live_model_gate --accept-api-cost
+          else
+            python -m scripts.live_model_gate --accept-api-cost --only unattributed
+          fi
+      - name: Report verified outcomes (not mock results)
+        if: always()
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          f=Path("artifacts/real_model/summary.json")
+          with open(os.environ["GITHUB_STEP_SUMMARY"],"a") as out:
+              out.write("## Real-model results, not an injected-model test\n\n")
+              out.write("Database: temporary GitHub Actions FalkorDB, **not** user's FalkorDB Cloud.\n\n")
+              if not f.exists():
+                  out.write("No complete report produced. Check the job log for the error.\n")
+              else:
+                  d=json.loads(f.read_text())
+                  out.write(f"**{d.get('passed',0)} / {d.get('total',0)} scenarios passed**.\n\n")
+                  out.write(f"Different model tool sequences observed: {d.get('different_tool_sequences_observed')}.\n")
+                  for k,v in d.get("statuses",{}).items():out.write(f"- {k}: {v or 'NO DECISION'}\n")
+          PY
+      - name: Keep auditable synthetic results for seven days
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: real-model-evidence-${{ github.run_id }}
+          path: artifacts/real_model/
+          retention-days: 7
+          if-no-files-found: ignore
