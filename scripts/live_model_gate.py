@@ -123,7 +123,15 @@ async def run_one(store,kind,model,output_dir):
                           "draft_stays_internal":draft_safe}
         result["passed"]=all(result["checks"].values())
     except Exception as exc:
-        result["error"]=f"{type(exc).__name__}: {str(exc)[:500]}"
+        # Do not print provider exception messages or connection details.
+        def leaf_types(err):
+            if isinstance(err, BaseExceptionGroup):
+                for child in err.exceptions:
+                    yield from leaf_types(child)
+            else:
+                yield type(err).__name__
+        result["error"] = type(exc).__name__
+        result["error_leaf_types"] = list(leaf_types(exc))[:12]
         # This is still a FAILED real-model run. Preserve the exact synthetic
         # graph-tool evidence instead of erasing every chosen tool when the
         # model cannot produce a final response within the round budget.
