@@ -6,7 +6,7 @@
 
 Built on **FalkorDB** for Graph Hacks (Oct 15–18, 2026) · Track **01 · Agents That Act on Connected Data** · Track **02 · Agent Memory and Coordination**
 
-[**Live preview**](https://sahiaaya-graphhacks.vercel.app/) · [**Blog post**](https://medium.com/@aadi.n.harale/bill-vs-box-we-taught-an-ai-agent-which-promise-a-delivery-kept-and-when-to-say-i-dont-know-3f09d796db5a) · [**Run it locally**](#run-it-yourself-docker) · [**How it works**](#how-it-works--for-engineers)
+[**Live demo**](https://sahiaaya-graphhacks.vercel.app/) · [**Blog post**](https://medium.com/@aadi.n.harale/bill-vs-box-we-taught-an-ai-agent-which-promise-a-delivery-kept-and-when-to-say-i-dont-know-3f09d796db5a) · [**Run it locally**](#run-it-yourself-docker) · [**How it works**](#how-it-works--for-engineers)
 
 </div>
 
@@ -58,7 +58,7 @@ Honest reading:
 
 ## Try it
 
-**In the browser (no install):** open the [live preview](https://sahiaaya-graphhacks.vercel.app/) → **Enter your own case** → click **Load demo: two unlabelled drops (forced)**. The page has no database, so it replays a real FalkorDB run and labels it **REPLAY**. Then try **Load demo: symmetric drops (ambiguous)** to watch it refuse to guess.
+**In the browser (no install):** open the [live preview](https://sahiaaya-graphhacks.vercel.app/) → **Enter your own case** → click **Load demo: two unlabelled drops (forced)**. It runs **live**: a small Vercel function creates a fresh fictional case on **FalkorDB Cloud** and runs `algo.maxFlow` on it, and the panel shows **LIVE · FalkorDB Cloud · algo.maxFlow** with the case ID. Click **Shopkeeper approves** to write a real settlement. If the cloud graph is unreachable, the page falls back to a recorded run, labelled **REPLAY**. Public demo cases are deleted after 30 minutes. Then try **Load demo: symmetric drops (ambiguous)** to watch it refuse to guess.
 
 ### Run it yourself (Docker)
 
