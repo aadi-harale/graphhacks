@@ -1323,6 +1323,9 @@ function markPublicLive(){
  assign("heroLiveTag","LIVE · FALKORDB CLOUD");
  assign("heroLiveNote","The whole-ledger demo on this page runs a real algo.maxFlow query against FalkorDB Cloud. The shop, supplier and documents are fictional; the graph query is not.");
  const hl=$("heroSeeLive");if(hl)hl.hidden=false;
+ /* The live ledger is the strongest thing on this page; do not hide it behind
+    a collapsed "Advanced workspace" when the cloud graph is actually answering. */
+ try{simpleOpenAdvanced("case");}catch(e){}
 }
 async function publicLiveDemo(which){
  if(!await publicLiveAvailable())return false;
