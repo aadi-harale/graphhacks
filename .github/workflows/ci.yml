@@ -81,7 +81,9 @@ jobs:
           FALKOR_HOST: localhost
           FALKOR_PORT: "6379"
           SAHIAAYA_REQUIRE_GRAPH_MAXFLOW: "1"
-        run: python -m scripts.benchmark --cases 60 --noise 0.15 --live --out docs/benchmark_results.json
+        run: |
+          python -m scripts.benchmark --cases 60 --noise 0.15 --live --out docs/benchmark_results.json > /dev/null
+          python -c "import json; d=json.load(open('docs/benchmark_results.json')); [print('::notice title=Benchmark '+k+'::engine='+d['engine']+' delivered='+str(v['delivered_units'])+' sql_agree='+v['graph_equals_equally_informed_sql_flow']+' '+json.dumps(v['methods'])) for k,v in d['results'].items()]"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
