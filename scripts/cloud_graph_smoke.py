@@ -22,7 +22,6 @@ def main():
         ssl_cert_reqs="required",
         socket_connect_timeout=8,
         socket_timeout=15,
-        retry_on_timeout=False,
         decode_responses=False,
     )
     graph = "graphhacks"
@@ -58,7 +57,21 @@ def main():
 if __name__ == "__main__":
     try:
         main()
-    except Exception:
-        # Never print exception text: backend errors can include connection details.
-        print("FAIL: private TLS Cloud test unsuccessful. Check configured secrets, TLS support, network reachability and Cloud plan.", file=sys.stderr)
+    except Exception as exc:
+        # Never print exception text: errors may contain host or credentials.
+        from redis.exceptions import AuthenticationError, ConnectionError as RedisConnectionError, TimeoutError as RedisTimeoutError, ResponseError
+        import ssl
+        if isinstance(exc, AuthenticationError):
+            category = "AUTHENTICATION"
+        elif isinstance(exc, ssl.SSLError):
+            category = "TLS_HANDSHAKE_OR_CERTIFICATE"
+        elif isinstance(exc, (RedisTimeoutError, TimeoutError)):
+            category = "NETWORK_TIMEOUT"
+        elif isinstance(exc, RedisConnectionError):
+            category = "NETWORK_OR_TLS"
+        elif isinstance(exc, ResponseError):
+            category = "GRAPH_QUERY_OR_PERMISSIONS"
+        else:
+            category = "CONFIGURATION_OR_OTHER"
+        print(f"FAIL CATEGORY: {category}; exception type: {type(exc).__name__}", file=sys.stderr)
         sys.exit(1)
