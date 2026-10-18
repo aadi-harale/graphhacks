@@ -43,3 +43,9 @@ jobs:
               for b in list(c.iter('failure'))+list(c.iter('error')):
                   print(f"::warning title={c.get('name')}::{(b.get('message') or '')[:250]}")
           PY
+      - name: End-to-end check of the deployed public site
+        if: always()
+        run: |
+          python -m pip install playwright==1.56.0
+          python -m playwright install --with-deps chromium
+          python scripts/live_site_check.py https://sahiaaya-graphhacks.vercel.app
