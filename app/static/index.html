@@ -546,8 +546,8 @@ pre{max-width:100%;overflow:auto}
       <div class="judge-promises"><span>THE NEXT DELIVERY: 2 SOAPS ARRIVE</span><h2>Which promise did these 2 soaps fulfil?</h2><div><strong>↳ 2 replacement soaps</strong><strong>✳ 2 promotional soaps</strong></div><small>Two possible answers. Only evidence can decide.</small></div>
     </div>
   </div>
-  <div class="judge-actions"><button type="button" id="judgeTryDemo" class="simple-button simple-button-main">Try the demo <span aria-hidden="true">→</span></button><button type="button" id="judgeHow" class="simple-outline-button">See how it works ↓</button></div>
-  <div class="judge-disclosure" role="note"><strong>FICTIONAL DEMO · NOT LIVE</strong><span>This preview uses fictional data. Live graph and AI investigation require the local Docker app.</span></div>
+  <div class="judge-actions"><button type="button" id="judgeTryDemo" class="simple-button simple-button-main">Try the demo <span aria-hidden="true">→</span></button><button type="button" id="judgeHow" class="simple-outline-button">See how it works ↓</button><button type="button" id="heroSeeLive" class="simple-outline-button" hidden>See the live graph answer →</button></div>
+  <div class="judge-disclosure" role="note"><strong id="heroLiveTag">FICTIONAL DEMO · NOT LIVE</strong><span id="heroLiveNote">This preview uses fictional data. Live graph and AI investigation require the local Docker app.</span></div>
   <div class="simple-progress" id="judgeProcess" aria-label="Three step receiving workflow">
     <div id="simpleStep1" class="simple-progress-step is-active"><span>01</span> Check delivery</div>
     <div id="simpleStep2" class="simple-progress-step"><span>02</span> Trace promises</div>
@@ -1238,6 +1238,7 @@ $("heroStart").addEventListener("click",async()=>{
 });
 $("simpleShowProof").addEventListener("click",()=>simpleOpenAdvanced("proof"));
 $("judgeOpenGraph").addEventListener("click",()=>{simpleOpenAdvanced("case");$("ledgerPanel").scrollIntoView({behavior:"smooth",block:"start"});});
+$("heroSeeLive").addEventListener("click",async()=>{simpleOpenAdvanced("case");$("ledgerPanel").scrollIntoView({behavior:"smooth",block:"start"});await publicLiveDemo("forced");});
 $("simpleTryOwn").addEventListener("click",()=>simpleOpenAdvanced("case"));
 simpleDisplay();
 $("caseForm").addEventListener("submit",e=>{e.preventDefault();createResolveCase();});$("agentRun").addEventListener("click",runInvestigationAgent);$("resumeCaseButton").addEventListener("click",reopenResolveCase);$("caseReceiptSelect").addEventListener("change",loadResolveReceipt);$("caseAttribute").addEventListener("click",attributeResolve);$("caseApprove").addEventListener("click",approveResolve);setCaseAvailable();$("tourNext").addEventListener("click",advanceTour);updateTour();$("short").addEventListener("click",()=>respond("SHORT-41"));$("promo").addEventListener("click",()=>respond("PROMO-17"));$("approve").addEventListener("click",approve);$("reset").addEventListener("click",()=>reset(selected));$("navProof").addEventListener("click",()=>$("proof").scrollIntoView({behavior:"smooth"}));$("navAbout").addEventListener("click",()=>$("about").scrollIntoView({behavior:"smooth"}));
@@ -1319,6 +1320,9 @@ function markPublicLive(){
  assign("runtimeDisclosure","The whole-supplier-ledger demo below runs live on FalkorDB Cloud: each run creates a fresh fictional case and reconciles it with algo.maxFlow. Entering your own case history still needs the local Docker app.");
  $("mode").classList.add("live");assign("modeText","LIVE FALKORDB CLOUD · LEDGER DEMO");
  assign("judgeGraphNote","On this public site the whole-ledger demo runs live on FalkorDB Cloud — a real algo.maxFlow query, not a replay.");
+ assign("heroLiveTag","LIVE · FALKORDB CLOUD");
+ assign("heroLiveNote","The whole-ledger demo on this page runs a real algo.maxFlow query against FalkorDB Cloud. The shop, supplier and documents are fictional; the graph query is not.");
+ const hl=$("heroSeeLive");if(hl)hl.hidden=false;
 }
 async function publicLiveDemo(which){
  if(!await publicLiveAvailable())return false;
