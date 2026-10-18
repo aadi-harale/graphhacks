@@ -724,7 +724,7 @@ pre{max-width:100%;overflow:auto}
 const SCENARIOS=[["ambiguous","Unattributed delivery"],["shortage_confirmed","Replacement proof"],["promotion_confirmed","Promotion proof"],["conflict","Conflicting statements"],["unknown_pack","Unknown pack size"],["not_received","No merchant confirmation"]];
 const CLAIMS=[{id:"SHORT-41",kind:"short_delivery",outstanding_qty:2,proof_ref:"invoice-41:merchant-count",version:0},{id:"PROMO-17",kind:"promotional_entitlement",outstanding_qty:2,proof_ref:"offer-17:documented-terms",version:0}];
 const $=id=>document.getElementById(id);
-let kind="SIMULATION",selected="ambiguous",snapshot=null,local=null;
+let kind="SIMULATION",selected="ambiguous",snapshot=null,local=null,publicLive=null;
 function assign(id,value){$(id).textContent=value==null?"—":String(value)}
 function failure(message){$("notice").className="notice error";assign("notice",message)}
 function safeCopy(value){return JSON.parse(JSON.stringify(value))}
@@ -855,7 +855,7 @@ const audit=$("audit");audit.replaceChildren();if(!s.verified_allocations.length
 for(const button of $("scenarios").children)button.classList.toggle("active",button.dataset.scenario===selected);
 }
 async function api(url,body){const response=await fetch(url,{method:body?"POST":"GET",headers:body?{"content-type":"application/json"}:{},body:body?JSON.stringify(body):undefined});const data=await response.json();if(!response.ok)throw Error(typeof data.detail==="string"?data.detail:"Request failed");return data;}
-function setMode(){const live=kind==="FALKORDB";$("mode").classList.toggle("live",live);assign("modeText",live?"LIVE FALKORDB — CYPHER VERIFIED":kind==="UNAVAILABLE"?"GRAPH SERVICE UNAVAILABLE":kind==="LOCAL_MEMORY"?"LOCAL MEMORY TEST MODE":"PUBLIC SYNTHETIC SIMULATION");setCaseAvailable();assign("runtimeDisclosure",live?"Local FalkorDB mode: Cypher traversals and retailer-reviewed allocations on fictional data. No actual supplier communication or money movement.":kind==="UNAVAILABLE"?"Graph service unavailable. No live decisions may be recorded.":"Public preview: fictional browser-only actions, not a live database. Use local Docker to verify FalkorDB queries.");}
+function setMode(){if(publicLive===true&&kind!=="FALKORDB"){setCaseAvailable();markPublicLive();return;}const live=kind==="FALKORDB";$("mode").classList.toggle("live",live);assign("modeText",live?"LIVE FALKORDB — CYPHER VERIFIED":kind==="UNAVAILABLE"?"GRAPH SERVICE UNAVAILABLE":kind==="LOCAL_MEMORY"?"LOCAL MEMORY TEST MODE":"PUBLIC SYNTHETIC SIMULATION");setCaseAvailable();assign("runtimeDisclosure",live?"Local FalkorDB mode: Cypher traversals and retailer-reviewed allocations on fictional data. No actual supplier communication or money movement.":kind==="UNAVAILABLE"?"Graph service unavailable. No live decisions may be recorded.":"Public preview: fictional browser-only actions, not a live database. Use local Docker to verify FalkorDB queries.");}
 async function reset(s){selected=s;try{if(kind==="UNAVAILABLE")throw Error("Graph backend not ready");if(kind!=="SIMULATION"){render(normalizeState(await api("/api/demo/reset",{scenario:s})));}else{local=createCase(s);refreshSynthetic();}setMode();return true;}catch(error){failure("Case reset failed: "+error.message);return false;}}
 async function respond(target){try{if(kind!=="SIMULATION"){render(normalizeState(await api("/api/investigate/RCP-52/simulate-supplier-response",{obligation_id:target,reference:"SYNTHETIC-supplier-evidence-"+target})));}else{if(local.receipt.available_qty<=0)throw Error("No remaining goods");if(!local.obligations.some(x=>x.id===target&&x.outstanding_qty>0))throw Error("No eligible open obligation");local.statements=[statement(target)];local.receipt.version++;refreshSynthetic();} return true;}catch(error){failure("Supplier demonstration: "+error.message);return false;}}
 async function approve(){try{const d=snapshot.decision;if(d.status!=="REVIEW_SETTLEMENT"||!d.suggested_obligation)throw Error("No evidence-supported proposal");const o=snapshot.obligations.find(x=>x.id===d.suggested_obligation);if(kind!=="SIMULATION"){render(normalizeState(await api("/api/investigate/RCP-52/approve-demo-settlement",{obligation_id:d.suggested_obligation,quantity:d.suggested_qty,receipt_version:snapshot.receipt.version,obligation_version:o.version})));}else{if(d.suggested_qty>local.receipt.available_qty||d.suggested_qty>o.outstanding_qty)throw Error("Quantity exceeds capacity");local.receipt.available_qty-=d.suggested_qty;local.receipt.version++;o.outstanding_qty-=d.suggested_qty;o.version++;local.verified_allocations.push({allocation_id:"SYNTHETIC-APPROVAL-"+(local.verified_allocations.length+1),obligation_id:o.id,quantity:d.suggested_qty,approved_by:"retailer-demo"});refreshSynthetic();}}catch(error){failure("Settlement was blocked: "+error.message);}}
@@ -1241,6 +1241,7 @@ $("caseForm").addEventListener("submit",e=>{e.preventDefault();createResolveCase
 try{const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),1600);const res=await fetch("/api/health",{signal:controller.signal,headers:{accept:"application/json"}});clearTimeout(timeout);if(res.ok){const health=await res.json();if(health.backend==="FALKORDB"&&health.ok===true)kind="FALKORDB";else if(health.backend==="memory"&&health.ok===true)kind="LOCAL_MEMORY";else throw Error("Unknown health state");}else if(res.status!==404)throw Error("Graph API health unavailable: HTTP "+res.status);}catch(e){kind="UNAVAILABLE";failure("Graph API unavailable: "+e.message+". The app will not claim live settlement results.");}
 if(!await reset("ambiguous"))throw Error("Could not load ambiguous case");simpleDisplay();}
 initialize();
+publicLiveAvailable().then(ok=>{if(ok)setMode();});
 
 /* Whole-ledger reconciliation (FalkorDB algo.maxFlow). Shows only server results. */
 const LEDGER_DEMOS={forced:{"synthetic_only": true, "supplier_id": "fictional_sharma_distributors", "sku": "SOAP100", "unit": "piece", "obligations": [{"id": "SHORT_JUN", "kind": "shortage", "qty": 2, "created_on": "2026-10-01", "document_ref": "fictional_invoice_1041_billed50_received48"}, {"id": "DIWALI_SCHEME", "kind": "promotion", "qty": 2, "created_on": "2026-10-02", "earned_on": "2026-10-02", "document_ref": "fictional_diwali_scheme_circular", "scheme_terms": {"valid_from": "2026-10-01", "valid_to": "2026-10-31", "min_purchase": 40, "purchase_qty": 50, "deliver_by": "2026-10-07"}}], "receipts": [{"id": "DROP_1", "received_on": "2026-10-05", "qty": 2, "unit": "piece", "retailer_confirmed": true, "document_ref": "fictional_delivery_note_05"}, {"id": "DROP_2", "received_on": "2026-10-09", "qty": 2, "unit": "piece", "retailer_confirmed": true, "document_ref": "fictional_delivery_note_09"}], "case_id": "ledger_forced_demo"},ambiguous:{"synthetic_only": true, "supplier_id": "fictional_sharma_distributors", "sku": "SOAP100", "unit": "piece", "obligations": [{"id": "SHORT_JUN", "kind": "shortage", "qty": 2, "created_on": "2026-10-01", "document_ref": "fictional_invoice_1041_billed50_received48"}, {"id": "DIWALI_SCHEME", "kind": "promotion", "qty": 2, "created_on": "2026-10-02", "earned_on": "2026-10-02", "document_ref": "fictional_diwali_scheme_circular", "scheme_terms": {"valid_from": "2026-10-01", "valid_to": "2026-10-31", "min_purchase": 40, "purchase_qty": 50, "deliver_by": "2026-10-07"}}], "receipts": [{"id": "DROP_1", "received_on": "2026-10-05", "qty": 2, "unit": "piece", "retailer_confirmed": true, "document_ref": "fictional_delivery_note_05"}, {"id": "DROP_2", "received_on": "2026-10-06", "qty": 2, "unit": "piece", "retailer_confirmed": true, "document_ref": "fictional_delivery_note_06"}], "case_id": "ledger_ambiguous_demo"}};
@@ -1301,11 +1302,19 @@ function renderLedger(r,replay){
    row.append(info,end);ch.append(row);
   }
 }
-let publicLive=null;
+
 async function publicLiveAvailable(){
  if(publicLive!==null)return publicLive;
  try{const c=new AbortController();const t=setTimeout(()=>c.abort(),6000);const r=await fetch("/api/public/health",{signal:c.signal});clearTimeout(t);publicLive=r.ok&&(await r.json()).ok===true;}catch(e){publicLive=false;}
+ if(publicLive)markPublicLive();
  return publicLive;
+}
+/* The ledger demo runs on a hosted FalkorDB even though this page has no local
+   graph: say so, instead of leaving the "not a live database" wording. */
+function markPublicLive(){
+ assign("caseMode","LIVE · FALKORDB CLOUD");
+ assign("runtimeDisclosure","The whole-supplier-ledger demo below runs live on FalkorDB Cloud: each run creates a fresh fictional case and reconciles it with algo.maxFlow. Entering your own case history still needs the local Docker app.");
+ $("mode").classList.add("live");assign("modeText","LIVE FALKORDB CLOUD · LEDGER DEMO");
 }
 async function publicLiveDemo(which){
  if(!await publicLiveAvailable())return false;
