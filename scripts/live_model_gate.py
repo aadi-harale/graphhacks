@@ -123,7 +123,16 @@ async def run_one(store,kind,model,output_dir):
                           "draft_stays_internal":draft_safe}
         result["passed"]=all(result["checks"].values())
     except Exception as exc:
-        result["error"]=f"{type(exc).__name__}: {exc}"
+        result["error"]=f"{type(exc).__name__}: {str(exc)[:500]}"
+        # This is still a FAILED real-model run. Preserve the exact synthetic
+        # graph-tool evidence instead of erasing every chosen tool when the
+        # model cannot produce a final response within the round budget.
+        if hasattr(exc,"tool_trace"):
+            result["failed_model_tool_trace"]=exc.tool_trace
+            result["failed_model_evidence_paths"]=exc.evidence_paths
+            result["failed_model_policy_decision"]=exc.authoritative_decision
+            result["failed_model_draft"]=exc.internal_draft
+            result["failed_model_tool_count"]=len(exc.tool_trace)
         result["passed"]=False
     result["finished_utc"]=datetime.now(timezone.utc).isoformat()
     output_dir.mkdir(parents=True,exist_ok=True)
