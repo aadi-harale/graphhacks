@@ -28,8 +28,8 @@ Take FalkorDB out and SahiAaya cannot reconcile, explain or settle anything.
 
 | Capability | How the graph does it |
 | --- | --- |
-| Reconcile the whole ledger | `algo.maxFlow` over `LedgerSource → Receipt → Obligation → LedgerSink` |
-| Prove an allocation is forced | Block one `POTENTIALLY_FULFILLS` edge, re-run `algo.maxFlow`; the drop is the units that edge carries in **every** maximum allocation |
+| Reconcile the whole ledger | `algo.maxFlow` over `LedgerSource → Receipt → Obligation → LedgerSink` (`LEDGER_FLOW` edges) |
+| Prove an allocation is forced | Block one receipt→claim edge, re-run `algo.maxFlow`; the drop is the units that edge carries in **every** maximum allocation |
 | Explain every number | Path `Receipt → POTENTIALLY_FULFILLS → Obligation → SUPPORTED_BY → Document` |
 | Refuse contradictions | A receipt with conflicting active `ResolveStatement`s gets zero flow capacity → `DISPUTE` |
 | Settle safely | One guarded Cypher write: versions, eligibility, no contradicting statement, retailer approval — or nothing |
@@ -80,16 +80,15 @@ docker compose exec app python -m scripts.benchmark --cases 60 --noise 0.15 --li
 (:ResolveCase)-[:HAS_RECEIPT]->(:ResolveReceipt {qty, available, received_on, confirmed, version})
 (:ResolveCase)-[:HAS_OBLIGATION]->(:ResolveObligation {kind, original, remaining, eligible, deliver_by, version})
 (:ResolveObligation)-[:SUPPORTED_BY]->(:ResolveDocument {ref})
-(:ResolveReceipt)-[:POTENTIALLY_FULFILLS {flow_cap}]->(:ResolveObligation)   // date, unit and scheme-window checks
+(:ResolveReceipt)-[:POTENTIALLY_FULFILLS]->(:ResolveObligation)   // date, unit and scheme-window checks
 (:ResolveStatement {target_id, reference, active})-[:ABOUT]->(:ResolveReceipt)
-(:LedgerSource)-[:FEEDS {flow_cap}]->(:ResolveReceipt)
-(:ResolveObligation)-[:DRAINS {flow_cap}]->(:LedgerSink)
+(:LedgerSource)-[:LEDGER_FLOW {flow_cap}]->(:ResolveReceipt)-[:LEDGER_FLOW {flow_cap}]->(:ResolveObligation)-[:LEDGER_FLOW {flow_cap}]->(:LedgerSink)
 (:ResolveAllocation {qty, proof})-[:FROM]->(:ResolveReceipt), -[:SETTLES]->(:ResolveObligation)
 (:ResolveApproval)-[:CONFIRMS]->(:ResolveAllocation)
 (:ResolveFollowUp {action, question, status})-[:FOR_RECEIPT]->(:ResolveReceipt)
 ```
 
-`flow_cap` is derived from graph facts on every reconcile. It is never a business fact. The original preset walkthrough (`app/graph.py`) uses an older `Receipt/Obligation/Allocation` schema in a separate graph.
+`flow_cap` is derived from graph facts on every reconcile. It is never a business fact. `algo.maxFlow` accepts a single relationship type, so the network uses one `LEDGER_FLOW` type; each receipt→claim `LEDGER_FLOW` edge mirrors a `POTENTIALLY_FULFILLS` eligibility edge. The original preset walkthrough (`app/graph.py`) uses an older `Receipt/Obligation/Allocation` schema in a separate graph.
 
 ## The Cypher the product depends on
 
@@ -98,12 +97,13 @@ The core algorithm call (`app/ledger.py`, `Q_MAXFLOW`):
 ```cypher
 MATCH (src:LedgerSource {tenant:$tenant,case:$case}),(snk:LedgerSink {tenant:$tenant,case:$case})
 CALL algo.maxFlow({sourceNodes:[src], targetNodes:[snk], capacityProperty:'flow_cap',
-                   relationshipTypes:['FEEDS','POTENTIALLY_FULFILLS','DRAINS']})
+                   relationshipTypes:['LEDGER_FLOW']})
 YIELD edges, edgeFlows, maxFlow
 UNWIND range(0, size(edges)-1) AS i
 WITH edges[i] AS e, edgeFlows[i] AS units, maxFlow
-WHERE type(e)='POTENTIALLY_FULFILLS'
-RETURN startNode(e).id, endNode(e).id, units, maxFlow
+WITH startNode(e) AS a, endNode(e) AS b, units, maxFlow
+WHERE a:ResolveReceipt AND b:ResolveObligation
+RETURN a.id, b.id, units, maxFlow
 ```
 
 Eligibility edges are created at intake (`app/resolve.py`):

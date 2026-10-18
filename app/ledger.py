@@ -2,9 +2,13 @@
 
 The supplier relationship is modelled as a flow network that lives in the graph:
 
-    (:LedgerSource) -[:FEEDS {flow_cap: units still unallocated}]-> (:ResolveReceipt)
-    (:ResolveReceipt) -[:POTENTIALLY_FULFILLS {flow_cap}]-> (:ResolveObligation)
-    (:ResolveObligation) -[:DRAINS {flow_cap: units still owed}]-> (:LedgerSink)
+    (:LedgerSource) -[:LEDGER_FLOW {flow_cap: units still unallocated}]-> (:ResolveReceipt)
+    (:ResolveReceipt) -[:LEDGER_FLOW {flow_cap}]-> (:ResolveObligation)   // mirrors POTENTIALLY_FULFILLS
+    (:ResolveObligation) -[:LEDGER_FLOW {flow_cap: units still owed}]-> (:LedgerSink)
+
+FalkorDB's algo.maxFlow takes exactly one relationship type, so the network uses a
+single LEDGER_FLOW type; every receipt->obligation LEDGER_FLOW edge mirrors a
+POTENTIALLY_FULFILLS eligibility edge created at intake.
 
 ``flow_cap`` is a derived field recomputed from graph facts on every reconcile; it
 is never a business fact. One ``algo.maxFlow`` call returns the most units the
@@ -20,7 +24,7 @@ from .demo_data import TENANT
 from .flow import forced_units as py_forced
 
 BIG = 1_000_000
-REL_TYPES = ["FEEDS", "POTENTIALLY_FULFILLS", "DRAINS"]
+REL_TYPE = "LEDGER_FLOW"
 _lock = threading.Lock()
 
 # 1. Ensure the case's source and sink exist and are wired to its receipts/obligations.
@@ -29,53 +33,59 @@ MERGE (src:LedgerSource {tenant:$tenant,case:$case})
 MERGE (snk:LedgerSink {tenant:$tenant,case:$case})
 WITH c,src,snk
 OPTIONAL MATCH (c)-[:HAS_RECEIPT]->(r:ResolveReceipt)
-FOREACH (_ IN CASE WHEN r IS NULL THEN [] ELSE [1] END | MERGE (src)-[:FEEDS]->(r))
-WITH c,snk
+FOREACH (_ IN CASE WHEN r IS NULL THEN [] ELSE [1] END | MERGE (src)-[:LEDGER_FLOW]->(r))
+WITH DISTINCT c,snk
 OPTIONAL MATCH (c)-[:HAS_OBLIGATION]->(o:ResolveObligation)
-FOREACH (_ IN CASE WHEN o IS NULL THEN [] ELSE [1] END | MERGE (o)-[:DRAINS]->(snk))
+FOREACH (_ IN CASE WHEN o IS NULL THEN [] ELSE [1] END | MERGE (o)-[:LEDGER_FLOW]->(snk))
+WITH DISTINCT c
+OPTIONAL MATCH (c)-[:HAS_RECEIPT]->(r2:ResolveReceipt)-[:POTENTIALLY_FULFILLS]->(o2:ResolveObligation)
+WHERE (c)-[:HAS_OBLIGATION]->(o2)
+FOREACH (_ IN CASE WHEN o2 IS NULL THEN [] ELSE [1] END | MERGE (r2)-[:LEDGER_FLOW]->(o2))
+WITH DISTINCT c
 RETURN c.id"""
 
 # 2. Derive capacities from current graph facts.
 #    A receipt with conflicting active supplier statements feeds nothing (dispute).
 #    A receipt attributed by the supplier may only flow to that obligation.
 Q_CAPS_RECEIPTS = """MATCH (c:ResolveCase {tenant:$tenant,id:$case,ready:true})-[:HAS_RECEIPT]->(r:ResolveReceipt)
-MATCH (:LedgerSource {tenant:$tenant,case:$case})-[f:FEEDS]->(r)
+MATCH (:LedgerSource {tenant:$tenant,case:$case})-[f:LEDGER_FLOW]->(r)
 OPTIONAL MATCH (s:ResolveStatement {active:true})-[:ABOUT]->(r)
 WITH c,r,f,collect(DISTINCT s.target_id) AS targets
 SET f.flow_cap = CASE WHEN r.confirmed=true AND r.unit=c.unit AND size(targets)<=1 THEN r.available ELSE 0 END
 WITH r,targets
-OPTIONAL MATCH (r)-[p:POTENTIALLY_FULFILLS]->(o:ResolveObligation)
+OPTIONAL MATCH (r)-[p:LEDGER_FLOW]->(o:ResolveObligation)
 FOREACH (_ IN CASE WHEN p IS NULL THEN [] ELSE [1] END |
   SET p.flow_cap = CASE WHEN size(targets)=0 OR o.id IN targets THEN $big ELSE 0 END)
 RETURN r.id, size(targets)"""
 Q_CAPS_OBLIGATIONS = """MATCH (c:ResolveCase {tenant:$tenant,id:$case,ready:true})-[:HAS_OBLIGATION]->(o:ResolveObligation)
-MATCH (o)-[d:DRAINS]->(:LedgerSink {tenant:$tenant,case:$case})
+MATCH (o)-[d:LEDGER_FLOW]->(:LedgerSink {tenant:$tenant,case:$case})
 SET d.flow_cap = CASE WHEN o.eligible=true THEN o.remaining ELSE 0 END
 RETURN o.id"""
 
 # 3. The graph algorithm itself.
 Q_MAXFLOW = """MATCH (src:LedgerSource {tenant:$tenant,case:$case}),(snk:LedgerSink {tenant:$tenant,case:$case})
 CALL algo.maxFlow({sourceNodes:[src], targetNodes:[snk], capacityProperty:'flow_cap',
-                   relationshipTypes:['FEEDS','POTENTIALLY_FULFILLS','DRAINS']})
+                   relationshipTypes:['LEDGER_FLOW']})
 YIELD edges, edgeFlows, maxFlow
 UNWIND range(0, size(edges)-1) AS i
 WITH edges[i] AS e, edgeFlows[i] AS units, maxFlow
-WHERE type(e)='POTENTIALLY_FULFILLS'
-RETURN startNode(e).id, endNode(e).id, units, maxFlow"""
+WITH startNode(e) AS a, endNode(e) AS b, units, maxFlow
+WHERE a:ResolveReceipt AND b:ResolveObligation
+RETURN a.id, b.id, units, maxFlow"""
 
 Q_BLOCK_EDGE = """MATCH (c:ResolveCase {tenant:$tenant,id:$case,ready:true})-[:HAS_RECEIPT]->(r:ResolveReceipt {id:$receipt})
 MATCH (c)-[:HAS_OBLIGATION]->(o:ResolveObligation {id:$claim})
-MATCH (r)-[p:POTENTIALLY_FULFILLS]->(o)
+MATCH (r)-[p:LEDGER_FLOW]->(o)
 SET p.flow_cap=$cap RETURN p.flow_cap"""
 
 # Read the same network back for the labelled fallback and for explanations.
 Q_NETWORK = """MATCH (c:ResolveCase {tenant:$tenant,id:$case,ready:true})-[:HAS_RECEIPT]->(r:ResolveReceipt)
-MATCH (:LedgerSource {tenant:$tenant,case:$case})-[f:FEEDS]->(r)
-OPTIONAL MATCH (r)-[p:POTENTIALLY_FULFILLS]->(o:ResolveObligation)
+MATCH (:LedgerSource {tenant:$tenant,case:$case})-[f:LEDGER_FLOW]->(r)
+OPTIONAL MATCH (r)-[p:LEDGER_FLOW]->(o:ResolveObligation)
 RETURN r.id, r.received_on, r.qty, f.flow_cap, o.id, p.flow_cap, r.available, r.confirmed, r.version
 ORDER BY r.received_on, r.id, o.id"""
 Q_OBLIGATIONS = """MATCH (c:ResolveCase {tenant:$tenant,id:$case,ready:true})-[:HAS_OBLIGATION]->(o:ResolveObligation)
-MATCH (o)-[d:DRAINS]->(:LedgerSink {tenant:$tenant,case:$case})
+MATCH (o)-[d:LEDGER_FLOW]->(:LedgerSink {tenant:$tenant,case:$case})
 MATCH (o)-[:SUPPORTED_BY]->(doc:ResolveDocument)
 RETURN o.id, o.kind, o.original, o.remaining, o.eligible, d.flow_cap, doc.ref, o.version ORDER BY o.created_on, o.id"""
 Q_DISPUTED = """MATCH (c:ResolveCase {tenant:$tenant,id:$case,ready:true})-[:HAS_RECEIPT]->(r:ResolveReceipt)
@@ -228,7 +238,7 @@ class LedgerReconciler:
                 "proposals": proposals, "ambiguous": ambiguous, "obligations": owed,
                 "receipts": list(receipts.values()), "blocked_receipts": blocked,
                 "supplier_question": question,
-                "method": ("One algo.maxFlow over Source→Receipt→Obligation→Sink; each used edge is "
+                "method": ("One algo.maxFlow over LEDGER_FLOW edges Source→Receipt→Obligation→Sink; each used edge is "
                            "blocked and re-run. Units that disappear are carried by that edge in every "
                            "maximum allocation and are the only units proposed."),
                 "cypher": ["Q_WIRE", "Q_CAPS_RECEIPTS", "Q_CAPS_OBLIGATIONS", "Q_MAXFLOW", "Q_BLOCK_EDGE", "Q_PATH"]}
