@@ -59,3 +59,23 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+def plain_reachability():
+    """Open a TCP socket and send an unauthenticated PING. No credentials are sent."""
+    import socket
+    try:
+        s = socket.create_connection((os.environ["FALKOR_HOST"], int(os.environ["FALKOR_PORT"])), timeout=8)
+        note("TCP", "port reachable (TCP connect OK)")
+        s.settimeout(8)
+        s.sendall(b"PING\r\n")
+        reply = s.recv(200).decode(errors="replace").strip()
+        s.close()
+        # Typical: '-NOAUTH Authentication required.' => plaintext Redis protocol, auth enabled.
+        note("Plain PING", f"server replied without TLS: {reply[:60]!r}")
+    except Exception as exc:
+        note("TCP", f"FAIL {type(exc).__name__}", "warning")
+
+
+if __name__ == "__main__" and os.getenv("FALKOR_HOST"):
+    plain_reachability()
