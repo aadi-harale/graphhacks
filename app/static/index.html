@@ -787,7 +787,7 @@ function renderStory(s){
 function normalizeState(s){if(s&&s.backend==="FALKORDB"){return {...s,mode:"FALKORDB",verified_allocations:Array.isArray(s.allocations)?s.allocations:[],decision:{...s.decision,tool_trace:s.decision?.graph_tool_trace||[]}};}return s;}
 function renderEvidenceNetwork(state){
  const grid=$("networkGrid");grid.replaceChildren();
- const simulated=kind!=="FALKORDB";$("networkCaption").textContent=simulated?"Fictional browser case · visual links from current scenario":"FalkorDB-backed case · references from current API response";
+ const simulated=kind!=="FALKORDB";$("networkCaption").textContent=simulated?"Fictional browser case · conceptual links (not graph edges)":"FalkorDB-backed case · conceptual links (inspect actual paths below)";
  if(!state){$("networkState").textContent="AWAITING CASE";return;}
  const rec=state.receipt||{},obs=state.obligations||[],dec=state.decision||{};
  $("networkState").textContent=(dec.status||"WAITING").replaceAll("_"," ");
@@ -810,7 +810,7 @@ function renderEvidenceNetwork(state){
    $("networkDetail").textContent=data.title+" · "+data.id+" · "+data.detail;
   });grid.append(button);
  }
- $("networkDetail").textContent="Select a record for its reported reference. Connections are a simplified case overview, not a live graph traversal.";
+ $("networkDetail").textContent="Select a record for its reported reference. Lines illustrate the case workflow only, not verified graph edges. Open Evidence trail for returned paths.";
 }
 function render(s){s=normalizeState(s);snapshot=s;renderEvidenceNetwork(s);const d=s.decision;renderStory(s);assign("received",s.receipt.original_qty);assign("available",s.receipt.available_qty);assign("open",s.obligations.filter(x=>x.outstanding_qty>0).length);const sh=s.obligations.find(x=>x.id==="SHORT-41"),pr=s.obligations.find(x=>x.id==="PROMO-17");
 assign("quickShort",sh?(sh.outstanding_qty?sh.outstanding_qty+" soaps still owed":"Settled ✓"):(s.verified_allocations.some(x=>x.obligation_id==="SHORT-41")?"Settled ✓":"—"));
