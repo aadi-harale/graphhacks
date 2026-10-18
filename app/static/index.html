@@ -1067,6 +1067,12 @@ $("simpleChooseReplacement").addEventListener("click",()=>simpleReply("SHORT-41"
 $("simpleChoosePromo").addEventListener("click",()=>simpleReply("PROMO-17"));
 $("simpleChooseConflict").addEventListener("click",()=>simpleReply("conflict"));
 $("simpleRestart").addEventListener("click",simpleReset);
+$("heroStart").addEventListener("click",async()=>{
+ $("workspaceDetails").open=true;
+ $("tour").classList.remove("is-collapsed");
+ $("tour").scrollIntoView({behavior:"smooth",block:"center"});
+ if(tourStep===0)await advanceTour();
+});
 $("simpleShowProof").addEventListener("click",()=>simpleOpenAdvanced("proof"));
 $("judgeOpenGraph").addEventListener("click",()=>{simpleOpenAdvanced("case");$("ledgerPanel").scrollIntoView({behavior:"smooth",block:"start"});});
 $("simpleTryOwn").addEventListener("click",()=>simpleOpenAdvanced("case"));
