@@ -1,5 +1,11 @@
 name: Private real-model acceptance (manual)
 on:
+  # One-time smoke + six-case gate when this workflow is first merged to main.
+  # Later unrelated pushes do not incur model API usage.
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/real-model-acceptance.yml"
   workflow_dispatch:
     inputs:
       scenario:
@@ -30,7 +36,7 @@ jobs:
     env:
       OPENAI_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
       OPENAI_BASE_URL: https://openrouter.ai/api/v1
-      SAHIAAYA_AGENT_MODEL: ${{ inputs.model }}
+      SAHIAAYA_AGENT_MODEL: ${{ inputs.model || 'openrouter/free' }}
       FALKOR_HOST: localhost
       FALKOR_PORT: "6379"
       ALLOW_DEMO_MUTATIONS: "1"
@@ -52,14 +58,13 @@ jobs:
         env:
           RUN_FALKOR_TESTS: "1"
         run: python -m pytest -q tests/test_track1_agent.py tests/test_track1_counterfactual.py
-      - name: Execute real model acceptance against temporary FalkorDB
+      - name: Real model smoke (one unfamiliar unattributed case)
         shell: bash
-        run: |
-          if [ "${{ inputs.scenario }}" = "all" ]; then
-            python -m scripts.live_model_gate --accept-api-cost
-          else
-            python -m scripts.live_model_gate --accept-api-cost --only unattributed
-          fi
+        run: python -m scripts.live_model_gate --accept-api-cost --only unattributed
+      - name: Run all six scenarios only after smoke succeeds
+        if: ${{ github.event_name == 'push' || inputs.scenario == 'all' }}
+        shell: bash
+        run: python -m scripts.live_model_gate --accept-api-cost
       - name: Report verified outcomes (not mock results)
         if: always()
         run: |
