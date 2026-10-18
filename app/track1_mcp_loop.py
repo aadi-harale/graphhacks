@@ -11,6 +11,17 @@ import sys
 
 from .track1_agent import TOOL_SCHEMAS, SYSTEM_PROMPT, AgentSession
 
+class AgentRoundsExhausted(RuntimeError):
+    """Unsuccessful model run with exact MCP tool history for postmortem.
+    Never indicates a successful policy decision.
+    """
+    def __init__(self, session: AgentSession):
+        super().__init__("Agent exhausted bounded tool-selection rounds without a final answer")
+        self.tool_trace=list(session.trace)
+        self.evidence_paths=list(session.evidence_paths)
+        self.authoritative_decision=session.decision
+        self.internal_draft=session.draft
+
 
 async def run_agent_mcp(case_id: str, receipt_id: str, query: str, store=None,
                         client=None, model: str | None=None, max_rounds: int=7):
@@ -149,4 +160,4 @@ async def run_agent_mcp(case_id: str, receipt_id: str, query: str, store=None,
                                            "result_kind":"blocked","reason":str(exc)})
                     messages.append({"role":"tool","tool_call_id":c.id,
                                      "content":json.dumps(outcome,default=str)})
-    raise RuntimeError("Agent exceeded bounded tool selection rounds")
+    raise AgentRoundsExhausted(sess)
