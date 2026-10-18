@@ -92,6 +92,8 @@
 .ledger-panel{margin-top:20px;border:1px solid #c9dac6;background:#fbfcf7;border-radius:14px;padding:18px}
 .ledger-panel h4{font-family:Georgia,serif;font-size:22px;font-weight:500;letter-spacing:-.03em;margin:8px 0 6px}
 .ledger-panel p.lead-small{font-size:12px;line-height:1.6;color:#58705a;margin:0 0 12px}
+.plain-first{font-size:14px;line-height:1.55;color:var(--ink);margin:0 0 10px;padding:10px 14px;border-left:3px solid var(--lime);background:var(--soft);border-radius:0 8px 8px 0}
+.plain-first b{color:var(--green)}
 .ledger-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}
 .ledger-stats div{background:#fff;border:1px solid #d6e3d2;border-radius:10px;padding:11px}
 .ledger-stats b{display:block;font-size:22px;letter-spacing:-.04em;color:#234b37}
@@ -544,8 +546,8 @@ pre{max-width:100%;overflow:auto}
       <div class="judge-promises"><span>THE NEXT DELIVERY: 2 SOAPS ARRIVE</span><h2>Which promise did these 2 soaps fulfil?</h2><div><strong>↳ 2 replacement soaps</strong><strong>✳ 2 promotional soaps</strong></div><small>Two possible answers. Only evidence can decide.</small></div>
     </div>
   </div>
-  <div class="judge-actions"><button type="button" id="judgeTryDemo" class="simple-button simple-button-main">Try the demo <span aria-hidden="true">→</span></button><button type="button" id="judgeHow" class="simple-outline-button">See how it works ↓</button></div>
-  <div class="judge-disclosure" role="note"><strong>FICTIONAL DEMO · NOT LIVE</strong><span>This preview uses fictional data. Live graph and AI investigation require the local Docker app.</span></div>
+  <div class="judge-actions"><button type="button" id="judgeTryDemo" class="simple-button simple-button-main">Try the demo <span aria-hidden="true">→</span></button><button type="button" id="judgeHow" class="simple-outline-button">See how it works ↓</button><button type="button" id="heroSeeLive" class="simple-outline-button" hidden>See the live graph answer →</button></div>
+  <div class="judge-disclosure" role="note"><strong id="heroLiveTag">FICTIONAL DEMO · NOT LIVE</strong><span id="heroLiveNote">This preview uses fictional data. Live graph and AI investigation require the local Docker app.</span></div>
   <div class="simple-progress" id="judgeProcess" aria-label="Three step receiving workflow">
     <div id="simpleStep1" class="simple-progress-step is-active"><span>01</span> Check delivery</div>
     <div id="simpleStep2" class="simple-progress-step"><span>02</span> Trace promises</div>
@@ -613,7 +615,7 @@ pre{max-width:100%;overflow:auto}
     <button id="simpleTryOwn" class="simple-outline-button" type="button">Enter your own case <span>→</span></button>
   </div>
 </section>
-<div class="judge-technical-link"><span><strong>Why the graph matters.</strong> In the local application, FalkorDB max-flow determines what is forced in every valid receipt-to-obligation allocation versus what still needs supplier evidence. Recorded replay on this public site is not a live query.</span><button type="button" id="judgeOpenGraph" class="simple-outline-button">Inspect graph reasoning →</button></div>
+<div class="judge-technical-link"><span><strong>Why the graph matters.</strong> FalkorDB max-flow determines what is forced in every valid receipt-to-obligation allocation versus what still needs supplier evidence. <span id="judgeGraphNote">Recorded replay on this public site is not a live query.</span></span><button type="button" id="judgeOpenGraph" class="simple-outline-button">Inspect graph reasoning →</button></div>
 <details id="workspaceDetails" class="full-workspace-details">
  <summary>Advanced workspace <span>History · Claims · FalkorDB evidence · Agent</span></summary>
 <section class="hero hero-simple" aria-label="What SahiAaya does for a shopkeeper">
@@ -660,7 +662,7 @@ pre{max-width:100%;overflow:auto}
 </details>
 <details class="optional-section full-optional" id="newCaseDetails"><summary>Try a different delivery <span>Enter your own example · local FalkorDB</span></summary><section class="card case-intake" id="newCase" aria-label="Create a new supplier delivery case">
  <div class="case-intake-head">
-   <div><div class="eyebrow">NEW · NOT A PRESET SCENARIO</div><h2>Try your own delivery history.</h2><p class="lead">Enter fictional goods and previous supplier promises, or upload a synthetic JSON history. SahiAaya creates new FalkorDB relationships and investigates what remains owed.</p></div>
+   <div><div class="eyebrow">NEW · NOT A PRESET SCENARIO</div><h2>Try your own delivery history.</h2><p class="lead">Enter your own fictional promises and deliveries. SahiAaya builds the graph and works out what is still owed.</p></div>
    <span class="tag" id="caseMode">LOCAL GRAPH REQUIRED</span>
  </div>
  <form id="caseForm" class="intake-form">
@@ -680,9 +682,10 @@ pre{max-width:100%;overflow:auto}
   <div class="agent-head"><span class="eyebrow">WHOLE SUPPLIER LEDGER · FALKORDB algo.maxFlow</span><span class="tag" id="ledgerEngine">NOT RUN</span></div>
   <div id="ledgerReplayNote" class="ledger-q" hidden></div>
   <h4>What is settled, what is still owed — across every delivery.</h4>
+  <p class="plain-first"><b>In plain words:</b> a delivery is only marked as settling a claim when there is <b>no other possible answer</b>. If two answers both fit the evidence, SahiAaya settles nothing and asks the supplier instead.</p>
   <p class="lead-small">FalkorDB runs one max-flow over Delivery → Claim. Then it blocks each link and re-runs it: units that vanish are carried by that link in <em>every</em> valid allocation. Only those forced units are proposed; everything else becomes a supplier question.</p>
   <button id="ledgerRun" type="button" class="btn primary">Reconcile whole ledger →</button>
-  <div class="ledger-stats" aria-live="polite"><div><b id="ledgerOwed">–</b><span>units owed by supplier</span></div><div><b id="ledgerMax">–</b><span>settleable by recorded deliveries</span></div><div class="forced"><b id="ledgerForced">–</b><span>forced by the graph — safe to propose</span></div><div class="amb"><b id="ledgerAmb">–</b><span>ambiguous — ask supplier</span></div></div>
+  <div class="ledger-stats" aria-live="polite"><div><b id="ledgerOwed">–</b><span>units owed by supplier</span></div><div><b id="ledgerMax">–</b><span>settleable by recorded deliveries</span></div><div class="forced"><b id="ledgerForced">–</b><span>forced — only one possible answer, safe to propose</span></div><div class="amb"><b id="ledgerAmb">–</b><span>ambiguous — ask supplier</span></div></div>
   <div id="ledgerQuestion" class="ledger-q" hidden></div>
   <div id="ledgerProposals"></div>
   <div id="ledgerClaims"></div>
@@ -715,7 +718,7 @@ pre{max-width:100%;overflow:auto}
  <div class="graph-steps" id="graphSteps" aria-live="polite"></div>
  <div class="graph-summary"><strong id="graphSummaryTitle">Missing supplier attribution</strong><span id="graphSummaryDetail">The retailer still has two outstanding obligations.</span></div>
 </section>
-<div class="under" id="proof"><section class="card"><div class="card-head"><div class="doc-label">Evidence trail</div><span class="tag">CONNECTIONS</span></div><h3>Why did SahiAaya decide this?</h3><ul class="evidence-list" id="evidenceList"></ul><div class="evidence-visual-head"><strong>Connected evidence paths</strong><small id="visualPathMode">Fictional preview · evidence from active case</small></div><div id="evidenceVisual" class="evidence-visual" aria-label="Evidence paths from the current case"></div><div id="evidenceRecordDetail" class="evidence-record-detail" role="status">Select a record to inspect its returned reference.</div><details><summary>Text evidence paths</summary><div id="paths"></div></details><details><summary>Inspect machine decision and graph tool trace</summary><pre id="raw"></pre></details></section><section class="card"><div class="card-head"><div class="doc-label">Reviewed outcome</div><span class="tag">AUDIT</span></div><h3>What actually changed?</h3><ul class="ledger" id="audit"></ul><div class="result-box"><strong>No invented recoveries</strong><p>We report proposed allocations, supplier statements and reviewed settlements separately. No money is shown as saved until a real adjustment is proven.</p></div></section></div></details>
+<div class="under" id="proof"><section class="card"><div class="card-head"><div class="doc-label">Evidence trail</div><span class="tag">CONNECTIONS</span></div><h3>Why did SahiAaya decide this?</h3><ul class="evidence-list" id="evidenceList"></ul><div class="evidence-visual-head"><strong>Connected evidence paths</strong><small id="visualPathMode">Fictional preview · evidence from active case</small></div><div id="evidenceVisual" class="evidence-visual" aria-label="Evidence paths from the current case"></div><div id="evidenceRecordDetail" class="evidence-record-detail" role="status">Select a record to inspect its returned reference.</div><details><summary>Text evidence paths</summary><div id="paths"></div></details><details><summary>Inspect machine decision and graph tool trace</summary><pre id="raw"></pre></details></section><section class="card"><div class="card-head"><div class="doc-label">Reviewed outcome</div><span class="tag">AUDIT</span></div><h3>What actually changed?</h3><ul class="ledger" id="audit"></ul><div class="result-box"><strong>No invented recoveries</strong><p>No money is shown as saved until a real adjustment is proven.</p></div></section></div></details>
 </details>
 <footer class="foot" id="about"><strong>Current experience:</strong> <span id="runtimeDisclosure">Public synthetic walkthrough. Real FalkorDB reasoning is available in the separate local Docker application.</span> <a href="https://github.com/aadi-harale/graphhacks" target="_blank" rel="noopener noreferrer">Source and local FalkorDB setup →</a><br><br>Graph Hacks × FalkorDB 2026 · Track 01 — Agents That Act on Connected Data · Built with AI development assistance. No real retailer information is used.</footer>
 </main></div></div>
@@ -1235,6 +1238,7 @@ $("heroStart").addEventListener("click",async()=>{
 });
 $("simpleShowProof").addEventListener("click",()=>simpleOpenAdvanced("proof"));
 $("judgeOpenGraph").addEventListener("click",()=>{simpleOpenAdvanced("case");$("ledgerPanel").scrollIntoView({behavior:"smooth",block:"start"});});
+$("heroSeeLive").addEventListener("click",async()=>{simpleOpenAdvanced("case");$("ledgerPanel").scrollIntoView({behavior:"smooth",block:"start"});await publicLiveDemo("forced");});
 $("simpleTryOwn").addEventListener("click",()=>simpleOpenAdvanced("case"));
 simpleDisplay();
 $("caseForm").addEventListener("submit",e=>{e.preventDefault();createResolveCase();});$("agentRun").addEventListener("click",runInvestigationAgent);$("resumeCaseButton").addEventListener("click",reopenResolveCase);$("caseReceiptSelect").addEventListener("change",loadResolveReceipt);$("caseAttribute").addEventListener("click",attributeResolve);$("caseApprove").addEventListener("click",approveResolve);setCaseAvailable();$("tourNext").addEventListener("click",advanceTour);updateTour();$("short").addEventListener("click",()=>respond("SHORT-41"));$("promo").addEventListener("click",()=>respond("PROMO-17"));$("approve").addEventListener("click",approve);$("reset").addEventListener("click",()=>reset(selected));$("navProof").addEventListener("click",()=>$("proof").scrollIntoView({behavior:"smooth"}));$("navAbout").addEventListener("click",()=>$("about").scrollIntoView({behavior:"smooth"}));
@@ -1313,8 +1317,16 @@ async function publicLiveAvailable(){
    graph: say so, instead of leaving the "not a live database" wording. */
 function markPublicLive(){
  assign("caseMode","LIVE · FALKORDB CLOUD");
- assign("runtimeDisclosure","The whole-supplier-ledger demo below runs live on FalkorDB Cloud: each run creates a fresh fictional case and reconciles it with algo.maxFlow. Entering your own case history still needs the local Docker app.");
+ assign("runtimeDisclosure","Live on FalkorDB Cloud. Each run reconciles a fresh fictional case.");
  $("mode").classList.add("live");assign("modeText","LIVE FALKORDB CLOUD · LEDGER DEMO");
+ assign("judgeGraphNote","Live on this page — a real algo.maxFlow query, not a replay.");
+ assign("heroLiveTag","LIVE · FALKORDB CLOUD");
+ assign("heroLiveNote","Real algo.maxFlow, running now. Fictional shop and documents.");
+ try{setCaseMessage("Live on FalkorDB Cloud. Entering your own history needs the local Docker app.",false);}catch(e){}
+ const hl=$("heroSeeLive");if(hl)hl.hidden=false;
+ /* The live ledger is the strongest thing on this page; do not hide it behind
+    a collapsed "Advanced workspace" when the cloud graph is actually answering. */
+ try{simpleOpenAdvanced("case");}catch(e){}
 }
 async function publicLiveDemo(which){
  if(!await publicLiveAvailable())return false;
