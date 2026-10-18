@@ -54,14 +54,17 @@ jobs:
           echo "OpenRouter key present (value not logged)."
       - name: Diagnose provider access (status codes only, key never printed)
         shell: bash
+        continue-on-error: true
         run: |
+          set +e
           code=$(curl -s -o /tmp/key.json -w '%{http_code}' https://openrouter.ai/api/v1/key -H "Authorization: Bearer $OPENAI_API_KEY")
-          info=$(python -c "import json;d=json.load(open('/tmp/key.json'));k=d.get('data',d);print({x:k.get(x) for x in ('limit','limit_remaining','usage','is_free_tier','error')})" 2>/dev/null)
-          echo "::notice title=Key check::HTTP $code $info"
+          echo "::notice title=Key check::HTTP $code $(python -c "import json;d=json.load(open('/tmp/key.json'));k=d.get('data',d);print({x:k.get(x) for x in ('limit','limit_remaining','usage','is_free_tier')})" 2>&1 | tail -1)"
+          curl -s https://openrouter.ai/api/v1/models -o /tmp/models.json
+          echo "::notice title=Free tool models::$(python -c "import json;m=json.load(open('/tmp/models.json'))['data'];print(sorted(x['id'] for x in m if x['id'].endswith(':free') and 'tools' in (x.get('supported_parameters') or [])))" 2>&1 | tail -1)"
           body='{"model":"'"$SAHIAAYA_AGENT_MODEL"'","max_tokens":20,"messages":[{"role":"user","content":"Say ok"}],"tools":[{"type":"function","function":{"name":"ping","description":"ping","parameters":{"type":"object","properties":{}}}}]}'
           code=$(curl -s -o /tmp/chat.json -w '%{http_code}' https://openrouter.ai/api/v1/chat/completions -H "Authorization: Bearer $OPENAI_API_KEY" -H 'Content-Type: application/json' -d "$body")
-          err=$(python -c "import json;d=json.load(open('/tmp/chat.json'));e=d.get('error');print(e.get('code'),str(e.get('message'))[:200] if e else 'none')" 2>/dev/null)
-          echo "::notice title=Chat check::model=$SAHIAAYA_AGENT_MODEL HTTP $code error=$err"
+          echo "::notice title=Chat check::model=$SAHIAAYA_AGENT_MODEL HTTP $code $(head -c 300 /tmp/chat.json | tr -d '\n' | sed 's/sk-[A-Za-z0-9_-]*/[redacted]/g')"
+          exit 0
       - name: Install project requirements
         run: python -m pip install -r requirements.txt
       - name: Verify MCP transport on temporary FalkorDB before invoking model
