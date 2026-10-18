@@ -33,7 +33,7 @@ jobs:
     # Future edits do not accidentally spend model credits.
     if: ${{ github.event_name == 'workflow_dispatch' || github.event.head_commit.message == 'Run one-time private model acceptance' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 45
     services:
       graph:
         image: falkordb/falkordb:latest
@@ -59,6 +59,7 @@ jobs:
           fi
           echo "OpenRouter key present (value not logged)."
       - name: Diagnose provider access (status codes only, key never printed)
+        if: ${{ inputs.provider != 'gemini' }}
         shell: bash
         continue-on-error: true
         run: |
@@ -74,6 +75,7 @@ jobs:
       - name: Install project requirements
         run: python -m pip install -r requirements.txt
       - name: Replay the agent's first model request (error text only)
+        if: ${{ inputs.provider != 'gemini' }}
         continue-on-error: true
         run: |
           python - <<'PY'

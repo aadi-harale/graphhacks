@@ -23,6 +23,29 @@ class AgentRoundsExhausted(RuntimeError):
         self.internal_draft=session.draft
 
 
+async def _create_with_backoff(client, **kwargs):
+    """Call the model; on a provider rate limit, wait and retry a few times.
+
+    Free tiers allow only a few requests per minute, and one investigation makes
+    several calls in a row. Only rate-limit errors are retried; anything else
+    propagates unchanged. Retries are bounded by SAHIAAYA_AGENT_RATE_RETRIES.
+    """
+    retries=int(os.getenv("SAHIAAYA_AGENT_RATE_RETRIES","4"))
+    for attempt in range(retries+1):
+        try:
+            return await asyncio.to_thread(client.chat.completions.create,**kwargs)
+        except Exception as exc:
+            if type(exc).__name__!="RateLimitError" or attempt==retries:
+                raise
+            wait=20*(attempt+1)
+            headers=getattr(getattr(exc,"response",None),"headers",None) or {}
+            try:
+                wait=max(wait,min(90,float(headers.get("retry-after",0))))
+            except (TypeError,ValueError):
+                pass
+            await asyncio.sleep(wait)
+
+
 async def run_agent_mcp(case_id: str, receipt_id: str, query: str, store=None,
                         client=None, model: str | None=None, max_rounds: int=7):
     """Model decides tools, MCP transports calls, FalkorDB supplies evidence.
@@ -70,8 +93,8 @@ async def run_agent_mcp(case_id: str, receipt_id: str, query: str, store=None,
                 model_tools.append({"type":"function","function":spec})
 
             for round_index in range(max_rounds):
-                response=await asyncio.to_thread(
-                    client.chat.completions.create,model=name,messages=messages,
+                response=await _create_with_backoff(client,
+                    model=name,messages=messages,
                     tools=model_tools,tool_choice="auto",temperature=0,
                     # Bounded output: providers otherwise reserve the model's full
                     # output allowance per call, which low-credit keys cannot cover.
