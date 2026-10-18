@@ -106,13 +106,21 @@ async def run_one(store,kind,model,output_dir):
         result["agent_result"]=agent
         result["final_graph_state"]=after
         statuses_match=agent["authoritative_decision"]["status"]==expected
-        true_transport=agent.get("model_execution")=="configured_api_client" and (
-          agent.get("engine")=="model_selected_mcp_graph_tools") and (
-          all(x.get("transport")=="mcp_stdio" for x in agent["tool_trace"]))
-        results_captured=any(x.get("result_kind")!="blocked" and "result" in x
-                             for x in agent["tool_trace"])
-        source_traced=any(x["tool"]=="trace_claim_evidence" and "result" in x
-                          for x in agent["tool_trace"])
+        trace=agent.get("tool_trace") or []
+        # Require actual recorded tool invocation: all([]) is vacuously True.
+        true_transport=(agent.get("model_execution")=="configured_api_client"
+                        and agent.get("engine")=="model_selected_mcp_graph_tools"
+                        and bool(trace)
+                        and all(x.get("transport")=="mcp_stdio" for x in trace))
+        results_captured=any(x.get("result_kind")!="blocked"
+                             and isinstance(x.get("result"),dict)
+                             and bool(x["result"]) for x in trace)
+        # A graph path may legitimately be empty (e.g. ineligible obligation),
+        # but the provenance tool must return a non-blocked structured response.
+        source_traced=any(x.get("tool")=="trace_claim_evidence"
+                          and x.get("result_kind")!="blocked"
+                          and isinstance(x.get("result"),dict)
+                          and "paths" in x["result"] for x in trace)
         draft_safe=(agent["draft"] is None or agent["draft"]["status"]=="draft")
         state_unchanged=before["receipt"]["available_qty"]==after["receipt"]["available_qty"]
         result["checks"]={"expected_policy":statuses_match,
