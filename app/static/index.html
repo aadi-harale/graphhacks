@@ -524,6 +524,14 @@ pre{max-width:100%;overflow:auto}
 .network-detail{max-width:100%}
 .simple-secondary{gap:12px}
 @media(max-width:760px){.simple-intro h1{font-size:clamp(40px,9vw,55px)}.judge-actions{margin-top:12px}.judge-actions .simple-button-main{min-width:0}.judge-story{margin-top:8px}.network-showcase{padding:15px}}
+
+/* Page organization only: retain original section styles and interactions. */
+.site-tabs{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 18px;position:sticky;top:0;z-index:15;padding:10px 0;background:var(--bg,#f8f8f6)}
+.site-tab{border:1px solid #cbd5d3;background:transparent;border-radius:8px;padding:10px 14px;font:inherit;cursor:pointer;color:inherit}
+.site-tab[aria-current="page"]{background:#133e42;color:white;border-color:#133e42}
+.site-panel[hidden]{display:none!important}
+.site-panel{min-width:0}
+@media(max-width:700px){.site-tabs{gap:5px;padding:8px 0}.site-tab{font-size:12px;padding:8px 9px;flex:1 1 auto}}
 </style>
 </head>
 <body>
@@ -1385,5 +1393,50 @@ async function replayLedgerDemo(which){
 $("ledgerRun").addEventListener("click",loadLedger);
 $("demoForced").addEventListener("click",()=>loadLedgerDemo("forced"));
 $("demoAmbiguous").addEventListener("click",()=>loadLedgerDemo("ambiguous"));
+</script>
+
+<script>
+/* Navigation-only enhancement: move live nodes, never clone or replace widgets. */
+(function(){
+"use strict";
+const content=document.querySelector("main.content");
+const home=document.getElementById("simpleHome");
+const details=document.getElementById("workspaceDetails");
+if(!content||!home||!details)return;
+const keys=[["home","Home"],["demo","Case Demo"],["evidence","Evidence Graph"],["how","How It Works"],["advanced","Advanced Workspace"]];
+const bar=document.createElement("nav");bar.className="site-tabs";bar.setAttribute("aria-label","Main sections");
+const panels={home};
+home.classList.add("site-panel");home.id="page-home";
+for(const [key,label] of keys.slice(1)){
+ const el=document.createElement("section");el.id="page-"+key;el.className="site-panel";el.hidden=true;
+ el.setAttribute("aria-label",label);
+ panels[key]=el;content.insertBefore(el,details);
+}
+content.insertBefore(bar,home);
+for(const [key,label] of keys){
+ const a=document.createElement("button");a.type="button";a.className="site-tab";a.textContent=label;a.dataset.page=key;
+ a.addEventListener("click",()=>show(key,true));bar.append(a);
+}
+const move=(selector,key)=>{const el=document.querySelector(selector);if(el)panels[key].append(el);};
+for(const sel of [".simple-progress",".simple-workspace",".simple-bottom",".simple-secondary"])move(sel,"demo");
+for(const sel of [".network-showcase",".judge-technical-link"])move(sel,"evidence");
+for(const sel of [".hero.hero-simple",".journey"])move(sel,"how");
+panels.advanced.append(details);
+const foot=document.getElementById("about");if(foot)panels.advanced.append(foot);
+function show(key,history){
+ if(!panels[key])key="home";
+ for(const [id,el] of Object.entries(panels))el.hidden=id!==key;
+ for(const b of bar.querySelectorAll("button")){if(b.dataset.page===key)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current");}
+ if(history)window.history.replaceState(null,"","#"+key);
+ window.scrollTo({top:0,behavior:"instant"});
+}
+function route(key){show(key,false);}
+const linkTo={judgeTryDemo:"demo",judgeHow:"how",simpleShowProof:"advanced",simpleTryOwn:"advanced",judgeOpenGraph:"advanced",heroStart:"advanced",navProof:"advanced",navAbout:"advanced"};
+for(const [id,key] of Object.entries(linkTo)){const node=document.getElementById(id);if(node)node.addEventListener("click",()=>route(key),true);}
+const rail=document.querySelector(".rail .nav button.active");if(rail)rail.addEventListener("click",()=>show("home",true));
+for(const [id,key] of [["simpleCheck","demo"],["simpleNext","demo"],["simpleRestart","demo"]]){const node=document.getElementById(id);if(node)node.addEventListener("click",()=>route(key),true);}
+window.addEventListener("hashchange",()=>show(location.hash.slice(1),false));
+show(location.hash.slice(1)||"home",false);
+})();
 </script>
 </body></html>
